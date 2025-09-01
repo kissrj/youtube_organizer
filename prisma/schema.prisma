@@ -1,0 +1,1011 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model YouTubeAccount {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  youtubeUserId     String?
+  youtubeUsername   String?
+  accessToken       String?
+  refreshToken      String?
+  tokenExpiry       DateTime?
+  scope             String?
+  connectedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  playlists     Playlist[]
+  categories    Category[]
+  tags          Tag[]
+  videos        Video[]
+  youtubeAccount YouTubeAccount?
+  autoTagRules  AutoTagRule[]
+  syncSessions  SyncSession[]
+  exportJobs    ExportJob[]
+  importJobs    ImportJob[]
+  dataMappings  DataMapping[]
+  collections   Collection[]
+  notifications Notification[]
+  notificationPreferences NotificationPreference?
+  notificationChannels NotificationChannel[]
+  filterPresets FilterPreset[]
+  filterHistory FilterHistory[]
+  syncQueues    SyncQueue[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// YouTube Organizer Models
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  color       String?    // Hex color for UI
+  userId      String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlists   PlaylistCategory[]
+  videos      VideoCategory[]
+
+  @@unique([userId, name])
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String?  // Cor da tag em formato hex
+  category    String?  // Categoria da tag
+  isAuto      Boolean  @default(false) // Se é tag automática
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlists   PlaylistTag[]
+  videos      VideoTag[]
+  collections CollectionTag[]
+  feeds       CollectionFeed[]
+  autoTagRules AutoTagRule[]
+  filterPresets FilterPreset[]
+  tagSuggestions TagSuggestion[]
+
+  @@unique([userId, name])
+}
+
+model Playlist {
+  id                String   @id @default(cuid())
+  youtubeId         String   @unique // YouTube playlist ID
+  title             String
+  description       String?
+  thumbnailUrl      String?
+  channelTitle      String?
+  itemCount         Int?
+  publishedAt       DateTime?
+  userId            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories        PlaylistCategory[]
+  tags              PlaylistTag[]
+  collections       CollectionPlaylist[]
+
+  @@unique([userId, youtubeId])
+}
+
+model PlaylistCategory {
+  id          String   @id @default(cuid())
+  playlistId  String
+  categoryId  String
+  addedAt     DateTime @default(now())
+
+  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, categoryId])
+}
+
+model PlaylistTag {
+  id         String   @id @default(cuid())
+  playlistId String
+  tagId      String
+  addedAt    DateTime @default(now())
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, tagId])
+}
+
+// Vídeos individuais importados
+model Video {
+  id                String   @id @default(cuid())
+  youtubeId         String   @unique // YouTube video ID (11 caracteres)
+  title             String
+  description       String?
+  thumbnailUrl      String?
+  channelTitle      String?
+  channelId         String?
+  duration          String?  // ISO 8601 duration (PT4M13S)
+  viewCount         String?
+  likeCount         String?
+  commentCount      String?  // Número de comentários
+  favoriteCount     String?  // Número de favoritos
+  publishedAt       DateTime?
+  definition        String?  // hd, sd
+  dimension         String?  // 2d, 3d
+  projection        String?  // rectangular, 360
+  defaultAudioLanguage String? // Idioma padrão do áudio
+  categoryId        String?  // Categoria do YouTube
+  videoTags         String?  // Tags do vídeo (JSON)
+
+  // Campos para indexação e busca avançada
+  searchContent     String?  // Conteúdo combinado para busca (título + descrição + tags)
+  contentSummary    String?  // Resumo gerado automaticamente
+  keywords          String?  // Palavras-chave extraídas
+  language          String?  // Idioma detectado
+  transcriptStatus  String?  // Status do transcript: 'available', 'unavailable', 'processing'
+  // Cache de transcript
+  transcriptJson    String?
+  transcriptText    String?
+  transcriptSource  String?
+  transcriptUpdatedAt DateTime?
+
+  userId            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories        VideoCategory[]
+  tags              VideoTag[]
+  analyses          VideoAnalysis[]
+  tagSuggestions    TagSuggestion[]
+  collections       CollectionVideo[]
+
+  @@unique([userId, youtubeId])
+}
+
+model VideoCategory {
+  id        String   @id @default(cuid())
+  videoId   String
+  categoryId String
+  addedAt   DateTime @default(now())
+
+  video     Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, categoryId])
+}
+
+model VideoTag {
+  id      String   @id @default(cuid())
+  videoId String
+  tagId   String
+  addedAt DateTime @default(now())
+
+  video   Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, tagId])
+}
+
+// Collections: hierarchical, user-scoped groupings for videos/playlists/channels/tags
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?  // Nome do ícone (ex: "folder", "video", "star")
+  color       String?  // Hex color for UI
+  isPublic    Boolean  @default(false)
+  position    Int?     // Ordem de exibição
+  parentId    String?  // Para hierarquia
+  userId      String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent      Collection?    @relation("CollectionHierarchy", fields: [parentId], references: [id])
+  children    Collection[]   @relation("CollectionHierarchy")
+  videos      CollectionVideo[]
+  channels    CollectionChannel[]
+  playlists   CollectionPlaylist[]
+  tags        CollectionTag[]
+  settings    CollectionSettings?
+  feeds       CollectionFeed[]
+  filterPresets FilterPreset[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model CollectionVideo {
+  id           String   @id @default(cuid())
+  collectionId String
+  videoId      String
+  addedAt      DateTime @default(now())
+  position     Int?     // Ordem dentro da coleção
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  video        Video      @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, videoId])
+  @@index([collectionId])
+  @@index([videoId])
+}
+
+model CollectionChannel {
+  id           String   @id @default(cuid())
+  collectionId String
+  channelId    String
+  channelTitle String
+  addedAt      DateTime @default(now())
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, channelId])
+  @@index([collectionId])
+  @@index([channelId])
+}
+
+model CollectionPlaylist {
+  id           String   @id @default(cuid())
+  collectionId String
+  playlistId   String
+  addedAt      DateTime @default(now())
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  playlist     Playlist   @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, playlistId])
+  @@index([collectionId])
+  @@index([playlistId])
+}
+
+model CollectionTag {
+  id           String   @id @default(cuid())
+  collectionId String
+  tagId        String
+  addedAt      DateTime @default(now())
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  tag          Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, tagId])
+  @@index([collectionId])
+  @@index([tagId])
+}
+
+model CollectionSettings {
+  id           String   @id @default(cuid())
+  collectionId String   @unique
+  autoTag      Boolean  @default(false)
+  syncEnabled  Boolean  @default(false)
+  notify       Boolean  @default(false)
+  feedEnabled  Boolean  @default(false)
+
+  // Campos adicionais usados nas configurações do app
+  hideWatched  Boolean  @default(false)
+  hideShorts   Boolean  @default(false)
+  sortBy       String?
+  sortOrder    String?
+  maxItems     Int?     @default(1000)
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+}
+
+// Feeds personalizados de vídeos por coleção
+model CollectionFeed {
+  id          String   @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+
+  // Filtros do feed
+  filters     String?  // JSON string com filtros personalizados
+
+  // Ordenação
+  sortBy      SortBy   @default(RECENT)
+  sortOrder   SortOrder @default(DESC)
+
+  // Paginação
+  limit       Int      @default(20)
+  offset      Int      @default(0)
+
+  // Status
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  tags        Tag[]
+
+  @@map("collection_feeds")
+  @@index([collectionId])
+}
+
+enum SortBy {
+  RECENT
+  VIEWS
+  LIKES
+  COMMENTS
+  DURATION
+  RELEVANCE
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+// Automatic Tagging System Models
+model AutoTagRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  // Regras de correspondência
+  titlePattern    String? // Padrão para título
+  descriptionPattern String? // Padrão para descrição
+  category        String? // Categoria correspondente
+  keywords        String?  // JSON array de palavras-chave
+  
+  // Configurações
+  isActive       Boolean  @default(true)
+  priority       Int      @default(1) // Prioridade da regra
+  
+  // Relacionamentos
+  userId         String
+  tags           Tag[]
+  
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("auto_tag_rules")
+  @@index([userId])
+}
+
+model VideoAnalysis {
+  id          String   @id @default(cuid())
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Análise de conteúdo
+  titleAnalysis       String? // JSON
+  descriptionAnalysis String? // JSON
+  categoryAnalysis    String? // JSON
+  sentimentAnalysis   String? // JSON
+  
+  // Tags sugeridas
+  suggestedTags       String? // JSON array
+  
+  // Métricas de qualidade
+  confidenceScore     Float
+  analysisDate        DateTime @default(now())
+
+  @@map("video_analyses")
+  @@unique([videoId])
+  @@index([videoId])
+}
+
+model TagSuggestion {
+  id          String   @id @default(cuid())
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  tagId       String
+  tag         Tag      @relation(fields: [tagId], references: [id])
+  
+  // Configuração da sugestão
+  confidence Float
+  source      String   // 'auto' | 'manual' | 'ai'
+  isAccepted  Boolean  @default(false)
+  rejectedAt  DateTime?
+  
+  createdAt   DateTime @default(now())
+
+  @@unique([videoId, tagId])
+  @@map("tag_suggestions")
+  @@index([videoId])
+  @@index([tagId])
+}
+
+// Sync System Models
+model SyncSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadados da sessão
+  deviceName  String
+  deviceType  String   // 'web' | 'mobile' | 'desktop'
+  os          String?
+  browser     String?
+  
+  // Status da sessão
+  status      SyncStatus @default(ACTIVE)
+  lastSync    DateTime?
+  nextSync    DateTime?
+  
+  // Estatísticas
+  itemsSynced Int      @default(0)
+  conflicts   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  syncConflicts SyncConflict[]
+  syncQueues    SyncQueue[]
+
+  @@map("sync_sessions")
+  @@index([userId])
+}
+
+model SyncConflict {
+  id          String   @id @default(cuid())
+  sessionId   String
+  session     SyncSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  // Dados do conflito
+  entityType  String   // 'collection' | 'feed' | 'tag' | 'video'
+  entityId    String
+  operation   SyncOperation // 'create' | 'update' | 'delete'
+  
+  // Dados em conflito
+  localData   Json?
+  remoteData  Json?
+  
+  // Status do conflito
+  status      ConflictStatus @default(PENDING)
+  resolution  Json?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sync_conflicts")
+  @@index([sessionId])
+}
+
+model SyncQueue {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Dados da operação
+  entityType  String
+  entityId    String
+  operation   SyncOperation
+  data        Json
+  
+  // Prioridade e tentativas
+  priority    Int      @default(1)
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  
+  // Status
+  status      QueueStatus @default(PENDING)
+  error       String?
+  
+  // Timestamps
+  scheduledAt DateTime @default(now())
+  executedAt  DateTime?
+  completedAt DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  sessionId   String?
+  session     SyncSession? @relation(fields: [sessionId], references: [id])
+
+  @@map("sync_queue")
+  @@index([userId])
+  @@index([status])
+}
+
+enum SyncStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  COMPLETED
+}
+
+enum SyncOperation {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ConflictStatus {
+  PENDING
+  RESOLVED
+  IGNORED
+  MANUAL
+}
+
+enum QueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  RETRYING
+}
+
+// Export/Import System Models
+model ExportJob {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadados do job
+  name        String
+  description String?
+  format      ExportFormat
+  status      ExportStatus @default(PENDING)
+  
+  // Dados do export
+  include     Json     // O que incluir no export
+  filters     Json?    // Filtros aplicados
+  totalItems  Int      @default(0)
+  exportedItems Int    @default(0)
+  
+  // Arquivo resultante
+  filePath    String?
+  fileSize    Int?
+  downloadUrl String?
+  
+  // Timestamps
+  scheduledAt DateTime @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("export_jobs")
+  @@index([userId])
+}
+
+model ImportJob {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadados do job
+  name        String
+  description String?
+  format      ImportFormat
+  status      ImportStatus @default(PENDING)
+  
+  // Dados do import
+  filePath    String
+  fileSize    Int
+  totalItems  Int      @default(0)
+  processedItems Int   @default(0)
+  successItems Int     @default(0)
+  errorItems  Int      @default(0)
+  
+  // Mapeamento de campos
+  mapping     Json     // Mapeamento de campos personalizado
+  
+  // Relatório
+  report      Json?    // Relatório do processo
+  
+  // Timestamps
+  scheduledAt DateTime @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("import_jobs")
+  @@index([userId])
+}
+
+model DataMapping {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Nome do mapeamento
+  name        String
+  description String?
+  
+  // Configuração de mapeamento
+  sourceFormat String
+  targetFormat String
+  mappings    Json     // Configuração de mapeamento de campos
+  
+  // Uso
+  isDefault   Boolean  @default(false)
+  usageCount  Int      @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("data_mappings")
+  @@index([userId])
+}
+
+enum ExportFormat {
+  JSON
+  CSV
+  XML
+  EXCEL
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum ImportFormat {
+  JSON
+  CSV
+  XML
+  YOUTUBE_JSON
+  OPML
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  VALIDATING
+}
+
+// Notification System Models
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadados da notificação
+  title       String
+  message     String
+  type        NotificationType
+  priority    NotificationPriority @default(MEDIUM)
+  
+  // Contexto
+  entityType  String?  // 'collection' | 'feed' | 'tag' | 'video'
+  entityId    String?
+  collectionId String?
+  
+  // Status
+  isRead      Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  
+  // Canais de entrega
+  channels    Json     // Configuração de canais (email, push, webhook)
+  
+  // Template
+  templateId  String?
+  template    NotificationTemplate? @relation(fields: [templateId], references: [id])
+  
+  // Timestamps
+  scheduledAt DateTime @default(now())
+  sentAt      DateTime?
+  readAt      DateTime?
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  logs        NotificationLog[]
+
+  @@map("notifications")
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+}
+
+model NotificationTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  // Template
+  subject     String
+  htmlContent String
+  textContent String?
+  
+  // Variáveis do template
+  variables   Json     // Variáveis disponíveis no template
+  
+  // Configuração
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  
+  // Categoria
+  category    String?
+  
+  // Relacionamentos
+  notifications Notification[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notification_templates")
+  @@index([isActive])
+  @@index([category])
+}
+
+model NotificationPreference {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Configurações globais
+  enabled     Boolean  @default(true)
+  frequency   NotificationFrequency @default(IMMEDIATE)
+  quietHours  Json?    // Horários silenciosos
+  
+  // Preferências por tipo
+  preferences Json     // Preferências detalhadas por tipo de notificação
+  
+  // Canais ativos
+  channels    Json     // Canais de entrega ativos
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId])
+  @@map("notification_preferences")
+}
+
+model NotificationChannel {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Canal
+  type        NotificationChannelType
+  name        String
+  config      Json     // Configuração do canal
+  
+  // Status
+  isActive    Boolean  @default(true)
+  verified    Boolean  @default(false)
+  
+  // Estatísticas
+  sentCount   Int      @default(0)
+  failedCount Int      @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notification_channels")
+  @@index([userId])
+  @@index([type])
+}
+
+model NotificationLog {
+  id          String   @id @default(cuid())
+  notificationId String
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  
+  // Tentativa de envio
+  attempt     Int
+  channel     String
+  status      NotificationStatus
+  error       String?
+  
+  // Detalhes
+  response    Json?
+  sentAt      DateTime?
+  
+  createdAt   DateTime @default(now())
+
+  @@map("notification_logs")
+  @@index([notificationId])
+  @@index([status])
+}
+
+enum NotificationType {
+  NEW_VIDEO
+  VIDEO_UPDATED
+  COLLECTION_UPDATED
+  FEED_UPDATED
+  TAG_SUGGESTED
+  SYNC_COMPLETED
+  SYNC_FAILED
+  EXPORT_COMPLETED
+  EXPORT_FAILED
+  IMPORT_COMPLETED
+  IMPORT_FAILED
+  SYSTEM_ALERT
+  REMINDER
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationFrequency {
+  IMMEDIATE
+  HOURLY
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+enum NotificationChannelType {
+  EMAIL
+  PUSH
+  WEBHOOK
+  SMS
+  SLACK
+  DISCORD
+}
+
+enum NotificationStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+  RETRYING
+}
+
+// Advanced Filters System Models
+model FilterPreset {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Metadados
+  name        String
+  description String?
+  isPublic    Boolean  @default(false)
+  isDefault   Boolean  @default(false)
+  
+  // Configuração do filtro
+  filters     Json     // Configuração completa do filtro
+  sortOptions Json     // Opções de ordenação
+  
+  // Estatísticas
+  usageCount  Int      @default(0)
+  
+  // Relacionamentos
+  collections Collection[]
+  conditions  FilterCondition[]
+  filterTags  FilterTag[]
+  tags        Tag[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("filter_presets")
+  @@index([userId])
+  @@index([isPublic])
+}
+
+model FilterHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Filtro aplicado
+  filters     Json
+  sortOptions Json
+  collectionId String?
+  
+  // Resultados
+  resultCount Int
+  executionTime Int
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+
+  @@map("filter_history")
+  @@index([userId])
+  @@index([collectionId])
+}
+
+model FilterTag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  color       String?  // Cor da tag em formato hex
+  description String?
+  
+  // Relacionamentos
+  filters     FilterPreset[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("filter_tags")
+}
+
+model FilterCondition {
+  id          String   @id @default(cuid())
+  presetId    String
+  preset      FilterPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  
+  // Condição do filtro
+  field       String   // Campo para filtrar
+  operator    String   // Operador (equals, contains, gt, lt, etc.)
+  value       Json     // Valor do filtro
+  logic       String   // AND, OR
+  
+  createdAt   DateTime @default(now())
+
+  @@map("filter_conditions")
+  @@index([presetId])
+}
