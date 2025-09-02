@@ -46,7 +46,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao aplicar filtros');
+        throw new Error('Failed to apply filters');
       }
 
       const results = await response.json();
@@ -59,7 +59,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
 
       return results;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       if (onError) {
         onError(errorMessage);
       }
@@ -85,7 +85,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao salvar preset');
+        throw new Error('Failed to save preset');
       }
 
       const preset = await response.json();
@@ -99,7 +99,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
 
       return preset;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao salvar preset';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save preset';
       if (onError) {
         onError(errorMessage);
       }
@@ -128,7 +128,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao atualizar preset');
+        throw new Error('Failed to update preset');
       }
 
       const updatedPreset = await response.json();
@@ -140,7 +140,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
 
       return updatedPreset;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar preset';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update preset';
       if (onError) {
         onError(errorMessage);
       }
@@ -155,14 +155,14 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao excluir preset');
+        throw new Error('Failed to delete preset');
       }
 
       // Remover preset da lista
       setPresets(prev => prev.filter(p => p.id !== presetId));
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao excluir preset';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete preset';
       if (onError) {
         onError(errorMessage);
       }
@@ -179,7 +179,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
         return data;
       }
     } catch (error) {
-      console.error('Erro ao carregar presets:', error);
+      console.error('Error loading presets:', error);
     }
   }, []);
 
@@ -201,7 +201,7 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
         URL.revokeObjectURL(url);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao exportar presets';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to export presets';
       if (onError) {
         onError(errorMessage);
       }
@@ -226,10 +226,10 @@ export function useAdvancedFilters(options: UseAdvancedFiltersOptions) {
         await loadPresets(); // Recarregar presets
         return result;
       } else {
-        throw new Error('Erro na importação');
+        throw new Error('Import failed');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao importar presets';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to import presets';
       if (onError) {
         onError(errorMessage);
       }

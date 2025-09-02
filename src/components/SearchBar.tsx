@@ -17,7 +17,7 @@ interface SearchFilters {
 
 export default function SearchBar({
   onSearch,
-  placeholder = "Buscar vídeos...",
+  placeholder = "Search videos...",
   categories = [],
   tags = []
 }: SearchBarProps) {
@@ -25,13 +25,13 @@ export default function SearchBar({
   const [filters, setFilters] = useState<SearchFilters>({})
   const [showFilters, setShowFilters] = useState(false)
 
-  // Executa busca quando query ou filtros mudam
+  // Execute search when query or filters change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (query.trim() || Object.keys(filters).length > 0) {
         onSearch(query, filters)
       }
-    }, 300) // Debounce de 300ms
+    }, 300) // Debounce 300ms
 
     return () => clearTimeout(timeoutId)
   }, [query, filters, onSearch])
@@ -45,7 +45,7 @@ export default function SearchBar({
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Barra de busca principal */}
+      {/* Main search bar */}
       <div className="relative">
         <div className="flex items-center bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
           <div className="pl-3">
@@ -60,23 +60,23 @@ export default function SearchBar({
             className="flex-1 px-3 py-3 text-gray-900 placeholder-gray-500 bg-transparent border-0 focus:ring-0 focus:outline-none"
           />
 
-          {/* Botão de filtros */}
+          {/* Filters button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`p-3 border-l border-gray-300 hover:bg-gray-50 transition-colors ${
               hasActiveFilters ? 'text-blue-600' : 'text-gray-500'
             }`}
-            title="Filtros avançados"
+            title="Advanced filters"
           >
             <Filter className="h-5 w-5" />
           </button>
 
-          {/* Botão de limpar */}
+          {/* Clear button */}
           {(query || hasActiveFilters) && (
             <button
               onClick={clearSearch}
               className="p-3 border-l border-gray-300 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
-              title="Limpar busca"
+              title="Clear search"
             >
               <X className="h-5 w-5" />
             </button>
@@ -84,14 +84,14 @@ export default function SearchBar({
         </div>
       </div>
 
-      {/* Filtros avançados */}
+      {/* Advanced filters */}
       {showFilters && (
         <div className="mt-3 bg-white border border-gray-300 rounded-lg shadow-sm p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Filtro por categoria */}
+            {/* Filter by category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categoria
+                Category
               </label>
               <select
                 value={filters.categoryId || ''}
@@ -101,7 +101,7 @@ export default function SearchBar({
                 }))}
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Todas as categorias</option>
+                <option value="">All categories</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -110,7 +110,7 @@ export default function SearchBar({
               </select>
             </div>
 
-            {/* Filtro por tag */}
+            {/* Filter by tag */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tag
@@ -123,7 +123,7 @@ export default function SearchBar({
                 }))}
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Todas as tags</option>
+                <option value="">All tags</option>
                 {tags.map((tag) => (
                   <option key={tag.id} value={tag.id}>
                     {tag.name}
@@ -133,15 +133,15 @@ export default function SearchBar({
             </div>
           </div>
 
-          {/* Filtros ativos */}
+          {/* Active filters */}
           {hasActiveFilters && (
             <div className="mt-4 pt-4 border-t border-gray-300">
               <div className="flex flex-wrap gap-2">
-                <span className="text-sm text-gray-600">Filtros ativos:</span>
+                <span className="text-sm text-gray-600">Active filters:</span>
 
                 {filters.categoryId && (
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Categoria: {categories.find(c => c.id === filters.categoryId)?.name}
+                    Category: {categories.find(c => c.id === filters.categoryId)?.name}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, categoryId: undefined }))}
                       className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
@@ -168,12 +168,12 @@ export default function SearchBar({
         </div>
       )}
 
-      {/* Dicas de busca */}
+      {/* Search tips */}
       {query && (
         <div className="mt-2 text-sm text-gray-600">
           <p>
-            💡 Buscando por: <strong className="text-gray-900">"{query}"</strong>
-            {hasActiveFilters && ' com filtros aplicados'}
+            💡 Searching for: <strong className="text-gray-900">"{query}"</strong>
+            {hasActiveFilters && ' with applied filters'}
           </p>
         </div>
       )}

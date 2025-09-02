@@ -14,7 +14,7 @@ export interface UpdateCategoryData {
 }
 
 /**
- * Cria uma nova categoria
+ * Create a new category
  */
 export async function createCategory(data: CreateCategoryData) {
   return await prisma.category.create({
@@ -23,7 +23,7 @@ export async function createCategory(data: CreateCategoryData) {
 }
 
 /**
- * Busca uma categoria por ID
+ * Get a category by ID
  */
 export async function getCategoryById(id: string) {
   return await prisma.category.findUnique({
@@ -39,7 +39,7 @@ export async function getCategoryById(id: string) {
 }
 
 /**
- * Busca todas as categorias de um usuário
+ * Get all categories for a user
  */
 export async function getUserCategories(userId: string) {
   return await prisma.category.findMany({
@@ -50,13 +50,18 @@ export async function getUserCategories(userId: string) {
           playlist: true,
         },
       },
+      _count: {
+        select: {
+          videos: true,
+        },
+      },
     },
     orderBy: { name: 'asc' },
   })
 }
 
 /**
- * Atualiza uma categoria
+ * Update a category
  */
 export async function updateCategory(id: string, data: UpdateCategoryData) {
   return await prisma.category.update({
@@ -66,7 +71,7 @@ export async function updateCategory(id: string, data: UpdateCategoryData) {
 }
 
 /**
- * Remove uma categoria
+ * Delete a category
  */
 export async function deleteCategory(id: string) {
   return await prisma.category.delete({
@@ -75,7 +80,7 @@ export async function deleteCategory(id: string) {
 }
 
 /**
- * Adiciona uma playlist a uma categoria
+ * Add a playlist to a category
  */
 export async function addPlaylistToCategory(playlistId: string, categoryId: string) {
   return await prisma.playlistCategory.create({
@@ -87,7 +92,7 @@ export async function addPlaylistToCategory(playlistId: string, categoryId: stri
 }
 
 /**
- * Remove uma playlist de uma categoria
+ * Remove a playlist from a category
  */
 export async function removePlaylistFromCategory(playlistId: string, categoryId: string) {
   return await prisma.playlistCategory.delete({
@@ -101,7 +106,7 @@ export async function removePlaylistFromCategory(playlistId: string, categoryId:
 }
 
 /**
- * Busca playlists de uma categoria específica
+ * Get playlists for a specific category
  */
 export async function getCategoryPlaylists(categoryId: string) {
   const category = await prisma.category.findUnique({

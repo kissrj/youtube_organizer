@@ -1,26 +1,26 @@
-# 🛠️ Guia de Desenvolvimento - YouTube Organizer
+# 🛠️ Development Guide - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-Este guia fornece instruções completas para configurar o ambiente de desenvolvimento, contribuir com código e seguir as melhores práticas do projeto YouTube Organizer.
+This guide provides complete instructions for setting up the development environment, contributing code, and following the YouTube Organizer project best practices.
 
-## 🚀 Configuração do Ambiente
+## 🚀 Environment Setup
 
-### Pré-requisitos
+### Prerequisites
 
-#### Sistema Operacional
-- **Windows 10/11** (recomendado)
+#### Operating System
+- **Windows 10/11** (recommended)
 - **macOS 12+**
 - **Linux Ubuntu 20.04+**
 
-#### Software Necessário
-- **Node.js 18+** - Runtime JavaScript
-- **npm 8+** ou **yarn 1.22+** - Gerenciador de pacotes
-- **Git 2.30+** - Controle de versão
-- **VS Code** - Editor recomendado
-- **SQLite 3.35+** - Banco de dados
+#### Required Software
+- **Node.js 18+** - JavaScript runtime
+- **npm 8+** or **yarn 1.22+** - Package manager
+- **Git 2.30+** - Version control
+- **VS Code** - Recommended editor
+- **SQLite 3.35+** - Database
 
-### Instalação do Node.js
+### Node.js Installation
 
 #### Windows (Chocolatey)
 ```powershell
@@ -38,41 +38,41 @@ curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-### Clonagem do Repositório
+### Repository Cloning
 
 ```bash
 git clone https://github.com/your-org/youtube-organizer.git
 cd youtube-organizer
 ```
 
-### Instalação de Dependências
+### Dependency Installation
 
 ```bash
 npm install
-# ou
+# or
 yarn install
 ```
 
-### Configuração do Banco de Dados
+### Database Configuration
 
-#### Instalação do SQLite (Windows)
+#### SQLite Installation (Windows)
 ```powershell
 choco install sqlite
 ```
 
-#### Instalação do SQLite (macOS)
+#### SQLite Installation (macOS)
 ```bash
 brew install sqlite
 ```
 
-#### Instalação do SQLite (Linux)
+#### SQLite Installation (Linux)
 ```bash
 sudo apt-get install sqlite3
 ```
 
-### Configuração das Variáveis de Ambiente
+### Environment Variables Configuration
 
-Crie o arquivo `.env.local` na raiz do projeto:
+Create the `.env.local` file in the project root:
 
 ```env
 # Database
@@ -89,188 +89,305 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 # YouTube API
 YOUTUBE_API_KEY="your-youtube-api-key"
 
-# OpenAI API (opcional)
+# OpenAI API (optional)
 OPENAI_API_KEY="your-openai-api-key"
 
-# Redis (opcional - para cache)
+# Redis (optional - for cache)
 REDIS_URL="redis://localhost:6379"
 
-# Sentry (opcional - para monitoramento)
+# Sentry (optional - for monitoring)
 SENTRY_DSN="your-sentry-dsn"
 ```
 
-### Geração da Chave Secreta NextAuth
+### NextAuth Secret Generation
 
 ```bash
 openssl rand -base64 32
 ```
 
-### Configuração do Google OAuth
+### Google OAuth Configuration
 
-1. Acesse [Google Cloud Console](https://console.cloud.google.com/)
-2. Crie um novo projeto ou selecione existente
-3. Ative a API do Google+ e YouTube Data API v3
-4. Configure as credenciais OAuth 2.0
-5. Adicione `http://localhost:3000/api/auth/callback/google` aos URIs de redirecionamento
+1. Access [Google Cloud Console](https://console.cloud.google.com/)
+2. Create new project or select existing
+3. Activate Google+ API and YouTube Data API v3
+4. Configure OAuth 2.0 credentials
+5. Add `http://localhost:3000/api/auth/callback/google` to redirect URIs
 
-### Configuração da YouTube API
+### YouTube API Configuration
 
-1. No Google Cloud Console, ative a YouTube Data API v3
-2. Crie uma chave de API
-3. Configure as restrições da API key
+1. In Google Cloud Console, activate YouTube Data API v3
+2. Create API key
+3. Configure API key restrictions (optional)
 
-### Inicialização do Banco de Dados
+### Database Initialization
 
 ```bash
-# Gerar cliente Prisma
+# Generate Prisma client
 npx prisma generate
 
-# Executar migrações
+# Apply migrations
 npx prisma db push
 
-# (Opcional) Popular com dados de exemplo
+# (Optional) Populate with sample data
 npx prisma db seed
 ```
 
-### Inicialização da Aplicação
+### Application Initialization
 
 ```bash
 npm run dev
-# ou
+# or
 yarn dev
 ```
 
-A aplicação estará disponível em `http://localhost:3000`.
+The application will be available at `http://localhost:3000`.
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
-```
+```bash
 src/
 ├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Rotas de autenticação
-│   ├── (dashboard)/              # Dashboard principal
-│   │   ├── collections/          # Gestão de coleções
-│   │   ├── feeds/                # Gestão de feeds
-│   │   ├── notifications/        # Centro de notificações
-│   │   └── settings/             # Configurações
+│   ├── (auth)/                   # Authentication routes
+│   ├── (dashboard)/              # Main dashboard
+│   │   ├── collections/          # Collection management
+│   │   ├── feeds/                # Feed management
+│   │   ├── notifications/        # Notification center
+│   │   └── settings/             # Settings
 │   ├── api/                      # API Routes
-│   ├── globals.css               # Estilos globais
-│   ├── layout.tsx                # Layout raiz
-│   └── page.tsx                  # Página inicial
-├── components/                   # Componentes React
-│   ├── ui/                       # Componentes base da UI
-│   ├── forms/                    # Formulários
-│   ├── modals/                   # Modais e dialogs
-│   ├── layout/                   # Componentes de layout
+│   ├── globals.css               # Global styles
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Home page
+├── components/                   # React components
+│   ├── ui/                       # Base UI components
+│   ├── forms/                    # Forms
+│   ├── modals/                   # Modals and dialogs
+│   ├── layout/                   # Layout components
 │   └── providers/                # Context providers
-├── lib/                          # Utilitários e configurações
-│   ├── prisma/                   # Cliente e configurações Prisma
-│   ├── auth/                     # Configuração NextAuth
-│   ├── services/                 # Serviços da aplicação
-│   ├── utils/                    # Funções utilitárias
+├── lib/                          # Utilities and configurations
+│   ├── prisma/                   # Prisma client and configurations
+│   ├── auth/                     # NextAuth configuration
+│   ├── services/                 # Application services
+│   ├── utils/                    # Utility functions
 │   ├── hooks/                    # Custom hooks
-│   ├── types/                    # Definições de tipos
-│   └── validations/              # Schemas de validação
-├── styles/                       # Estilos adicionais
-├── __tests__/                    # Testes
-│   ├── unit/                     # Testes unitários
-│   ├── integration/              # Testes de integração
-│   └── e2e/                      # Testes E2E
-├── docs/                         # Documentação
-├── public/                       # Assets estáticos
-├── prisma/                       # Schema do banco de dados
-│   ├── schema.prisma             # Definição do schema
-│   └── migrations/               # Migrações do banco
+│   ├── types/                    # Type definitions
+│   └── validations/              # Validation schemas
+├── styles/                       # Additional styles
+├── __tests__/                    # Tests
+│   ├── unit/                     # Unit tests
+│   ├── integration/              # Integration tests
+│   └── e2e/                      # E2E tests
+├── docs/                         # Documentation
+├── public/                       # Static assets
+├── prisma/                       # Database schema
+│   ├── schema.prisma             # Schema definition
+│   └── migrations/               # Database migrations
 ├── .github/                      # GitHub Actions
-├── .vscode/                      # Configurações VS Code
-└── package.json                  # Dependências e scripts
+├── .vscode/                      # VS Code configurations
+└── package.json                  # Dependencies and scripts
 ```
 
-## 🛠️ Scripts Disponíveis
+## 🛠️ Available Scripts
 
-### Desenvolvimento
+### Development
 ```bash
-npm run dev          # Inicia servidor de desenvolvimento
-npm run build        # Build de produção
-npm run start        # Inicia servidor de produção
-npm run preview      # Preview do build
+npm run dev          # Start development server
+npm run build        # Production build
+npm run start        # Start production server
+npm run preview      # Preview build
 ```
 
-### Qualidade de Código
+### Code Quality
 ```bash
-npm run lint         # Executa ESLint
-npm run lint:fix     # Corrige problemas do ESLint
-npm run type-check   # Verifica tipos TypeScript
-npm run format       # Formata código com Prettier
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint problems
+npm run type-check   # Check TypeScript types
+npm run format       # Format code with Prettier
 ```
 
-### Testes
+### Testing
 ```bash
-npm run test                 # Executa todos os testes
-npm run test:unit            # Testes unitários
-npm run test:integration     # Testes de integração
-npm run test:e2e             # Testes E2E
-npm run test:coverage        # Testes com relatório de cobertura
-npm run test:performance     # Testes de performance
+npm run test                 # Run all tests
+npm run test:unit            # Unit tests
+npm run test:integration     # Integration tests
+npm run test:e2e             # E2E tests
+npm run test:coverage        # Tests with coverage report
+npm run test:performance     # Performance tests
 ```
 
-### Banco de Dados
+### Database
 ```bash
-npm run db:generate          # Gera cliente Prisma
-npm run db:push              # Aplica mudanças no schema
-npm run db:migrate           # Cria e executa migração
-npm run db:studio            # Abre Prisma Studio
-npm run db:seed              # Popula banco com dados de exemplo
-npm run db:reset             # Reseta banco de dados
+npm run db:generate          # Generate Prisma client
+npm run db:push              # Apply schema changes
+npm run db:migrate           # Create and run migration
+npm run db:studio            # Open Prisma Studio
+npm run db:seed              # Populate database with sample data
+npm run db:reset             # Reset database
 ```
 
-### Outros
+### Other
 ```bash
-npm run clean                # Limpa arquivos de build
-npm run analyze              # Análise de bundle
-npm run storybook            # Inicia Storybook
-npm run docs                 # Gera documentação
+npm run clean                # Clean build files
+npm run analyze              # Bundle analysis
+npm run storybook            # Start Storybook
+npm run docs                 # Generate documentation
 ```
 
-## 🧪 Estratégia de Testes
+## 🧪 Testing Strategy
 
-### Configuração dos Testes
+### Testing Pyramid
 
-#### Jest Configuration (`jest.config.js`)
+```bash
+     E2E Tests (Playwright)
+          ↑
+   Integration Tests (Jest)
+          ↑
+    Unit Tests (Jest)
+          ↑
+   Static Analysis (TypeScript, ESLint)
+```
+
+### Target Coverage
+- **Unit Tests**: 80%+ code coverage
+- **Integration Tests**: Main workflows
+- **E2E Tests**: Critical user journey
+- **Performance Tests**: Performance benchmarks
+
+### Jest Configuration
+
 ```javascript
+// jest.config.js
 module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/__tests__/(.*)$': '<rootDir>/__tests__/$1',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/**/_*.{ts,tsx}',
+    '!src/lib/prisma/schema.prisma',
   ],
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
-  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
+  testTimeout: 10000,
 };
 ```
 
-#### Jest Setup (`jest.setup.js`)
-```javascript
-import '@testing-library/jest-dom';
+### Jest Global Setup
 
-// Mocks globais
+```javascript
+// jest.setup.js
+import '@testing-library/jest-dom';
+import { server } from '@/__tests__/mocks/server';
+
+// Global mocks
 jest.mock('next-auth/react');
 jest.mock('@prisma/client');
 jest.mock('next/navigation');
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    // Mock implementations
+  },
+}));
 
-// Configurações adicionais
+// MSW for API mocks
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+// Additional configurations
 global.fetch = jest.fn();
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 ```
 
-### Tipos de Testes
+### Playwright Configuration
 
-#### 1. Testes Unitários
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './__tests__/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+  ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
+  globalSetup: require.resolve('./__tests__/e2e/global-setup'),
+  globalTeardown: require.resolve('./__tests__/e2e/global-teardown'),
+});
+```
+
+## 🧩 Unit Tests
+
+### Unit Tests Structure
+
+```bash
+src/
+├── lib/
+│   ├── services/
+│   │   ├── collections.test.ts
+│   │   ├── feeds.test.ts
+│   │   ├── notifications.test.ts
+│   │   └── videos.test.ts
+│   ├── utils/
+│   │   ├── formatters.test.ts
+│   │   ├── validators.test.ts
+│   │   └── api-helpers.test.ts
+│   └── hooks/
+│       ├── useCollections.test.ts
+│       ├── useNotifications.test.ts
+│       └── useVideos.test.ts
+└── components/
+    ├── ui/
+    │   ├── Button.test.tsx
+    │   ├── Input.test.tsx
+    │   └── Modal.test.tsx
+    └── forms/
+        ├── CollectionForm.test.tsx
+        └── VideoSearchForm.test.tsx
+```
+
+### Service Test Example
+
 ```typescript
 // src/lib/services/collections.test.ts
 import { CollectionsService } from './collections';
@@ -286,7 +403,13 @@ describe('CollectionsService', () => {
   describe('createCollection', () => {
     it('should create a collection successfully', async () => {
       // Arrange
-      const mockCollection = { id: '1', name: 'Test Collection' };
+      const mockCollection = {
+        id: '1',
+        name: 'Test Collection',
+        userId: 'user-1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       (prisma.collection.create as jest.Mock).mockResolvedValue(mockCollection);
 
       // Act
@@ -304,16 +427,238 @@ describe('CollectionsService', () => {
         },
       });
     });
+
+    it('should throw error for invalid input', async () => {
+      // Arrange
+      const invalidInput = { name: '', userId: 'user-1' };
+
+      // Act & Assert
+      await expect(
+        CollectionsService.createCollection(invalidInput)
+      ).rejects.toThrow('Name is required');
+    });
+
+    it('should handle database errors', async () => {
+      // Arrange
+      (prisma.collection.create as jest.Mock).mockRejectedValue(
+        new Error('Database connection failed')
+      );
+
+      // Act & Assert
+      await expect(
+        CollectionsService.createCollection({
+          name: 'Test Collection',
+          userId: 'user-1',
+        })
+      ).rejects.toThrow('Failed to create collection');
+    });
+  });
+
+  describe('getCollections', () => {
+    it('should return paginated collections', async () => {
+      // Arrange
+      const mockCollections = [
+        { id: '1', name: 'Collection 1' },
+        { id: '2', name: 'Collection 2' },
+      ];
+      const mockCount = 2;
+      (prisma.collection.findMany as jest.Mock).mockResolvedValue(mockCollections);
+      (prisma.collection.count as jest.Mock).mockResolvedValue(mockCount);
+
+      // Act
+      const result = await CollectionsService.getCollections({
+        userId: 'user-1',
+        page: 1,
+        limit: 10,
+      });
+
+      // Assert
+      expect(result.collections).toEqual(mockCollections);
+      expect(result.pagination.total).toBe(mockCount);
+    });
+
+    it('should apply search filter', async () => {
+      // Arrange
+      const mockCollections = [{ id: '1', name: 'React Collection' }];
+      (prisma.collection.findMany as jest.Mock).mockResolvedValue(mockCollections);
+      (prisma.collection.count as jest.Mock).mockResolvedValue(1);
+
+      // Act
+      await CollectionsService.getCollections({
+        userId: 'user-1',
+        search: 'React',
+      });
+
+      // Assert
+      expect(prisma.collection.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            name: { contains: 'React', mode: 'insensitive' },
+          }),
+        })
+      );
+    });
   });
 });
 ```
 
-#### 2. Testes de Integração
+### Component Test Example
+
+```typescript
+// src/components/ui/Button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('should render with correct text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument();
+  });
+
+  it('should call onClick when clicked', () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+
+    fireEvent.click(screen.getByRole('button', { name: /click me/i }));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be disabled when disabled prop is true', () => {
+    render(<Button disabled>Click me</Button>);
+    expect(screen.getByRole('button', { name: /click me/i })).toBeDisabled();
+  });
+
+  it('should apply correct variant classes', () => {
+    render(<Button variant="secondary">Click me</Button>);
+    const button = screen.getByRole('button', { name: /click me/i });
+    expect(button).toHaveClass('bg-gray-200', 'text-gray-900');
+  });
+
+  it('should render as link when href is provided', () => {
+    render(<Button href="/test">Click me</Button>);
+    const link = screen.getByRole('link', { name: /click me/i });
+    expect(link).toHaveAttribute('href', '/test');
+  });
+});
+```
+
+### Custom Hook Test Example
+
+```typescript
+// src/lib/hooks/useCollections.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { useCollections } from './useCollections';
+import { CollectionsService } from '@/lib/services/collections';
+
+jest.mock('@/lib/services/collections');
+
+describe('useCollections', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should load collections on mount', async () => {
+    // Arrange
+    const mockCollections = [
+      { id: '1', name: 'Collection 1' },
+      { id: '2', name: 'Collection 2' },
+    ];
+    (CollectionsService.getCollections as jest.Mock).mockResolvedValue({
+      collections: mockCollections,
+      pagination: { total: 2, page: 1, limit: 10 },
+    });
+
+    // Act
+    const { result } = renderHook(() => useCollections());
+
+    // Assert
+    expect(result.current.loading).toBe(true);
+    await waitFor(() => {
+      expect(result.current.collections).toEqual(mockCollections);
+      expect(result.current.loading).toBe(false);
+    });
+  });
+
+  it('should handle errors', async () => {
+    // Arrange
+    (CollectionsService.getCollections as jest.Mock).mockRejectedValue(
+      new Error('Failed to load collections')
+    );
+
+    // Act
+    const { result } = renderHook(() => useCollections());
+
+    // Assert
+    await waitFor(() => {
+      expect(result.current.error).toBe('Failed to load collections');
+      expect(result.current.loading).toBe(false);
+    });
+  });
+
+  it('should refetch when refresh is called', async () => {
+    // Arrange
+    const mockCollections = [{ id: '1', name: 'Collection 1' }];
+    (CollectionsService.getCollections as jest.Mock).mockResolvedValue({
+      collections: mockCollections,
+      pagination: { total: 1, page: 1, limit: 10 },
+    });
+
+    // Act
+    const { result } = renderHook(() => useCollections());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    // Reset mock
+    jest.clearAllMocks();
+    (CollectionsService.getCollections as jest.Mock).mockResolvedValue({
+      collections: [],
+      pagination: { total: 0, page: 1, limit: 10 },
+    });
+
+    // Act
+    result.current.refresh();
+
+    // Assert
+    await waitFor(() => {
+      expect(CollectionsService.getCollections).toHaveBeenCalledTimes(2);
+    });
+  });
+});
+```
+
+## 🔗 Integration Tests
+
+### Integration Tests Structure
+
+```bash
+__tests__/
+├── integration/
+│   ├── collections-workflow.test.ts
+│   ├── feeds-workflow.test.ts
+│   ├── notifications-workflow.test.ts
+│   ├── videos-workflow.test.ts
+│   ├── api/
+│   │   ├── collections.test.ts
+│   │   ├── feeds.test.ts
+│   │   ├── notifications.test.ts
+│   │   └── videos.test.ts
+│   └── database/
+│       ├── migrations.test.ts
+│       └── seed.test.ts
+```
+
+### Complete Workflow Test Example
+
 ```typescript
 // __tests__/integration/collections-workflow.test.ts
-describe('Collections Workflow', () => {
-  let user: User;
-  let collection: Collection;
+import { CollectionsService } from '@/lib/services/collections';
+import { VideosService } from '@/lib/services/videos';
+import { prisma } from '@/lib/prisma';
+import { createTestUser, cleanupTestData } from '@/__tests__/helpers';
+
+describe('Collections Workflow Integration', () => {
+  let user: any;
+  let collection: any;
+  let video: any;
 
   beforeAll(async () => {
     user = await createTestUser();
@@ -323,312 +668,840 @@ describe('Collections Workflow', () => {
     await cleanupTestData();
   });
 
-  it('should create and manage collection workflow', async () => {
-    // Criar coleção
-    collection = await CollectionsService.createCollection({
-      name: 'Test Collection',
-      userId: user.id,
+  describe('Complete Collection Lifecycle', () => {
+    it('should create collection with videos and manage content', async () => {
+      // 1. Create collection
+      collection = await CollectionsService.createCollection({
+        name: 'Integration Test Collection',
+        description: 'Test collection for integration tests',
+        userId: user.id,
+      });
+
+      expect(collection.name).toBe('Integration Test Collection');
+      expect(collection.userId).toBe(user.id);
+
+      // 2. Sync video from YouTube
+      video = await VideosService.syncVideo('dQw4w9WgXcQ'); // Test video
+      expect(video.youtubeId).toBe('dQw4w9WgXcQ');
+
+      // 3. Add video to collection
+      await CollectionsService.addVideosToCollection(collection.id, [video.id]);
+
+      // 4. Verify collection content
+      const content = await CollectionsService.getCollectionContent(collection.id);
+      expect(content.videos).toHaveLength(1);
+      expect(content.videos[0].id).toBe(video.id);
+
+      // 5. Search collections
+      const searchResults = await CollectionsService.getCollections({
+        userId: user.id,
+        search: 'Integration Test',
+      });
+      expect(searchResults.collections).toHaveLength(1);
+
+      // 6. Update collection
+      const updatedCollection = await CollectionsService.updateCollection(collection.id, {
+        name: 'Updated Integration Test Collection',
+        description: 'Updated description',
+      });
+      expect(updatedCollection.name).toBe('Updated Integration Test Collection');
+
+      // 7. Remove video from collection
+      await CollectionsService.removeVideosFromCollection(collection.id, [video.id]);
+      const updatedContent = await CollectionsService.getCollectionContent(collection.id);
+      expect(updatedContent.videos).toHaveLength(0);
+
+      // 8. Delete collection
+      await CollectionsService.deleteCollection(collection.id);
+      await expect(
+        CollectionsService.getCollection(collection.id)
+      ).rejects.toThrow('Collection not found');
     });
 
-    expect(collection.name).toBe('Test Collection');
+    it('should handle collection hierarchy', async () => {
+      // Create parent collection
+      const parentCollection = await CollectionsService.createCollection({
+        name: 'Parent Collection',
+        userId: user.id,
+      });
 
-    // Adicionar vídeo
-    const video = await VideosService.syncVideo('test-youtube-id');
-    await CollectionsService.addVideosToCollection(collection.id, [video.id]);
+      // Create child collection
+      const childCollection = await CollectionsService.createCollection({
+        name: 'Child Collection',
+        userId: user.id,
+        parentId: parentCollection.id,
+      });
 
-    // Verificar conteúdo
-    const content = await CollectionsService.getCollectionContent(collection.id);
-    expect(content.videos).toHaveLength(1);
+      // Verify hierarchy
+      const parentContent = await CollectionsService.getCollectionContent(parentCollection.id);
+      expect(parentContent.children).toHaveLength(1);
+      expect(parentContent.children[0].id).toBe(childCollection.id);
+
+      // Move collection
+      await CollectionsService.moveCollection(childCollection.id, {
+        newParentId: null,
+        position: 0,
+      });
+
+      const updatedParentContent = await CollectionsService.getCollectionContent(parentCollection.id);
+      expect(updatedParentContent.children).toHaveLength(0);
+    });
+  });
+
+  describe('Bulk Operations', () => {
+    it('should handle bulk video additions', async () => {
+      // Create collection
+      collection = await CollectionsService.createCollection({
+        name: 'Bulk Test Collection',
+        userId: user.id,
+      });
+
+      // Create multiple videos
+      const videoIds = [];
+      for (let i = 0; i < 10; i++) {
+        const video = await VideosService.syncVideo(`test-video-${i}`);
+        videoIds.push(video.id);
+      }
+
+      // Add all at once
+      await CollectionsService.addVideosToCollection(collection.id, videoIds);
+
+      // Verify
+      const content = await CollectionsService.getCollectionContent(collection.id);
+      expect(content.videos).toHaveLength(10);
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle concurrent modifications', async () => {
+      collection = await CollectionsService.createCollection({
+        name: 'Concurrency Test Collection',
+        userId: user.id,
+      });
+
+      // Simulate concurrent modifications
+      const promises = Array.from({ length: 5 }, () =>
+        CollectionsService.updateCollection(collection.id, {
+          name: `Updated by ${Math.random()}`,
+        })
+      );
+
+      // At least one should pass
+      const results = await Promise.allSettled(promises);
+      const successful = results.filter(r => r.status === 'fulfilled');
+      expect(successful.length).toBeGreaterThan(0);
+    });
   });
 });
 ```
 
-#### 3. Testes E2E
+### API Test Example
+
+```typescript
+// __tests__/integration/api/collections.test.ts
+import { createMocks } from 'node-mocks-http';
+import { GET, POST } from '@/app/api/collections/route';
+import { prisma } from '@/lib/prisma';
+import { createTestUser } from '@/__tests__/helpers';
+
+jest.mock('@/lib/prisma');
+
+describe('/api/collections', () => {
+  let user: any;
+
+  beforeAll(async () => {
+    user = await createTestUser();
+  });
+
+  describe('GET /api/collections', () => {
+    it('should return user collections', async () => {
+      // Arrange
+      const mockCollections = [
+        { id: '1', name: 'Test Collection', userId: user.id },
+      ];
+      (prisma.collection.findMany as jest.Mock).mockResolvedValue(mockCollections);
+      (prisma.collection.count as jest.Mock).mockResolvedValue(1);
+
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: { page: '1', limit: '10' },
+      });
+
+      // Mock session
+      req.auth = { user: { id: user.id } };
+
+      // Act
+      await GET(req, res);
+
+      // Assert
+      expect(res._getStatusCode()).toBe(200);
+      const data = JSON.parse(res._getData());
+      expect(data.collections).toEqual(mockCollections);
+    });
+
+    it('should handle pagination', async () => {
+      // Arrange
+      const mockCollections = Array.from({ length: 5 }, (_, i) => ({
+        id: `${i + 1}`,
+        name: `Collection ${i + 1}`,
+        userId: user.id,
+      }));
+      (prisma.collection.findMany as jest.Mock).mockResolvedValue(mockCollections);
+      (prisma.collection.count as jest.Mock).mockResolvedValue(25);
+
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: { page: '2', limit: '5' },
+      });
+      req.auth = { user: { id: user.id } };
+
+      // Act
+      await GET(req, res);
+
+      // Assert
+      expect(prisma.collection.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 5,
+          take: 5,
+        })
+      );
+    });
+  });
+
+  describe('POST /api/collections', () => {
+    it('should create collection', async () => {
+      // Arrange
+      const mockCollection = {
+        id: '1',
+        name: 'New Collection',
+        userId: user.id,
+      };
+      (prisma.collection.create as jest.Mock).mockResolvedValue(mockCollection);
+
+      const { req, res } = createMocks({
+        method: 'POST',
+        body: { name: 'New Collection' },
+      });
+      req.auth = { user: { id: user.id } };
+
+      // Act
+      await POST(req, res);
+
+      // Assert
+      expect(res._getStatusCode()).toBe(201);
+      const data = JSON.parse(res._getData());
+      expect(data.collection).toEqual(mockCollection);
+    });
+
+    it('should validate input', async () => {
+      // Arrange
+      const { req, res } = createMocks({
+        method: 'POST',
+        body: { name: '' },
+      });
+      req.auth = { user: { id: user.id } };
+
+      // Act
+      await POST(req, res);
+
+      // Assert
+      expect(res._getStatusCode()).toBe(400);
+      const data = JSON.parse(res._getData());
+      expect(data.error.code).toBe('VALIDATION_ERROR');
+    });
+  });
+});
+```
+
+## 🌐 E2E Tests
+
+### E2E Tests Structure
+
+```bash
+__tests__/
+├── e2e/
+│   ├── collections-flow.test.ts
+│   ├── feeds-flow.test.ts
+│   ├── notifications-flow.test.ts
+│   ├── videos-flow.test.ts
+│   ├── auth-flow.test.ts
+│   ├── global-setup.ts
+│   └── global-teardown.ts
+```
+
+### Complete E2E Test Example
+
 ```typescript
 // __tests__/e2e/collections-flow.test.ts
 import { test, expect } from '@playwright/test';
 
 test.describe('Collections Flow', () => {
-  test('should create and manage collections', async ({ page }) => {
-    // Login
+  test.beforeEach(async ({ page }) => {
+    // Login before each test
     await page.goto('/auth/signin');
     await page.fill('[data-testid="email"]', 'test@example.com');
-    await page.fill('[data-testid="password"]', 'password');
+    await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="signin-button"]');
+    await expect(page).toHaveURL('/dashboard');
+  });
 
-    // Criar coleção
+  test('should create and manage collections', async ({ page }) => {
+    // Navigate to collections
     await page.goto('/collections');
+    await expect(page.locator('h1')).toContainText('My Collections');
+
+    // Create new collection
     await page.click('[data-testid="create-collection"]');
+    await expect(page.locator('[data-testid="collection-modal"]')).toBeVisible();
+
     await page.fill('[data-testid="collection-name"]', 'My Test Collection');
+    await page.fill('[data-testid="collection-description"]', 'Test collection description');
+    await page.click('[data-testid="collection-public"]');
     await page.click('[data-testid="save-collection"]');
 
-    // Verificar criação
-    await expect(page.locator('[data-testid="collection-title"]')).toHaveText('My Test Collection');
+    // Verify creation
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('My Test Collection');
+    await expect(page.locator('[data-testid="collection-description"]')).toContainText('Test collection description');
+
+    // Add video
+    await page.click('[data-testid="add-video"]');
+    await page.fill('[data-testid="video-search"]', 'react tutorial');
+    await page.click('[data-testid="search-button"]');
+    await page.waitForSelector('[data-testid="video-result"]');
+    await page.click('[data-testid="video-result"]:first-child [data-testid="add-to-collection"]');
+
+    // Verify video in collection
+    await expect(page.locator('[data-testid="collection-video"]')).toBeVisible();
+
+    // Edit collection
+    await page.click('[data-testid="edit-collection"]');
+    await page.fill('[data-testid="collection-name"]', 'Edited Collection');
+    await page.click('[data-testid="save-collection"]');
+
+    // Verify edit
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Edited Collection');
+
+    // Delete collection
+    await page.click('[data-testid="delete-collection"]');
+    await page.click('[data-testid="confirm-delete"]');
+
+    // Verify deletion
+    await expect(page.locator('[data-testid="collection-title"]')).toBeHidden();
+  });
+
+  test('should handle collection search and filtering', async ({ page }) => {
+    // Arrange: Create multiple collections
+    await page.goto('/collections');
+
+    for (let i = 1; i <= 3; i++) {
+      await page.click('[data-testid="create-collection"]');
+      await page.fill('[data-testid="collection-name"]', `Collection ${i}`);
+      await page.click('[data-testid="save-collection"]');
+      await page.waitForSelector('[data-testid="collection-list"]');
+    }
+
+    // Act: Search
+    await page.fill('[data-testid="search-collections"]', 'Collection 1');
+    await page.click('[data-testid="search-button"]');
+
+    // Assert: Only Collection 1 should appear
+    await expect(page.locator('[data-testid="collection-item"]')).toHaveCount(1);
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Collection 1');
+
+    // Cleanup
+    const collections = page.locator('[data-testid="collection-item"]');
+    const count = await collections.count();
+    for (let i = 0; i < count; i++) {
+      await collections.nth(i).click();
+      await page.click('[data-testid="delete-collection"]');
+      await page.click('[data-testid="confirm-delete"]');
+    }
+  });
+
+  test('should handle collection hierarchy', async ({ page }) => {
+    await page.goto('/collections');
+
+    // Create parent collection
+    await page.click('[data-testid="create-collection"]');
+    await page.fill('[data-testid="collection-name"]', 'Parent Collection');
+    await page.click('[data-testid="save-collection"]');
+
+    // Create child collection
+    await page.click('[data-testid="create-collection"]');
+    await page.selectOption('[data-testid="parent-collection"]', 'Parent Collection');
+    await page.fill('[data-testid="collection-name"]', 'Child Collection');
+    await page.click('[data-testid="save-collection"]');
+
+    // Verify hierarchy
+    await expect(page.locator('[data-testid="collection-children"]')).toContainText('Child Collection');
+
+    // Expand/collapse
+    await page.click('[data-testid="toggle-children"]');
+    await expect(page.locator('[data-testid="collection-child-item"]')).toBeVisible();
+
+    await page.click('[data-testid="toggle-children"]');
+    await expect(page.locator('[data-testid="collection-child-item"]')).toBeHidden();
+  });
+
+  test('should handle bulk operations', async ({ page }) => {
+    await page.goto('/collections');
+
+    // Create collection
+    await page.click('[data-testid="create-collection"]');
+    await page.fill('[data-testid="collection-name"]', 'Bulk Test Collection');
+    await page.click('[data-testid="save-collection"]');
+
+    // Select multiple videos
+    await page.click('[data-testid="bulk-select-mode"]');
+
+    const videoCheckboxes = page.locator('[data-testid="video-checkbox"]');
+    await videoCheckboxes.nth(0).check();
+    await videoCheckboxes.nth(1).check();
+    await videoCheckboxes.nth(2).check();
+
+    // Add to collection
+    await page.click('[data-testid="bulk-add-to-collection"]');
+    await page.selectOption('[data-testid="bulk-collection-select"]', 'Bulk Test Collection');
+    await page.click('[data-testid="confirm-bulk-add"]');
+
+    // Verify
+    await page.goto('/collections/Bulk Test Collection');
+    await expect(page.locator('[data-testid="collection-video"]')).toHaveCount(3);
   });
 });
 ```
 
-### Testes de Performance
+### E2E Global Setup
+
 ```typescript
-// __tests__/performance/collections-performance.test.ts
-describe('Collections Performance', () => {
-  it('should handle bulk operations efficiently', async () => {
-    const startTime = Date.now();
+// __tests__/e2e/global-setup.ts
+import { chromium, FullConfig } from '@playwright/test';
+import { createTestUser, cleanupTestData } from '@/__tests__/helpers';
 
-    // Criar múltiplas coleções
-    const promises = Array.from({ length: 100 }, (_, i) =>
-      CollectionsService.createCollection({
-        name: `Collection ${i}`,
-        userId: 'test-user',
-      })
-    );
+async function globalSetup(config: FullConfig) {
+  // Create test user
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
 
-    await Promise.all(promises);
-    const endTime = Date.now();
+  try {
+    // Create test user in database
+    await createTestUser({
+      email: 'test@example.com',
+      password: 'password123',
+    });
 
-    // Verificar performance (deve ser < 5 segundos)
-    expect(endTime - startTime).toBeLessThan(5000);
+    // Login once to establish session
+    await page.goto('http://localhost:3000/auth/signin');
+    await page.fill('[data-testid="email"]', 'test@example.com');
+    await page.fill('[data-testid="password"]', 'password123');
+    await page.click('[data-testid="signin-button"]');
+    await page.waitForURL('http://localhost:3000/dashboard');
+
+    // Save authentication state
+    await page.context().storageState({ path: 'test-results/auth-state.json' });
+  } finally {
+    await browser.close();
+  }
+}
+
+export default globalSetup;
+```
+
+## ⚡ Performance Tests
+
+### Performance Tests Structure
+
+```bash
+__tests__/
+├── performance/
+│   ├── collections-performance.test.ts
+│   ├── feeds-performance.test.ts
+│   ├── videos-performance.test.ts
+│   ├── database-performance.test.ts
+│   └── benchmark.test.ts
+```
+
+### Performance Benchmark Example
+
+```typescript
+// __tests__/performance/benchmark.test.ts
+import { CollectionsService } from '@/lib/services/collections';
+import { VideosService } from '@/lib/services/videos';
+import { measurePerformance, calculateAverage, calculatePercentile } from './utils';
+import { createTestUser, cleanupTestData } from '@/__tests__/helpers';
+
+describe('Performance Benchmarks', () => {
+  let user: any;
+
+  beforeAll(async () => {
+    user = await createTestUser();
+  });
+
+  afterAll(async () => {
+    await cleanupTestData();
+  });
+
+  describe('Collections Performance', () => {
+    it('should handle collection creation efficiently', async () => {
+      const results = await measurePerformance(
+        'create-collection',
+        async () => {
+          const collection = await CollectionsService.createCollection({
+            name: `Performance Test Collection ${Date.now()}`,
+            userId: user.id,
+          });
+          return collection;
+        },
+        100
+      );
+
+      const average = calculateAverage(results);
+      const p95 = calculatePercentile(results, 95);
+
+      console.log(`Collection Creation - Average: ${average}ms, P95: ${p95}ms`);
+
+      // Assert performance requirements
+      expect(average).toBeLessThan(100); // < 100ms average
+      expect(p95).toBeLessThan(200); // < 200ms P95
+    });
+
+    it('should handle bulk collection queries efficiently', async () => {
+      // Create 1000 collections for test
+      const createPromises = Array.from({ length: 1000 }, (_, i) =>
+        CollectionsService.createCollection({
+          name: `Bulk Collection ${i}`,
+          userId: user.id,
+        })
+      );
+      await Promise.all(createPromises);
+
+      // Test search
+      const results = await measurePerformance(
+        'bulk-collection-query',
+        async () => {
+          return await CollectionsService.getCollections({
+            userId: user.id,
+            page: 1,
+            limit: 100,
+          });
+        },
+        50
+      );
+
+      const average = calculateAverage(results);
+      console.log(`Bulk Query - Average: ${average}ms`);
+
+      expect(average).toBeLessThan(500); // < 500ms for 100 items
+    });
+
+    it('should handle concurrent operations', async () => {
+      const concurrentOperations = 50;
+
+      const results = await measurePerformance(
+        'concurrent-collections',
+        async () => {
+          const promises = Array.from({ length: concurrentOperations }, () =>
+            CollectionsService.createCollection({
+              name: `Concurrent Collection ${Date.now()}-${Math.random()}`,
+              userId: user.id,
+            })
+          );
+          return await Promise.all(promises);
+        },
+        5
+      );
+
+      const average = calculateAverage(results);
+      console.log(`Concurrent Operations - Average: ${average}ms`);
+
+      expect(average).toBeLessThan(2000); // < 2s for 50 concurrent operations
+    });
+  });
+
+  describe('Videos Performance', () => {
+    it('should handle video synchronization efficiently', async () => {
+      const testVideoIds = [
+        'dQw4w9WgXcQ', // Rick Roll
+        'jNQXAC9IVRw', // Me at the zoo
+        '9bZkp7q19f0', // Gangnam Style
+      ];
+
+      const results = await measurePerformance(
+        'video-sync',
+        async () => {
+          const promises = testVideoIds.map(id => VideosService.syncVideo(id));
+          return await Promise.all(promises);
+        },
+        10
+      );
+
+      const average = calculateAverage(results);
+      console.log(`Video Sync - Average: ${average}ms`);
+
+      expect(average).toBeLessThan(1000); // < 1s for 3 videos
+    });
+
+    it('should handle video search efficiently', async () => {
+      // Create search index
+      const searchTerms = ['react', 'javascript', 'tutorial', 'programming'];
+
+      const results = await measurePerformance(
+        'video-search',
+        async () => {
+          const promises = searchTerms.map(term =>
+            VideosService.searchVideos({
+              q: term,
+              maxResults: 50,
+            })
+          );
+          return await Promise.all(promises);
+        },
+        20
+      );
+
+      const average = calculateAverage(results);
+      console.log(`Video Search - Average: ${average}ms`);
+
+      expect(average).toBeLessThan(300); // < 300ms for search
+    });
+  });
+
+  describe('Memory Usage', () => {
+    it('should not have memory leaks in long-running operations', async () => {
+      const initialMemory = process.memoryUsage().heapUsed;
+
+      // Execute heavy operations
+      for (let i = 0; i < 100; i++) {
+        await CollectionsService.createCollection({
+          name: `Memory Test ${i}`,
+          userId: user.id,
+        });
+
+        if (i % 10 === 0) {
+          // Force garbage collection if available
+          if (global.gc) {
+            global.gc();
+          }
+        }
+      }
+
+      const finalMemory = process.memoryUsage().heapUsed;
+      const memoryIncrease = finalMemory - initialMemory;
+
+      console.log(`Memory Increase: ${(memoryIncrease / 1024 / 1024).toFixed(2)} MB`);
+
+      // Memory should not increase more than 50MB
+      expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024);
+    });
+  });
+
+  describe('Database Performance', () => {
+    it('should handle database connections efficiently', async () => {
+      const results = await measurePerformance(
+        'database-connection',
+        async () => {
+          // Test multiple simultaneous connections
+          const promises = Array.from({ length: 20 }, () =>
+            CollectionsService.getCollections({
+              userId: user.id,
+              page: 1,
+              limit: 10,
+            })
+          );
+          return await Promise.all(promises);
+        },
+        10
+      );
+
+      const average = calculateAverage(results);
+      console.log(`Database Connections - Average: ${average}ms`);
+
+      expect(average).toBeLessThan(1000); // < 1s for 20 connections
+    });
   });
 });
 ```
 
-## 🔧 Desenvolvimento com VS Code
+## 🔄 CI/CD Integration
 
-### Extensões Recomendadas
-```json
-{
-  "recommendations": [
-    "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
-    "ms-vscode.vscode-json",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "ms-vscode.vscode-jest",
-    "ms-vscode.test-adapter-converter",
-    "prisma.prisma",
-    "ms-vscode.vscode-playwright"
-  ]
-}
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+
+      - name: Run performance tests
+        run: npm run test:performance
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 ```
 
-### Configurações do Workspace
+## 📊 Coverage Reports
+
+### Coverage Configuration
+
 ```json
+// jest.config.js
+module.exports = {
+  // ... other configurations
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/_*.{ts,tsx}',
+    '!src/lib/prisma/schema.prisma',
+    '!src/pages/_*.{ts,tsx}',
+    '!src/styles/**/*',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: [
+    'text',
+    'lcov',
+    'html',
+    'json',
+    'cobertura',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+    './src/lib/services/': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+  },
+};
+```
+
+### Report Scripts
+
+```json
+// package.json
 {
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.suggest.autoImports": true,
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "emmet.includeLanguages": {
-    "typescript": "html",
-    "typescriptreact": "html"
-  },
-  "tailwindCSS.includeLanguages": {
-    "typescript": "html",
-    "typescriptreact": "html"
+  "scripts": {
+    "test:coverage": "jest --coverage",
+    "test:coverage:watch": "jest --coverage --watch",
+    "test:coverage:report": "jest --coverage --coverageReporters=html",
+    "test:badges": "jest --coverage --coverageReporters=json-summary"
   }
 }
 ```
 
-## 📋 Padrões de Código
+## 🎯 Best Practices
 
-### TypeScript
-- Use `strict` mode
-- Defina interfaces para objetos complexos
-- Use tipos union quando apropriado
-- Prefira `const` assertions para objetos imutáveis
+### General Principles
+1. **Test behavior, not implementation**
+2. **Keep tests independent and isolated**
+3. **Use descriptive names for tests**
+4. **Follow Arrange-Act-Assert pattern**
+5. **Test error cases and edge cases**
 
-```typescript
-// ✅ Bom
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
-}
+### Unit Tests
+- Focus on pure functions and business logic
+- Mock external dependencies
+- Test one concept per test
+- Use factories for test data
 
-const config = {
-  apiUrl: 'https://api.example.com',
-  timeout: 5000,
-} as const;
+### Integration Tests
+- Test interactions between components
+- Use test database
+- Test complete workflows
+- Clean data after tests
 
-// ❌ Ruim
-interface User {
-  id: any;
-  name: string;
-  email?: string;
-}
+### E2E Tests
+- Test complete user journeys
+- Use realistic data
+- Avoid flaky tests
+- Keep tests independent
 
-const config = {
-  apiUrl: 'https://api.example.com',
-  timeout: 5000,
-};
-```
-
-### React/Next.js
-- Use Server Components quando possível
-- Use Client Components apenas quando necessário
-- Implemente Error Boundaries
-- Use custom hooks para lógica reutilizável
-
-```typescript
-// ✅ Bom - Server Component
-export default function CollectionsPage() {
-  const collections = await getCollections();
-
-  return (
-    <div>
-      {collections.map(collection => (
-        <CollectionCard key={collection.id} collection={collection} />
-      ))}
-    </div>
-  );
-}
-
-// ✅ Bom - Custom Hook
-function useCollections() {
-  const [collections, setCollections] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchCollections().then(setCollections).finally(() => setLoading(false));
-  }, []);
-
-  return { collections, loading };
-}
-```
-
-### Estilização
-- Use Tailwind CSS para consistência
-- Siga o design system definido
-- Use CSS Modules para estilos específicos
-- Mantenha responsividade mobile-first
-
-```typescript
-// ✅ Bom
-export function Button({ variant = 'primary', children, ...props }: ButtonProps) {
-  const baseClasses = 'px-4 py-2 rounded-md font-medium transition-colors';
-  const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
-  };
-
-  return (
-    <button
-      className={`${baseClasses} ${variantClasses[variant]}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-```
-
-## 🔄 Fluxo de Desenvolvimento
-
-### 1. Criar Branch
-```bash
-git checkout -b feature/nome-da-feature
-```
-
-### 2. Desenvolver
-- Escreva testes primeiro (TDD)
-- Mantenha commits pequenos e descritivos
-- Use conventional commits
-
-```bash
-git commit -m "feat: add collection search functionality"
-git commit -m "test: add unit tests for search service"
-git commit -m "docs: update API documentation"
-```
-
-### 3. Testar
-```bash
-npm run test:unit
-npm run test:integration
-npm run lint
-npm run type-check
-```
-
-### 4. Pull Request
-- Crie PR com descrição detalhada
-- Aguarde revisão de código
-- Faça as correções solicitadas
-
-### 5. Merge
-- Squash commits quando apropriado
-- Delete branch após merge
-
-## 🚀 Deploy
-
-### Desenvolvimento
-```bash
-npm run build
-npm run start
-```
-
-### Produção (Vercel)
-1. Conecte repositório no Vercel
-2. Configure variáveis de ambiente
-3. Deploy automático será feito
-
-### Produção (Docker)
-```dockerfile
-FROM node:18-alpine AS base
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-## 🔍 Debugging
-
-### Ferramentas
-- **React DevTools** - Debugging de componentes
-- **Next.js DevTools** - Debugging específico do Next.js
-- **Prisma Studio** - Visualização do banco de dados
-- **VS Code Debugger** - Debugging integrado
-
-### Logs
-```typescript
-// Desenvolvimento
-console.log('Debug info:', data);
-
-// Produção
-import { logger } from '@/lib/logger';
-logger.info('User created', { userId: user.id });
-```
-
-## 📚 Recursos Adicionais
-
-### Documentação
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-
-### Comunidade
-- [Next.js Discord](https://nextjs.org/discord)
-- [Prisma Slack](https://slack.prisma.io/)
-- [Reactiflux Discord](https://www.reactiflux.com/)
-
-### Ferramentas
-- [Vercel](https://vercel.com/) - Deploy
-- [PlanetScale](https://planetscale.com/) - Banco de dados
-- [Sentry](https://sentry.io/) - Monitoramento
-- [Linear](https://linear.app/) - Gerenciamento de tarefas
+### Performance Tests
+- Define performance baselines
+- Test with realistic data
+- Monitor regressions
+- Execute in controlled environment
 
 ---
 
-Para dúvidas específicas ou problemas, consulte a documentação completa ou abra uma issue no GitHub.
+This testing strategy ensures quality, maintainability, and performance of the YouTube Organizer, with comprehensive coverage and continuous integration.

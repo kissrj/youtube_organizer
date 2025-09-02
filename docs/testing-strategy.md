@@ -1,30 +1,30 @@
-# 🧪 Estratégia de Testes - YouTube Organizer
+# 🧪 Testing Strategy - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-Esta documentação descreve a estratégia completa de testes implementada no YouTube Organizer, incluindo testes unitários, de integração, E2E e de performance, com foco em qualidade, manutenibilidade e eficiência.
+This documentation describes the complete testing strategy implemented in YouTube Organizer, including unit tests, integration tests, E2E tests, and performance tests, with focus on quality, maintainability, and efficiency.
 
-## 🏗️ Arquitetura de Testes
+## 🏗️ Testing Architecture
 
-### Pirâmide de Testes
+### Testing Pyramid
 
-```
+```bash
      E2E Tests (Playwright)
-         ↑
-  Integration Tests (Jest)
-         ↑
-   Unit Tests (Jest)
-         ↑
-  Static Analysis (TypeScript, ESLint)
+          ↑
+   Integration Tests (Jest)
+          ↑
+    Unit Tests (Jest)
+          ↑
+   Static Analysis (TypeScript, ESLint)
 ```
 
-### Cobertura Alvo
-- **Unit Tests**: 80%+ cobertura de código
-- **Integration Tests**: Principais workflows e APIs
-- **E2E Tests**: Jornada crítica do usuário
-- **Performance Tests**: Benchmarks de performance
+### Target Coverage
+- **Unit Tests**: 80%+ code coverage
+- **Integration Tests**: Main workflows and APIs
+- **E2E Tests**: Critical user journey
+- **Performance Tests**: Performance benchmarks
 
-## ⚙️ Configuração dos Testes
+## ⚙️ Testing Configuration
 
 ### Jest Configuration
 
@@ -45,26 +45,18 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json'],
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
-    '<rootDir>/__tests__/**/*.{ts,tsx}',
-  ],
-  transform: {
-    '^.+\\.(ts|tsx)$': ['@swc/jest'],
-  },
   testTimeout: 10000,
 };
 ```
 
-### Jest Setup Global
+### Jest Global Setup
 
 ```javascript
 // jest.setup.js
 import '@testing-library/jest-dom';
 import { server } from '@/__tests__/mocks/server';
 
-// Mocks globais
+// Global mocks
 jest.mock('next-auth/react');
 jest.mock('@prisma/client');
 jest.mock('next/navigation');
@@ -74,12 +66,12 @@ jest.mock('@/lib/prisma', () => ({
   },
 }));
 
-// MSW para mocks de API
+// MSW for API mocks
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-// Configurações adicionais
+// Additional configurations
 global.fetch = jest.fn();
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -138,11 +130,11 @@ export default defineConfig({
 });
 ```
 
-## 🧩 Testes Unitários
+## 🧩 Unit Tests
 
-### Estrutura dos Testes Unitários
+### Unit Tests Structure
 
-```
+```bash
 src/
 ├── lib/
 │   ├── services/
@@ -168,7 +160,7 @@ src/
         └── VideoSearchForm.test.tsx
 ```
 
-### Exemplo: Teste de Serviço
+### Service Test Example
 
 ```typescript
 // src/lib/services/collections.test.ts
@@ -217,7 +209,7 @@ describe('CollectionsService', () => {
       // Act & Assert
       await expect(
         CollectionsService.createCollection(invalidInput)
-      ).rejects.toThrow('Nome é obrigatório');
+      ).rejects.toThrow('Name is required');
     });
 
     it('should handle database errors', async () => {
@@ -232,7 +224,7 @@ describe('CollectionsService', () => {
           name: 'Test Collection',
           userId: 'user-1',
         })
-      ).rejects.toThrow('Falha ao criar coleção');
+      ).rejects.toThrow('Failed to create collection');
     });
   });
 
@@ -284,7 +276,7 @@ describe('CollectionsService', () => {
 });
 ```
 
-### Exemplo: Teste de Componente
+### Component Test Example
 
 ```typescript
 // src/components/ui/Button.test.tsx
@@ -324,7 +316,7 @@ describe('Button', () => {
 });
 ```
 
-### Exemplo: Teste de Hook Customizado
+### Custom Hook Test Example
 
 ```typescript
 // src/lib/hooks/useCollections.test.ts
@@ -407,11 +399,11 @@ describe('useCollections', () => {
 });
 ```
 
-## 🔗 Testes de Integração
+## 🔗 Integration Tests
 
-### Estrutura dos Testes de Integração
+### Integration Tests Structure
 
-```
+```bash
 __tests__/
 ├── integration/
 │   ├── collections-workflow.test.ts
@@ -428,7 +420,7 @@ __tests__/
 │       └── seed.test.ts
 ```
 
-### Exemplo: Teste de Workflow Completo
+### Complete Workflow Test Example
 
 ```typescript
 // __tests__/integration/collections-workflow.test.ts
@@ -452,7 +444,7 @@ describe('Collections Workflow Integration', () => {
 
   describe('Complete Collection Lifecycle', () => {
     it('should create collection with videos and manage content', async () => {
-      // 1. Criar coleção
+      // 1. Create collection
       collection = await CollectionsService.createCollection({
         name: 'Integration Test Collection',
         description: 'Test collection for integration tests',
@@ -462,64 +454,64 @@ describe('Collections Workflow Integration', () => {
       expect(collection.name).toBe('Integration Test Collection');
       expect(collection.userId).toBe(user.id);
 
-      // 2. Sincronizar vídeo do YouTube
-      video = await VideosService.syncVideo('dQw4w9WgXcQ'); // Vídeo de teste
+      // 2. Sync video from YouTube
+      video = await VideosService.syncVideo('dQw4w9WgXcQ'); // Test video
       expect(video.youtubeId).toBe('dQw4w9WgXcQ');
 
-      // 3. Adicionar vídeo à coleção
+      // 3. Add video to collection
       await CollectionsService.addVideosToCollection(collection.id, [video.id]);
 
-      // 4. Verificar conteúdo da coleção
+      // 4. Verify collection content
       const content = await CollectionsService.getCollectionContent(collection.id);
       expect(content.videos).toHaveLength(1);
       expect(content.videos[0].id).toBe(video.id);
 
-      // 5. Buscar coleções
+      // 5. Search collections
       const searchResults = await CollectionsService.getCollections({
         userId: user.id,
         search: 'Integration Test',
       });
       expect(searchResults.collections).toHaveLength(1);
 
-      // 6. Atualizar coleção
+      // 6. Update collection
       const updatedCollection = await CollectionsService.updateCollection(collection.id, {
         name: 'Updated Integration Test Collection',
         description: 'Updated description',
       });
       expect(updatedCollection.name).toBe('Updated Integration Test Collection');
 
-      // 7. Remover vídeo da coleção
+      // 7. Remove video from collection
       await CollectionsService.removeVideosFromCollection(collection.id, [video.id]);
       const updatedContent = await CollectionsService.getCollectionContent(collection.id);
       expect(updatedContent.videos).toHaveLength(0);
 
-      // 8. Excluir coleção
+      // 8. Delete collection
       await CollectionsService.deleteCollection(collection.id);
       await expect(
         CollectionsService.getCollection(collection.id)
-      ).rejects.toThrow('Coleção não encontrada');
+      ).rejects.toThrow('Collection not found');
     });
 
     it('should handle collection hierarchy', async () => {
-      // Criar coleção pai
+      // Create parent collection
       const parentCollection = await CollectionsService.createCollection({
         name: 'Parent Collection',
         userId: user.id,
       });
 
-      // Criar coleção filha
+      // Create child collection
       const childCollection = await CollectionsService.createCollection({
         name: 'Child Collection',
         userId: user.id,
         parentId: parentCollection.id,
       });
 
-      // Verificar hierarquia
+      // Verify hierarchy
       const parentContent = await CollectionsService.getCollectionContent(parentCollection.id);
       expect(parentContent.children).toHaveLength(1);
       expect(parentContent.children[0].id).toBe(childCollection.id);
 
-      // Mover coleção
+      // Move collection
       await CollectionsService.moveCollection(childCollection.id, {
         newParentId: null,
         position: 0,
@@ -532,23 +524,23 @@ describe('Collections Workflow Integration', () => {
 
   describe('Bulk Operations', () => {
     it('should handle bulk video additions', async () => {
-      // Criar coleção
+      // Create collection
       collection = await CollectionsService.createCollection({
         name: 'Bulk Test Collection',
         userId: user.id,
       });
 
-      // Criar múltiplos vídeos
+      // Create multiple videos
       const videoIds = [];
       for (let i = 0; i < 10; i++) {
         const video = await VideosService.syncVideo(`test-video-${i}`);
         videoIds.push(video.id);
       }
 
-      // Adicionar todos de uma vez
+      // Add all at once
       await CollectionsService.addVideosToCollection(collection.id, videoIds);
 
-      // Verificar
+      // Verify
       const content = await CollectionsService.getCollectionContent(collection.id);
       expect(content.videos).toHaveLength(10);
     });
@@ -561,14 +553,14 @@ describe('Collections Workflow Integration', () => {
         userId: user.id,
       });
 
-      // Simular modificações concorrentes
+      // Simulate concurrent modifications
       const promises = Array.from({ length: 5 }, () =>
         CollectionsService.updateCollection(collection.id, {
           name: `Updated by ${Math.random()}`,
         })
       );
 
-      // Pelo menos uma deve passar
+      // At least one should pass
       const results = await Promise.allSettled(promises);
       const successful = results.filter(r => r.status === 'fulfilled');
       expect(successful.length).toBeGreaterThan(0);
@@ -577,7 +569,7 @@ describe('Collections Workflow Integration', () => {
 });
 ```
 
-### Exemplo: Teste de API
+### API Test Example
 
 ```typescript
 // __tests__/integration/api/collections.test.ts
@@ -695,11 +687,11 @@ describe('/api/collections', () => {
 });
 ```
 
-## 🌐 Testes E2E
+## 🌐 E2E Tests
 
-### Estrutura dos Testes E2E
+### E2E Tests Structure
 
-```
+```bash
 __tests__/
 ├── e2e/
 │   ├── collections-flow.test.ts
@@ -711,7 +703,7 @@ __tests__/
 │   └── global-teardown.ts
 ```
 
-### Exemplo: Teste E2E Completo
+### Complete E2E Test Example
 
 ```typescript
 // __tests__/e2e/collections-flow.test.ts
@@ -719,7 +711,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Collections Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Login antes de cada teste
+    // Login before each test
     await page.goto('/auth/signin');
     await page.fill('[data-testid="email"]', 'test@example.com');
     await page.fill('[data-testid="password"]', 'password123');
@@ -728,92 +720,96 @@ test.describe('Collections Flow', () => {
   });
 
   test('should create and manage collections', async ({ page }) => {
-    // Navegar para coleções
+    // Navigate to collections
     await page.goto('/collections');
-    await expect(page.locator('h1')).toContainText('Minhas Coleções');
+    await expect(page.locator('h1')).toContainText('My Collections');
 
-    // Criar nova coleção
+    // Create new collection
     await page.click('[data-testid="create-collection"]');
     await expect(page.locator('[data-testid="collection-modal"]')).toBeVisible();
 
-    await page.fill('[data-testid="collection-name"]', 'Minha Coleção de Teste');
-    await page.fill('[data-testid="collection-description"]', 'Descrição da coleção de teste');
+    await page.fill('[data-testid="collection-name"]', 'My Test Collection');
+    await page.fill('[data-testid="collection-description"]', 'Test collection description');
     await page.click('[data-testid="collection-public"]');
     await page.click('[data-testid="save-collection"]');
 
-    // Verificar criação
-    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Minha Coleção de Teste');
-    await expect(page.locator('[data-testid="collection-description"]')).toContainText('Descrição da coleção de teste');
+    // Verify creation
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('My Test Collection');
+    await expect(page.locator('[data-testid="collection-description"]')).toContainText('Test collection description');
 
-    // Adicionar vídeo
+    // Add video
     await page.click('[data-testid="add-video"]');
     await page.fill('[data-testid="video-search"]', 'react tutorial');
     await page.click('[data-testid="search-button"]');
     await page.waitForSelector('[data-testid="video-result"]');
     await page.click('[data-testid="video-result"]:first-child [data-testid="add-to-collection"]');
 
-    // Verificar vídeo na coleção
+    // Verify video in collection
     await expect(page.locator('[data-testid="collection-video"]')).toBeVisible();
 
-    // Editar coleção
+    // Edit collection
     await page.click('[data-testid="edit-collection"]');
-    await page.fill('[data-testid="collection-name"]', 'Coleção Editada');
+    await page.fill('[data-testid="collection-name"]', 'Edited Collection');
     await page.click('[data-testid="save-collection"]');
 
-    // Verificar edição
-    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Coleção Editada');
+    // Verify edit
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Edited Collection');
 
-    // Excluir coleção
+    // Delete collection
     await page.click('[data-testid="delete-collection"]');
     await page.click('[data-testid="confirm-delete"]');
 
-    // Verificar exclusão
+    // Verify deletion
     await expect(page.locator('[data-testid="collection-title"]')).toBeHidden();
   });
 
   test('should handle collection search and filtering', async ({ page }) => {
-    // Criar múltiplas coleções
+    // Arrange: Create multiple collections
     await page.goto('/collections');
 
     for (let i = 1; i <= 3; i++) {
       await page.click('[data-testid="create-collection"]');
-      await page.fill('[data-testid="collection-name"]', `Coleção ${i}`);
+      await page.fill('[data-testid="collection-name"]', `Collection ${i}`);
       await page.click('[data-testid="save-collection"]');
       await page.waitForSelector('[data-testid="collection-list"]');
     }
 
-    // Testar busca
-    await page.fill('[data-testid="search-collections"]', 'Coleção 1');
+    // Act: Search
+    await page.fill('[data-testid="search-collections"]', 'Collection 1');
     await page.click('[data-testid="search-button"]');
 
+    // Assert: Only Collection 1 should appear
     await expect(page.locator('[data-testid="collection-item"]')).toHaveCount(1);
-    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Coleção 1');
+    await expect(page.locator('[data-testid="collection-title"]')).toContainText('Collection 1');
 
-    // Limpar busca
-    await page.fill('[data-testid="search-collections"]', '');
-    await page.click('[data-testid="search-button"]');
-
-    await expect(page.locator('[data-testid="collection-item"]')).toHaveCount(3);
+    // Cleanup
+    const collections = page.locator('[data-testid="collection-item"]');
+    const count = await collections.count();
+    for (let i = 0; i < count; i++) {
+      await collections.nth(i).click();
+      await page.click('[data-testid="delete-collection"]');
+      await page.click('[data-testid="confirm-delete"]');
+    }
   });
 
   test('should handle collection hierarchy', async ({ page }) => {
     await page.goto('/collections');
 
-    // Criar coleção pai
+    // Create parent collection
     await page.click('[data-testid="create-collection"]');
-    await page.fill('[data-testid="collection-name"]', 'Coleção Pai');
+    await page.fill('[data-testid="collection-name"]', 'Parent Collection');
     await page.click('[data-testid="save-collection"]');
 
-    // Criar coleção filha
+    // Create child collection
     await page.click('[data-testid="create-collection"]');
-    await page.selectOption('[data-testid="parent-collection"]', 'Coleção Pai');
-    await page.fill('[data-testid="collection-name"]', 'Coleção Filha');
+    await page.selectOption('[data-testid="parent-collection"]', 'Parent Collection');
+    await page.fill('[data-testid="collection-name"]', 'Child Collection');
     await page.click('[data-testid="save-collection"]');
 
-    // Verificar hierarquia
-    await expect(page.locator('[data-testid="collection-children"]')).toContainText('Coleção Filha');
+    // Verify hierarchy
+    await expect(page.locator('[data-testid="collection-children"]')).toContainText('Child Collection');
 
-    // Expandir/colapsar
+    // Expand/collapse
     await page.click('[data-testid="toggle-children"]');
     await expect(page.locator('[data-testid="collection-child-item"]')).toBeVisible();
 
@@ -824,12 +820,12 @@ test.describe('Collections Flow', () => {
   test('should handle bulk operations', async ({ page }) => {
     await page.goto('/collections');
 
-    // Criar coleção
+    // Create collection
     await page.click('[data-testid="create-collection"]');
-    await page.fill('[data-testid="collection-name"]', 'Coleção em Massa');
+    await page.fill('[data-testid="collection-name"]', 'Bulk Test Collection');
     await page.click('[data-testid="save-collection"]');
 
-    // Selecionar múltiplos vídeos
+    // Select multiple videos
     await page.click('[data-testid="bulk-select-mode"]');
 
     const videoCheckboxes = page.locator('[data-testid="video-checkbox"]');
@@ -837,19 +833,19 @@ test.describe('Collections Flow', () => {
     await videoCheckboxes.nth(1).check();
     await videoCheckboxes.nth(2).check();
 
-    // Adicionar à coleção
+    // Add to collection
     await page.click('[data-testid="bulk-add-to-collection"]');
-    await page.selectOption('[data-testid="bulk-collection-select"]', 'Coleção em Massa');
+    await page.selectOption('[data-testid="bulk-collection-select"]', 'Bulk Test Collection');
     await page.click('[data-testid="confirm-bulk-add"]');
 
-    // Verificar
-    await page.goto('/collections/Coleção em Massa');
+    // Verify
+    await page.goto('/collections/Bulk Test Collection');
     await expect(page.locator('[data-testid="collection-video"]')).toHaveCount(3);
   });
 });
 ```
 
-### Global Setup para E2E
+### E2E Global Setup
 
 ```typescript
 // __tests__/e2e/global-setup.ts
@@ -857,25 +853,25 @@ import { chromium, FullConfig } from '@playwright/test';
 import { createTestUser, cleanupTestData } from '@/__tests__/helpers';
 
 async function globalSetup(config: FullConfig) {
-  // Criar usuário de teste
+  // Create test user
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
   try {
-    // Criar usuário de teste no banco
+    // Create test user in database
     await createTestUser({
       email: 'test@example.com',
       password: 'password123',
     });
 
-    // Fazer login uma vez para estabelecer sessão
+    // Login once to establish session
     await page.goto('http://localhost:3000/auth/signin');
     await page.fill('[data-testid="email"]', 'test@example.com');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="signin-button"]');
     await page.waitForURL('http://localhost:3000/dashboard');
 
-    // Salvar estado de autenticação
+    // Save authentication state
     await page.context().storageState({ path: 'test-results/auth-state.json' });
   } finally {
     await browser.close();
@@ -885,11 +881,11 @@ async function globalSetup(config: FullConfig) {
 export default globalSetup;
 ```
 
-## ⚡ Testes de Performance
+## ⚡ Performance Tests
 
-### Estrutura dos Testes de Performance
+### Performance Tests Structure
 
-```
+```bash
 __tests__/
 ├── performance/
 │   ├── collections-performance.test.ts
@@ -899,75 +895,7 @@ __tests__/
 │   └── benchmark.test.ts
 ```
 
-### Utilitários de Performance
-
-```typescript
-// __tests__/performance/utils.ts
-export interface PerformanceResult {
-  operation: string;
-  duration: number;
-  memoryUsage?: number;
-  throughput?: number;
-}
-
-export class PerformanceMonitor {
-  private startTime: number = 0;
-  private memoryStart: NodeJS.MemoryUsage | null = null;
-
-  start() {
-    this.startTime = Date.now();
-    if (typeof process !== 'undefined') {
-      this.memoryStart = process.memoryUsage();
-    }
-  }
-
-  end(operation: string): PerformanceResult {
-    const duration = Date.now() - this.startTime;
-    let memoryUsage: number | undefined;
-
-    if (this.memoryStart && typeof process !== 'undefined') {
-      const memoryEnd = process.memoryUsage();
-      memoryUsage = memoryEnd.heapUsed - this.memoryStart.heapUsed;
-    }
-
-    return {
-      operation,
-      duration,
-      memoryUsage,
-    };
-  }
-}
-
-export async function measurePerformance<T>(
-  operation: string,
-  fn: () => Promise<T>,
-  iterations: number = 1
-): Promise<PerformanceResult[]> {
-  const results: PerformanceResult[] = [];
-  const monitor = new PerformanceMonitor();
-
-  for (let i = 0; i < iterations; i++) {
-    monitor.start();
-    await fn();
-    results.push(monitor.end(`${operation} - iteration ${i + 1}`));
-  }
-
-  return results;
-}
-
-export function calculateAverage(results: PerformanceResult[]): number {
-  const total = results.reduce((sum, result) => sum + result.duration, 0);
-  return total / results.length;
-}
-
-export function calculatePercentile(results: PerformanceResult[], percentile: number): number {
-  const sorted = results.map(r => r.duration).sort((a, b) => a - b);
-  const index = Math.ceil((percentile / 100) * sorted.length) - 1;
-  return sorted[index];
-}
-```
-
-### Exemplo: Benchmark de Performance
+### Performance Benchmark Example
 
 ```typescript
 // __tests__/performance/benchmark.test.ts
@@ -1012,7 +940,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should handle bulk collection queries efficiently', async () => {
-      // Criar 1000 coleções para teste
+      // Create 1000 collections for test
       const createPromises = Array.from({ length: 1000 }, (_, i) =>
         CollectionsService.createCollection({
           name: `Bulk Collection ${i}`,
@@ -1021,7 +949,7 @@ describe('Performance Benchmarks', () => {
       );
       await Promise.all(createPromises);
 
-      // Testar busca
+      // Test search
       const results = await measurePerformance(
         'bulk-collection-query',
         async () => {
@@ -1037,7 +965,7 @@ describe('Performance Benchmarks', () => {
       const average = calculateAverage(results);
       console.log(`Bulk Query - Average: ${average}ms`);
 
-      expect(average).toBeLessThan(500); // < 500ms para 100 itens
+      expect(average).toBeLessThan(500); // < 500ms for 100 items
     });
 
     it('should handle concurrent operations', async () => {
@@ -1060,7 +988,7 @@ describe('Performance Benchmarks', () => {
       const average = calculateAverage(results);
       console.log(`Concurrent Operations - Average: ${average}ms`);
 
-      expect(average).toBeLessThan(2000); // < 2s para 50 operações concorrentes
+      expect(average).toBeLessThan(2000); // < 2s for 50 concurrent operations
     });
   });
 
@@ -1084,11 +1012,11 @@ describe('Performance Benchmarks', () => {
       const average = calculateAverage(results);
       console.log(`Video Sync - Average: ${average}ms`);
 
-      expect(average).toBeLessThan(1000); // < 1s para 3 vídeos
+      expect(average).toBeLessThan(1000); // < 1s for 3 videos
     });
 
     it('should handle video search efficiently', async () => {
-      // Criar índice de busca
+      // Create search index
       const searchTerms = ['react', 'javascript', 'tutorial', 'programming'];
 
       const results = await measurePerformance(
@@ -1108,7 +1036,7 @@ describe('Performance Benchmarks', () => {
       const average = calculateAverage(results);
       console.log(`Video Search - Average: ${average}ms`);
 
-      expect(average).toBeLessThan(300); // < 300ms para busca
+      expect(average).toBeLessThan(300); // < 300ms for search
     });
   });
 
@@ -1116,7 +1044,7 @@ describe('Performance Benchmarks', () => {
     it('should not have memory leaks in long-running operations', async () => {
       const initialMemory = process.memoryUsage().heapUsed;
 
-      // Executar operações pesadas
+      // Execute heavy operations
       for (let i = 0; i < 100; i++) {
         await CollectionsService.createCollection({
           name: `Memory Test ${i}`,
@@ -1124,7 +1052,7 @@ describe('Performance Benchmarks', () => {
         });
 
         if (i % 10 === 0) {
-          // Forçar garbage collection se disponível
+          // Force garbage collection if available
           if (global.gc) {
             global.gc();
           }
@@ -1136,7 +1064,7 @@ describe('Performance Benchmarks', () => {
 
       console.log(`Memory Increase: ${(memoryIncrease / 1024 / 1024).toFixed(2)} MB`);
 
-      // Memória não deve aumentar mais que 50MB
+      // Memory should not increase more than 50MB
       expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024);
     });
   });
@@ -1146,7 +1074,7 @@ describe('Performance Benchmarks', () => {
       const results = await measurePerformance(
         'database-connection',
         async () => {
-          // Testar múltiplas conexões simultâneas
+          // Test multiple simultaneous connections
           const promises = Array.from({ length: 20 }, () =>
             CollectionsService.getCollections({
               userId: user.id,
@@ -1162,7 +1090,7 @@ describe('Performance Benchmarks', () => {
       const average = calculateAverage(results);
       console.log(`Database Connections - Average: ${average}ms`);
 
-      expect(average).toBeLessThan(1000); // < 1s para 20 conexões
+      expect(average).toBeLessThan(1000); // < 1s for 20 connections
     });
   });
 });
@@ -1260,14 +1188,14 @@ jobs:
           retention-days: 30
 ```
 
-## 📊 Relatórios de Cobertura
+## 📊 Coverage Reports
 
-### Configuração de Cobertura
+### Coverage Configuration
 
 ```json
 // jest.config.js
 module.exports = {
-  // ... outras configurações
+  // ... other configurations
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
@@ -1301,7 +1229,7 @@ module.exports = {
 };
 ```
 
-### Scripts de Relatório
+### Report Scripts
 
 ```json
 // package.json
@@ -1315,39 +1243,39 @@ module.exports = {
 }
 ```
 
-## 🎯 Melhores Práticas
+## 🎯 Best Practices
 
-### Princípios Gerais
-1. **Teste o comportamento, não a implementação**
-2. **Mantenha testes independentes e isolados**
-3. **Use nomes descritivos para testes**
-4. **Siga o padrão Arrange-Act-Assert**
-5. **Teste casos de erro e edge cases**
+### General Principles
+1. **Test behavior, not implementation**
+2. **Keep tests independent and isolated**
+3. **Use descriptive names for tests**
+4. **Follow Arrange-Act-Assert pattern**
+5. **Test error cases and edge cases**
 
-### Testes Unitários
-- Foque em funções puras e lógica de negócio
-- Mock dependências externas
-- Teste um conceito por teste
-- Use factories para dados de teste
+### Unit Tests
+- Focus on pure functions and business logic
+- Mock external dependencies
+- Test one concept per test
+- Use factories for test data
 
-### Testes de Integração
-- Teste interações entre componentes
-- Use banco de dados de teste
-- Teste workflows completos
-- Limpe dados após testes
+### Integration Tests
+- Test interactions between components
+- Use test database
+- Test complete workflows
+- Clean data after tests
 
-### Testes E2E
-- Teste jornadas críticas do usuário
-- Use dados realistas
-- Evite testes frágeis
-- Mantenha testes independentes
+### E2E Tests
+- Test complete user journeys
+- Use realistic data
+- Avoid flaky tests
+- Keep tests independent
 
-### Testes de Performance
-- Defina baselines de performance
-- Teste com dados realistas
-- Monitore regressões
-- Execute em ambiente controlado
+### Performance Tests
+- Define performance baselines
+- Test with realistic data
+- Monitor regressions
+- Execute in controlled environment
 
 ---
 
-Esta estratégia de testes garante qualidade, manutenibilidade e performance do YouTube Organizer, com cobertura abrangente e integração contínua.
+This testing strategy ensures quality, maintainability, and performance of the YouTube Organizer, with comprehensive coverage and continuous integration.

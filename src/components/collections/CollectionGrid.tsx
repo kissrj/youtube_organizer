@@ -29,9 +29,9 @@ export function CollectionGrid({
     return (
       <div className="collection-grid">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Minhas Coleções</h2>
+          <h2 className="text-2xl font-bold">Minhas ColeÃ§Ãµes</h2>
           <div className="animate-pulse bg-gray-200 rounded px-4 py-2">
-            <span className="text-gray-500">Carregando...</span>
+            <span className="text-gray-500">Loading…</span>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -62,23 +62,23 @@ export function CollectionGrid({
   return (
     <div className="collection-grid space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Minhas Coleções</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Minhas ColeÃ§Ãµes</h2>
         <button
           onClick={() => setIsCreateDialogOpen(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
-          <span>+ Nova Coleção</span>
+          <span>+ Nova ColeÃ§Ã£o</span>
         </button>
       </div>
 
       {collections.length === 0 ? (
         <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">Nenhuma coleção encontrada</div>
+          <div className="text-gray-400 mb-4">Nenhuma coleÃ§Ã£o encontrada</div>
           <button
             onClick={() => setIsCreateDialogOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Criar primeira coleção
+            Criar primeira coleÃ§Ã£o
           </button>
         </div>
       ) : (
@@ -102,3 +102,4 @@ export function CollectionGrid({
     </div>
   )
 }
+

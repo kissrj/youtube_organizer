@@ -33,6 +33,12 @@ export async function GET(request: NextRequest) {
     // Construir query base
     let where: any = {
       userId,
+      // Exclude videos that belong to playlists (have playlist tags)
+      NOT: {
+        videoTags: {
+          contains: 'playlist_'
+        }
+      }
     }
 
     // Filtro de busca por texto

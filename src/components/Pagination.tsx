@@ -63,7 +63,7 @@ export function Pagination({
 
       {/* Controles de navegação */}
       <div className="flex items-center space-x-1">
-        {/* Botão Anterior */}
+        {/* Botão Previous */}
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -72,7 +72,7 @@ export function Pagination({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Anterior
+          Previous
         </button>
 
         {/* Números das páginas */}
@@ -95,22 +95,22 @@ export function Pagination({
           ))}
         </div>
 
-        {/* Botão Próximo */}
+        {/* Botão Next */}
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400"
         >
-          Próximo
+          Next
           <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
-      {/* Seletor de itens por página */}
+      {/* Seletor de Items per page */}
       <div className="flex items-center space-x-2 text-sm">
-        <span className="text-gray-600">Itens por página:</span>
+        <span className="text-gray-600">Items per page:</span>
         <select
           value={itemsPerPage}
           onChange={(e) => {
@@ -161,3 +161,4 @@ export function usePagination(initialPage = 1, initialItemsPerPage = 12) {
     getPaginationInfo,
   }
 }
+

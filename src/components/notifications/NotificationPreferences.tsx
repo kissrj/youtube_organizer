@@ -113,7 +113,7 @@ export function NotificationPreferences({ userId }: NotificationPreferencesProps
   };
 
   if (loading) {
-    return <div>Carregando preferências...</div>;
+    return <div>Loading preferências...</div>;
   }
 
   return (
@@ -303,3 +303,4 @@ export function NotificationPreferences({ userId }: NotificationPreferencesProps
     </div>
   );
 }
+

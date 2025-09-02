@@ -65,7 +65,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
         setImportJobs(importData);
       }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
         setExportDescription('');
       }
     } catch (error) {
-      console.error('Erro ao criar exportação:', error);
+      console.error('Error creating export:', error);
     }
   };
 
@@ -118,7 +118,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
         loadAllData();
       }
     } catch (error) {
-      console.error('Erro ao iniciar exportação:', error);
+      console.error('Error starting export:', error);
     }
   };
 
@@ -153,7 +153,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
         setImportFile(null);
       }
     } catch (error) {
-      console.error('Erro ao criar importação:', error);
+      console.error('Error creating import:', error);
     }
   };
 
@@ -173,15 +173,15 @@ export function ExportManager({ userId }: ExportManagerProps) {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'Pendente';
+        return 'Pending';
       case 'PROCESSING':
-        return 'Processando';
+        return 'Processing';
       case 'COMPLETED':
-        return 'Concluído';
+        return 'Completed';
       case 'FAILED':
-        return 'Falhou';
+        return 'Failed';
       case 'EXPIRED':
-        return 'Expirado';
+        return 'Expired';
       default:
         return status;
     }
@@ -200,7 +200,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            Exportações
+            Exports
           </button>
           <button
             onClick={() => setSelectedTab('imports')}
@@ -210,7 +210,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            Importações
+            Imports
           </button>
         </nav>
       </div>
@@ -222,19 +222,19 @@ export function ExportManager({ userId }: ExportManagerProps) {
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                Nova Exportação
+                New Export
               </h3>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Nome da Exportação
+                    Export Name
                   </label>
                   <input
                     type="text"
                     value={exportName}
                     onChange={(e) => setExportName(e.target.value)}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Ex: Backup mensal"
+                    placeholder="Ex: Monthly backup"
                   />
                 </div>
                 <div>
@@ -255,20 +255,20 @@ export function ExportManager({ userId }: ExportManagerProps) {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Descrição (opcional)
+                    Description (optional)
                   </label>
                   <textarea
                     value={exportDescription}
                     onChange={(e) => setExportDescription(e.target.value)}
                     rows={3}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Descrição da exportação"
+                    placeholder="Export description"
                   />
                 </div>
                 <div className="sm:col-span-2">
                   <fieldset>
                     <legend className="text-sm font-medium text-gray-700">
-                      Dados a incluir
+                      Data to include
                     </legend>
                     <div className="mt-2 space-y-2">
                       <div className="flex items-center">
@@ -280,7 +280,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <label htmlFor="include-collections" className="ml-2 text-sm text-gray-900">
-                          Coleções
+                          Collections
                         </label>
                       </div>
                       <div className="flex items-center">
@@ -316,7 +316,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <label htmlFor="include-videos" className="ml-2 text-sm text-gray-900">
-                          Vídeos
+                          Videos
                         </label>
                       </div>
                     </div>
@@ -329,7 +329,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                   disabled={!exportName.trim() || loading}
                   className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  Criar Exportação
+                  Create Export
                 </button>
               </div>
             </div>
@@ -339,10 +339,10 @@ export function ExportManager({ userId }: ExportManagerProps) {
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                Exportações Recentes
+                Recent Exports
               </h3>
               {exportJobs.length === 0 ? (
-                <p className="text-gray-500">Nenhuma exportação encontrada.</p>
+                <p className="text-gray-500">No exports found.</p>
               ) : (
                 <div className="space-y-4">
                   {exportJobs.map((job) => (
@@ -355,10 +355,10 @@ export function ExportManager({ userId }: ExportManagerProps) {
                               {job.name}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {job.description || 'Sem descrição'}
+                              {job.description || 'No description'}
                             </p>
                             <p className="text-xs text-gray-400">
-                              Criado em {new Date(job.createdAt).toLocaleDateString()}
+                              Created on {new Date(job.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -380,7 +380,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                               className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
                             >
                               <Play className="h-4 w-4 mr-1" />
-                              Iniciar
+                              Start
                             </button>
                           )}
                           {job.status === 'COMPLETED' && job.downloadUrl && (
@@ -409,19 +409,19 @@ export function ExportManager({ userId }: ExportManagerProps) {
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                Nova Importação
+                New Import
               </h3>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Nome da Importação
+                    Import Name
                   </label>
                   <input
                     type="text"
                     value={importName}
                     onChange={(e) => setImportName(e.target.value)}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Ex: Importação de backup"
+                    placeholder="Ex: Backup import"
                   />
                 </div>
                 <div>
@@ -442,7 +442,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Arquivo
+                    File
                   </label>
                   <input
                     type="file"
@@ -453,14 +453,14 @@ export function ExportManager({ userId }: ExportManagerProps) {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Descrição (opcional)
+                    Description (optional)
                   </label>
                   <textarea
                     value={importDescription}
                     onChange={(e) => setImportDescription(e.target.value)}
                     rows={3}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Descrição da importação"
+                    placeholder="Import description"
                   />
                 </div>
               </div>
@@ -470,7 +470,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                   disabled={!importName.trim() || !importFile || loading}
                   className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                 >
-                  Criar Importação
+                  Create Import
                 </button>
               </div>
             </div>
@@ -480,10 +480,10 @@ export function ExportManager({ userId }: ExportManagerProps) {
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                Importações Recentes
+                Recent Imports
               </h3>
               {importJobs.length === 0 ? (
-                <p className="text-gray-500">Nenhuma importação encontrada.</p>
+                <p className="text-gray-500">No imports found.</p>
               ) : (
                 <div className="space-y-4">
                   {importJobs.map((job) => (
@@ -496,10 +496,10 @@ export function ExportManager({ userId }: ExportManagerProps) {
                               {job.name}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {job.description || 'Sem descrição'}
+                              {job.description || 'No description'}
                             </p>
                             <p className="text-xs text-gray-400">
-                              Criado em {new Date(job.createdAt).toLocaleDateString()}
+                              Created on {new Date(job.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -521,7 +521,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                               className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
                             >
                               <Play className="h-4 w-4 mr-1" />
-                              Iniciar
+                              Start
                             </button>
                           )}
                         </div>
@@ -537,3 +537,4 @@ export function ExportManager({ userId }: ExportManagerProps) {
     </div>
   );
 }
+

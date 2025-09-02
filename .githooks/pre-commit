@@ -1,0 +1,25 @@
+#!/bin/sh
+# Pre-commit: ensure all tracked text files are valid UTF-8
+
+echo "[pre-commit] Checking UTF-8 encoding..."
+
+# Ensure we run from repo root
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+cd "$REPO_ROOT" || exit 1
+
+# Fast path: if package.json missing, skip
+if [ ! -f package.json ]; then
+  echo "[pre-commit] No package.json; skipping UTF-8 check."
+  exit 0
+fi
+
+# Run the UTF-8 check script
+if npm run --silent check:utf8; then
+  echo "[pre-commit] UTF-8 check passed."
+  exit 0
+else
+  echo "\n[pre-commit] UTF-8 check failed."
+  echo "Fix indicated files or run: node scripts/check-utf8.js"
+  exit 1
+fi
+

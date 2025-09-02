@@ -29,7 +29,7 @@ export default function Dashboard() {
         const data = await response.json()
       }
     } catch (error) {
-      console.error('Erro ao verificar status do YouTube:', error)
+      console.error('Error checking YouTube status:', error)
     } finally {
       setLoading(false)
     }
@@ -43,7 +43,7 @@ export default function Dashboard() {
         window.location.href = data.authUrl
       }
     } catch (error) {
-      console.error('Erro ao conectar YouTube:', error)
+      console.error('Error connecting YouTube:', error)
     }
   }
 
@@ -56,7 +56,7 @@ export default function Dashboard() {
         setYoutubeStatus({ connected: false })
       }
     } catch (error) {
-      console.error('Erro ao desconectar YouTube:', error)
+      console.error('Error disconnecting YouTube:', error)
     }
   }
 
@@ -65,40 +65,40 @@ export default function Dashboard() {
       <div className="space-y-8">
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Bem-vindo ao YouTube Organizer
+            Welcome to YouTube Organizer
           </h2>
           <p className="text-gray-600 mb-6">
-            Organize suas playlists do YouTube por categorias e tags de forma eficiente.
+            Organize your YouTube playlists by categories and tags efficiently.
           </p>
 
-          {/* Status da Conexão YouTube */}
+          {/* YouTube Connection Status */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              🔗 Conexão com YouTube
+              🔗 YouTube Connection
             </h3>
 
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                <span className="text-gray-600">Verificando conexão...</span>
+                <span className="text-gray-600">Checking connection...</span>
               </div>
             ) : youtubeStatus?.connected ? (
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-green-600">✅</span>
-                  <span className="font-medium text-green-700">Conectado</span>
+                  <span className="font-medium text-green-700">Connected</span>
                   {youtubeStatus.youtubeUsername && (
-                    <span className="text-gray-600">como {youtubeStatus.youtubeUsername}</span>
+                    <span className="text-gray-600">as {youtubeStatus.youtubeUsername}</span>
                   )}
                 </div>
 
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p>🎯 <strong className="text-gray-900">Você pode acessar:</strong></p>
+                  <p>🎯 <strong className="text-gray-900">You can access:</strong></p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li className="text-green-700">✅ Playlists públicas</li>
-                    <li className="text-green-700">✅ Playlists privadas</li>
-                    <li className="text-green-700">✅ Playlists não listadas</li>
-                    <li className="text-green-700">✅ Seu histórico completo</li>
+                    <li className="text-green-700">✅ Public playlists</li>
+                    <li className="text-green-700">✅ Private playlists</li>
+                    <li className="text-green-700">✅ Unlisted playlists</li>
+                    <li className="text-green-700">✅ Your complete history</li>
                   </ul>
                 </div>
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
                     onClick={disconnectYouTube}
                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                   >
-                    Desconectar YouTube
+                    Disconnect YouTube
                   </button>
                 </div>
               </div>
@@ -115,27 +115,27 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-yellow-600">⚠️</span>
-                  <span className="font-medium text-yellow-700">Não conectado</span>
+                  <span className="font-medium text-yellow-700">Not connected</span>
                 </div>
 
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p>🎯 <strong className="text-gray-900">Sem conexão OAuth:</strong></p>
+                  <p>🎯 <strong className="text-gray-900">Without OAuth connection:</strong></p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li className="text-green-700">✅ Playlists públicas apenas</li>
-                    <li className="text-red-700">❌ Playlists privadas (bloqueadas)</li>
-                    <li className="text-red-700">❌ Playlists não listadas (bloqueadas)</li>
-                    <li className="text-red-700">❌ Seu histórico pessoal (bloqueado)</li>
+                    <li className="text-green-700">✅ Public playlists only</li>
+                    <li className="text-red-700">❌ Private playlists (blocked)</li>
+                    <li className="text-red-700">❌ Unlisted playlists (blocked)</li>
+                    <li className="text-red-700">❌ Your personal history (blocked)</li>
                   </ul>
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                   <p className="text-sm text-blue-800 mb-2">
-                    <strong>💡 Para acessar suas playlists privadas:</strong>
+                    <strong>💡 To access your private playlists:</strong>
                   </p>
                   <ol className="list-decimal list-inside text-sm text-blue-800 space-y-1">
-                    <li>Configure OAuth no Google Cloud Console</li>
-                    <li>Adicione as credenciais no arquivo .env</li>
-                    <li>Clique em "Conectar YouTube" abaixo</li>
+                    <li>Configure OAuth in Google Cloud Console</li>
+                    <li>Add credentials to the .env file</li>
+                    <li>Click "Connect YouTube" below</li>
                   </ol>
                 </div>
 
@@ -144,7 +144,7 @@ export default function Dashboard() {
                     onClick={connectYouTube}
                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                   >
-                    🔗 Conectar YouTube
+                    🔗 Connect YouTube
                   </button>
                 </div>
               </div>
@@ -154,31 +154,31 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                📚 Coleções
+                📚 Notebooks
               </h3>
               <p className="text-blue-700 mb-4">
-                Organize vídeos, canais e playlists em coleções personalizáveis
+                Organize videos, channels and playlists in customizable notebooks
               </p>
               <Link
-                href="/collections"
+                href="/notebooks"
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                Ver Coleções
+                View Notebooks
               </Link>
             </div>
 
             <div className="bg-green-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-green-900 mb-2">
-                🎥 Vídeos
+                🎥 Videos
               </h3>
               <p className="text-green-700 mb-4">
-                Gerencie seus vídeos importados
+                Manage your imported videos
               </p>
               <Link
                 href="/videos"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
-                Ver Vídeos
+                View Videos
               </Link>
             </div>
   
@@ -187,43 +187,43 @@ export default function Dashboard() {
                 🏷️ Tags
               </h3>
               <p className="text-purple-700 mb-4">
-                Adicione tags aos seus vídeos
+                Add tags to your videos
               </p>
               <Link
                 href="/tags"
                 className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
               >
-                Ver Tags
+                View Tags
               </Link>
             </div>
   
             <div className="bg-orange-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-orange-900 mb-2">
-                🤖 Tags Automáticas
+                🤖 Auto Tags
               </h3>
               <p className="text-orange-700 mb-4">
-                Sistema inteligente de análise e sugestão automática de tags
+                Intelligent system for automatic tag analysis and suggestions
               </p>
               <Link
                 href="/auto-tags"
                 className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
               >
-                Gerenciar Tags
+                Manage Tags
               </Link>
             </div>
 
             <div className="bg-indigo-50 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-indigo-900 mb-2">
-                🔄 Sincronização
+                🔄 Synchronization
               </h3>
               <p className="text-indigo-700 mb-4">
-                Mantenha seus dados sincronizados entre dispositivos
+                Keep your data synchronized across devices
               </p>
               <Link
                 href="/sync"
                 className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
               >
-                Gerenciar Sync
+                Manage Sync
               </Link>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function Dashboard() {
 
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            Como começar
+            How to get started
           </h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
@@ -239,9 +239,9 @@ export default function Dashboard() {
                 <span className="text-blue-600 font-semibold">1</span>
               </div>
               <div>
-                <h4 className="font-medium text-gray-900">Sincronize suas playlists</h4>
+                <h4 className="font-medium text-gray-900">Sync your playlists</h4>
                 <p className="text-gray-600">
-                  Use o ID de uma playlist do YouTube para importar automaticamente.
+                  Use a YouTube playlist ID to import automatically.
                 </p>
               </div>
             </div>
@@ -251,9 +251,9 @@ export default function Dashboard() {
                 <span className="text-green-600 font-semibold">2</span>
               </div>
               <div>
-                <h4 className="font-medium text-gray-900">Crie categorias</h4>
+                <h4 className="font-medium text-gray-900">Create categories</h4>
                 <p className="text-gray-600">
-                  Organize suas playlists por temas, assuntos ou qualquer critério.
+                  Organize your playlists by themes, topics or any criteria.
                 </p>
               </div>
             </div>
@@ -263,9 +263,9 @@ export default function Dashboard() {
                 <span className="text-purple-600 font-semibold">3</span>
               </div>
               <div>
-                <h4 className="font-medium text-gray-900">Adicione tags</h4>
+                <h4 className="font-medium text-gray-900">Add tags</h4>
                 <p className="text-gray-600">
-                  Use tags para uma organização mais granular e flexível.
+                  Use tags for more granular and flexible organization.
                 </p>
               </div>
             </div>

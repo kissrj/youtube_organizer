@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState } from 'react'
 import { Feed, FeedSortBy, FeedSortOrder } from '@/lib/types'
@@ -48,13 +48,13 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
                 value={editedFeed.title}
                 onChange={(e) => setEditedFeed({ ...editedFeed, title: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Título do feed"
+                placeholder="Feed title"
               />
               <textarea
                 value={editedFeed.description}
                 onChange={(e) => setEditedFeed({ ...editedFeed, description: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Descrição opcional"
+                placeholder="Optional description"
                 rows={2}
               />
             </div>
@@ -70,7 +70,7 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
         <div className="flex items-center space-x-2 ml-4">
           {!feed.isActive && (
             <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-              Inativo
+              Inactive
             </span>
           )}
           {isEditing ? (
@@ -78,14 +78,14 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
               <button
                 onClick={handleSave}
                 className="p-2 text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                title="Salvar"
+                title="Save"
               >
                 <Save className="h-4 w-4" />
               </button>
               <button
                 onClick={handleCancel}
                 className="p-2 text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
-                title="Cancelar"
+                title="Cancel"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -95,21 +95,21 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
               <button
                 onClick={() => onVideosClick(feed)}
                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                title="Ver vídeos"
+                title="View videos"
               >
                 <Play className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setIsEditing(true)}
                 className="p-2 text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
-                title="Editar"
+                title="Edit"
               >
                 <Edit className="h-4 w-4" />
               </button>
               <button
                 onClick={() => onDelete(feed.id)}
                 className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                title="Excluir"
+                title="Delete"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -123,32 +123,32 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ordenar por
+                Sort by
               </label>
               <select
                 value={editedFeed.sortBy}
                 onChange={(e) => setEditedFeed({ ...editedFeed, sortBy: e.target.value as FeedSortBy })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="RECENT">Mais Recente</option>
-                <option value="VIEWS">Mais Visualizações</option>
-                <option value="LIKES">Mais Curtidas</option>
-                <option value="COMMENTS">Mais Comentários</option>
-                <option value="DURATION">Duração</option>
-                <option value="RELEVANCE">Relevância</option>
+                <option value="RECENT">Most Recent</option>
+                <option value="VIEWS">Most Views</option>
+                <option value="LIKES">Most Likes</option>
+                <option value="COMMENTS">Most Comments</option>
+                <option value="DURATION">Duration</option>
+                <option value="RELEVANCE">Relevance</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ordem
+                Order
               </label>
               <select
                 value={editedFeed.sortOrder}
                 onChange={(e) => setEditedFeed({ ...editedFeed, sortOrder: e.target.value as FeedSortOrder })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="DESC">Decrescente</option>
-                <option value="ASC">Crescente</option>
+                <option value="DESC">Descending</option>
+                <option value="ASC">Ascending</option>
               </select>
             </div>
           </div>
@@ -161,18 +161,18 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
             <label htmlFor={`active-${feed.id}`} className="ml-2 text-sm text-gray-700">
-              Feed ativo
+              Active feed
             </label>
           </div>
         </div>
       ) : (
         <div className="flex items-center justify-between text-sm text-gray-600">
           <div className="flex items-center space-x-4">
-            <span>Ordenar: {getSortByLabel(feed.sortBy)} {getSortOrderLabel(feed.sortOrder)}</span>
+            <span>Sort: {getSortByLabel(feed.sortBy)} {feed.sortOrder === 'DESC' ? '↓' : '↑'}</span>
             <span>Limit: {feed.limit}</span>
           </div>
           <span className="text-xs">
-            Criado em {new Date(feed.createdAt).toLocaleDateString('pt-BR')}
+            Created on {new Date(feed.createdAt).toLocaleDateString('en-US')}
           </span>
         </div>
       )}
@@ -182,16 +182,17 @@ export function FeedCard({ feed, onUpdate, onDelete, onVideosClick }: FeedCardPr
 
 function getSortByLabel(sortBy: FeedSortBy): string {
   const labels = {
-    RECENT: 'Recente',
-    VIEWS: 'Visualizações',
-    LIKES: 'Curtidas',
-    COMMENTS: 'Comentários',
-    DURATION: 'Duração',
-    RELEVANCE: 'Relevância'
+    RECENT: 'Recent',
+    VIEWS: 'Views',
+    LIKES: 'Likes',
+    COMMENTS: 'Comments',
+    DURATION: 'Duration',
+    RELEVANCE: 'Relevance'
   }
   return labels[sortBy]
 }
 
 function getSortOrderLabel(sortOrder: FeedSortOrder): string {
-  return sortOrder === 'DESC' ? '↓' : '↑'
+  return sortOrder === 'DESC' ? 'â†“' : 'â†‘'
 }
+

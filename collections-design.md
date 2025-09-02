@@ -1,8 +1,8 @@
-# Design de Arquitetura de Coleções para YouTube Organizer
+# Collections Architecture Design for YouTube Organizer
 
-## Visão Geral
+## Overview
 
-As coleções substituirão o sistema atual de categorias e tags, fornecendo uma organização hierárquica flexível que pode conter vídeos, canais, playlists e outras coleções.
+Collections will replace the current categories and tags system, providing a flexible hierarchical organization that can contain videos, channels, playlists, and other collections.
 
 ## Modelo de Dados Hierárquico
 

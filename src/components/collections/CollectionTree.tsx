@@ -48,9 +48,9 @@ export function CollectionTree({
     return (
       <div className="collection-tree">
         <div className="flex justify-between items-center mb-4 p-4">
-          <h2 className="text-lg font-semibold">Minhas Coleções</h2>
+          <h2 className="text-lg font-semibold">Minhas ColeÃ§Ãµes</h2>
           <div className="animate-pulse bg-gray-200 rounded px-3 py-1">
-            <span className="text-gray-500">Carregando...</span>
+            <span className="text-gray-500">Loading…</span>
           </div>
         </div>
         <div className="space-y-1 p-4">
@@ -77,12 +77,12 @@ export function CollectionTree({
   return (
     <div className="collection-tree bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-4 p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Minhas Coleções</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Minhas ColeÃ§Ãµes</h2>
         <button
           onClick={() => setIsAddDialogOpen(true)}
           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
-          <span>+ Nova Coleção</span>
+          <span>+ Nova ColeÃ§Ã£o</span>
         </button>
       </div>
 
@@ -111,3 +111,4 @@ export function CollectionTree({
     </div>
   )
 }
+

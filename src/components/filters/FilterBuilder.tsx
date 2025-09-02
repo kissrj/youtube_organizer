@@ -5,7 +5,7 @@ import { Plus, Trash2, Filter, Save, Play } from 'lucide-react';
 import { FilterCondition, FilterOptions } from '@/lib/services/advancedFilters';
 
 interface FilterBuilderProps {
-  collectionId: string;
+  notebookId: string;
   onApplyFilters: (filters: FilterOptions) => void;
   onSavePreset?: (name: string, filters: FilterOptions) => void;
   initialFilters?: FilterOptions;
@@ -68,7 +68,7 @@ const MULTISELECT_OPERATORS = [
 ];
 
 export default function FilterBuilder({
-  collectionId,
+  notebookId,
   onApplyFilters,
   onSavePreset,
   initialFilters
@@ -281,7 +281,7 @@ export default function FilterBuilder({
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold flex items-center">
           <Filter className="w-5 h-5 mr-2" />
-          Construtor de Filtros Avançados
+          Advanced Filter Builder
         </h3>
         <div className="flex space-x-2">
           <button
@@ -289,27 +289,25 @@ export default function FilterBuilder({
             className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Adicionar Condição
+            Add Condition
           </button>
         </div>
       </div>
 
-      {/* Lógica Global */}
+      {/* Global Logic */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Lógica entre condições:
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Logic between conditions:</label>
         <select
           value={logic}
           onChange={(e) => setLogic(e.target.value as 'AND' | 'OR')}
           className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="AND">E (todas as condições devem ser verdadeiras)</option>
-          <option value="OR">OU (pelo menos uma condição deve ser verdadeira)</option>
+          <option value="AND">AND (all conditions must be true)</option>
+          <option value="OR">OR (at least one condition must be true)</option>
         </select>
       </div>
 
-      {/* Condições */}
+      {/* Conditions */}
       <div className="space-y-4 mb-6">
         {conditions.map((condition, index) => (
           <div key={condition.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
@@ -355,23 +353,21 @@ export default function FilterBuilder({
         ))}
       </div>
 
-      {/* Ordenação */}
+      {/* Sorting */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Ordenar por:
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Sort by:</label>
         <div className="flex space-x-4">
           <select
             value={sortField}
             onChange={(e) => setSortField(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">Nenhuma ordenação</option>
-            <option value="title">Título</option>
-            <option value="publishedAt">Data de publicação</option>
-            <option value="viewCount">Visualizações</option>
-            <option value="likeCount">Curtidas</option>
-            <option value="duration">Duração</option>
+            <option value="">No sorting</option>
+            <option value="title">Title</option>
+            <option value="publishedAt">Published date</option>
+            <option value="viewCount">Views</option>
+            <option value="likeCount">Likes</option>
+            <option value="duration">Duration</option>
           </select>
 
           {sortField && (
@@ -380,14 +376,14 @@ export default function FilterBuilder({
               onChange={(e) => setSortDirection(e.target.value as 'asc' | 'desc')}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="desc">Decrescente</option>
-              <option value="asc">Crescente</option>
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
             </select>
           )}
         </div>
       </div>
 
-      {/* Ações */}
+      {/* Actions */}
       <div className="flex justify-between items-center">
         <div className="flex space-x-2">
           <button
@@ -396,7 +392,7 @@ export default function FilterBuilder({
             className="flex items-center px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Play className="w-4 h-4 mr-2" />
-            {isLoading ? 'Aplicando...' : 'Aplicar Filtros'}
+            {isLoading ? 'Applying...' : 'Apply Filters'}
           </button>
 
           {onSavePreset && (
@@ -406,26 +402,26 @@ export default function FilterBuilder({
               className="flex items-center px-6 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Save className="w-4 h-4 mr-2" />
-              Salvar Preset
+              Save Preset
             </button>
           )}
         </div>
 
         <div className="text-sm text-gray-500">
-          {conditions.length} condição(ões)
+          {conditions.length} condition(s)
         </div>
       </div>
 
-      {/* Dialog para salvar preset */}
+      {/* Save preset dialog */}
       {showSaveDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4">Salvar Preset de Filtros</h3>
+            <h3 className="text-lg font-semibold mb-4">Save Filter Preset</h3>
             <input
               type="text"
               value={presetName}
               onChange={(e) => setPresetName(e.target.value)}
-              placeholder="Nome do preset"
+              placeholder="Preset name"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
             />
             <div className="flex justify-end space-x-2">
@@ -433,14 +429,14 @@ export default function FilterBuilder({
                 onClick={() => setShowSaveDialog(false)}
                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
               >
-                Cancelar
+                Cancel
               </button>
               <button
                 onClick={handleSavePreset}
                 disabled={!presetName.trim()}
                 className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Salvar
+                Save
               </button>
             </div>
           </div>

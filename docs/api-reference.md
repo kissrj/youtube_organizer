@@ -1,39 +1,39 @@
-# 📚 Referência da API - YouTube Organizer
+# 📚 API Reference - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-A API do YouTube Organizer é construída com Next.js API Routes, seguindo princípios RESTful e GraphQL-like patterns. Todas as rotas estão protegidas por autenticação e utilizam validação rigorosa de dados.
+The YouTube Organizer API is built with Next.js API Routes, following RESTful principles and GraphQL-like patterns. All routes are protected by authentication and use rigorous data validation.
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-### Headers Necessários
+### Required Headers
 ```http
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
-### Obter Token
+### Get Token
 ```http
 POST /api/auth/signin/google
 ```
 
-## 📋 Endpoints Principais
+## 📋 Main Endpoints
 
-### Coleções (Collections)
+### Collections (Collections)
 
 #### GET /api/collections
-Lista todas as coleções do usuário.
+Lists all user collections.
 
-**Parâmetros de Query:**
-- `page` (number): Página atual (default: 1)
-- `limit` (number): Itens por página (default: 20)
-- `search` (string): Termo de busca
-- `sortBy` (string): Campo para ordenação (name, createdAt, updatedAt)
-- `sortOrder` (string): Ordem (asc, desc)
-- `parentId` (string): Filtrar por coleção pai
-- `isPublic` (boolean): Filtrar por visibilidade
+**Query Parameters:**
+- `page` (number): Current page (default: 1)
+- `limit` (number): Items per page (default: 20)
+- `search` (string): Search term
+- `sortBy` (string): Field for sorting (name, createdAt, updatedAt)
+- `sortOrder` (string): Order (asc, desc)
+- `parentId` (string): Filter by parent collection
+- `isPublic` (boolean): Filter by visibility
 
-**Resposta:**
+**Response:**
 ```json
 {
   "collections": [
@@ -65,28 +65,28 @@ Lista todas as coleções do usuário.
 ```
 
 #### POST /api/collections
-Cria uma nova coleção.
+Creates a new collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
-  "name": "Minha Coleção",
-  "description": "Descrição opcional",
+  "name": "My Collection",
+  "description": "Optional description",
   "isPublic": false,
-  "parentId": "uuid-do-pai",
+  "parentId": "parent-uuid",
   "position": 0
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "collection": {
-    "id": "uuid-gerado",
-    "name": "Minha Coleção",
-    "description": "Descrição opcional",
+    "id": "generated-uuid",
+    "name": "My Collection",
+    "description": "Optional description",
     "isPublic": false,
-    "parentId": "uuid-do-pai",
+    "parentId": "parent-uuid",
     "position": 0,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
@@ -95,12 +95,12 @@ Cria uma nova coleção.
 ```
 
 #### GET /api/collections/[id]
-Obtém uma coleção específica.
+Gets a specific collection.
 
-**Parâmetros de Path:**
-- `id` (string): ID da coleção
+**Path Parameters:**
+- `id` (string): Collection ID
 
-**Resposta:**
+**Response:**
 ```json
 {
   "collection": {
@@ -124,24 +124,24 @@ Obtém uma coleção específica.
 ```
 
 #### PUT /api/collections/[id]
-Atualiza uma coleção.
+Updates a collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
-  "name": "Nome Atualizado",
-  "description": "Descrição atualizada",
+  "name": "Updated Name",
+  "description": "Updated description",
   "isPublic": true
 }
 ```
 
 #### DELETE /api/collections/[id]
-Exclui uma coleção.
+Deletes a collection.
 
 #### POST /api/collections/[id]/videos
-Adiciona vídeos a uma coleção.
+Adds videos to a collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "videoIds": ["youtube-id-1", "youtube-id-2"],
@@ -150,9 +150,9 @@ Adiciona vídeos a uma coleção.
 ```
 
 #### DELETE /api/collections/[id]/videos
-Remove vídeos de uma coleção.
+Removes videos from a collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "videoIds": ["youtube-id-1", "youtube-id-2"]
@@ -160,9 +160,9 @@ Remove vídeos de uma coleção.
 ```
 
 #### POST /api/collections/[id]/channels
-Adiciona canais a uma coleção.
+Adds channels to a collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "channelIds": ["channel-id-1", "channel-id-2"]
@@ -170,9 +170,9 @@ Adiciona canais a uma coleção.
 ```
 
 #### POST /api/collections/[id]/playlists
-Adiciona playlists a uma coleção.
+Adds playlists to a collection.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "playlistIds": ["playlist-id-1", "playlist-id-2"]
@@ -182,21 +182,21 @@ Adiciona playlists a uma coleção.
 ### Feeds
 
 #### GET /api/feeds
-Lista todos os feeds.
+Lists all feeds.
 
-**Parâmetros de Query:**
-- `collectionId` (string): Filtrar por coleção
-- `isActive` (boolean): Filtrar por status
+**Query Parameters:**
+- `collectionId` (string): Filter by collection
+- `isActive` (boolean): Filter by status
 
 #### POST /api/feeds
-Cria um novo feed.
+Creates a new feed.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
-  "collectionId": "uuid-da-colecao",
-  "title": "Feed de Tecnologia",
-  "description": "Vídeos sobre tecnologia",
+  "collectionId": "collection-uuid",
+  "title": "Technology Feed",
+  "description": "Videos about technology",
   "filters": "{\"categories\": [\"tech\", \"programming\"]}",
   "sortBy": "publishedAt",
   "sortOrder": "desc",
@@ -206,36 +206,36 @@ Cria um novo feed.
 ```
 
 #### GET /api/feeds/[id]
-Obtém um feed específico.
+Gets a specific feed.
 
 #### PUT /api/feeds/[id]
-Atualiza um feed.
+Updates a feed.
 
 #### DELETE /api/feeds/[id]
-Exclui um feed.
+Deletes a feed.
 
 #### POST /api/feeds/[id]/sync
-Sincroniza o conteúdo do feed.
+Syncs feed content.
 
-### Vídeos (Videos)
+### Videos (Videos)
 
 #### GET /api/videos
-Busca vídeos com filtros avançados.
+Searches videos with advanced filters.
 
-**Parâmetros de Query:**
-- `q` (string): Termo de busca
-- `channelId` (string): Filtrar por canal
-- `collectionId` (string): Filtrar por coleção
-- `publishedAfter` (string): Data de publicação inicial (ISO 8601)
-- `publishedBefore` (string): Data de publicação final (ISO 8601)
-- `minViewCount` (number): Mínimo de visualizações
-- `maxViewCount` (number): Máximo de visualizações
-- `sortBy` (string): Campo para ordenação
-- `sortOrder` (string): Ordem (asc, desc)
-- `page` (number): Página
-- `limit` (number): Itens por página
+**Query Parameters:**
+- `q` (string): Search term
+- `channelId` (string): Filter by channel
+- `collectionId` (string): Filter by collection
+- `publishedAfter` (string): Initial publication date (ISO 8601)
+- `publishedBefore` (string): Final publication date (ISO 8601)
+- `minViewCount` (number): Minimum views
+- `maxViewCount` (number): Maximum views
+- `sortBy` (string): Sorting field
+- `sortOrder` (string): Order (asc, desc)
+- `page` (number): Page
+- `limit` (number): Items per page
 
-**Resposta:**
+**Response:**
 ```json
 {
   "videos": [
@@ -267,24 +267,24 @@ Busca vídeos com filtros avançados.
 ```
 
 #### GET /api/videos/[youtubeId]
-Obtém detalhes de um vídeo específico.
+Gets details of a specific video.
 
-**Parâmetros de Path:**
-- `youtubeId` (string): ID do vídeo no YouTube
+**Path Parameters:**
+- `youtubeId` (string): YouTube video ID
 
 #### POST /api/videos/[youtubeId]/sync
-Sincroniza metadados do vídeo com YouTube.
+Syncs video metadata with YouTube.
 
 #### GET /api/videos/[youtubeId]/transcript
-Obtém o transcript do vídeo.
+Gets video transcript.
 
-**Parâmetros de Query:**
-- `language` (string): Idioma do transcript (default: 'en')
+**Query Parameters:**
+- `language` (string): Transcript language (default: 'en')
 
 #### POST /api/videos/[youtubeId]/summary
-Gera um resumo IA do vídeo.
+Generates AI summary of video.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "model": "gpt-3.5-turbo",
@@ -293,32 +293,32 @@ Gera um resumo IA do vídeo.
 }
 ```
 
-### Notificações (Notifications)
+### Notifications (Notifications)
 
 #### GET /api/notifications
-Lista notificações do usuário.
+Lists user notifications.
 
-**Parâmetros de Query:**
-- `isRead` (boolean): Filtrar por status de leitura
-- `isArchived` (boolean): Filtrar por status de arquivamento
-- `type` (string): Filtrar por tipo
-- `priority` (string): Filtrar por prioridade
-- `page` (number): Página
-- `limit` (number): Itens por página
+**Query Parameters:**
+- `isRead` (boolean): Filter by read status
+- `isArchived` (boolean): Filter by archive status
+- `type` (string): Filter by type
+- `priority` (string): Filter by priority
+- `page` (number): Page
+- `limit` (number): Items per page
 
 #### POST /api/notifications
-Cria uma nova notificação.
+Creates a new notification.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
-  "title": "Nova notificação",
-  "message": "Conteúdo da notificação",
+  "title": "New notification",
+  "message": "Notification content",
   "type": "info",
   "priority": "normal",
   "entityType": "collection",
-  "entityId": "uuid-da-entidade",
-  "collectionId": "uuid-da-colecao",
+  "entityId": "entity-uuid",
+  "collectionId": "collection-uuid",
   "channels": ["email", "push"],
   "scheduledAt": "2024-01-01T00:00:00.000Z",
   "expiresAt": "2024-01-02T00:00:00.000Z"
@@ -326,21 +326,21 @@ Cria uma nova notificação.
 ```
 
 #### PUT /api/notifications/[id]/read
-Marca notificação como lida.
+Marks notification as read.
 
 #### PUT /api/notifications/[id]/archive
-Arquiva notificação.
+Archives notification.
 
 #### DELETE /api/notifications/[id]
-Exclui notificação.
+Deletes notification.
 
 #### GET /api/notifications/preferences
-Obtém preferências de notificação do usuário.
+Gets user notification preferences.
 
 #### PUT /api/notifications/preferences
-Atualiza preferências de notificação.
+Updates notification preferences.
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "emailEnabled": true,
@@ -358,39 +358,39 @@ Atualiza preferências de notificação.
 }
 ```
 
-### Canais (Channels)
+### Channels (Channels)
 
 #### GET /api/channels
-Busca canais do YouTube.
+Searches YouTube channels.
 
-**Parâmetros de Query:**
-- `q` (string): Termo de busca
-- `maxResults` (number): Máximo de resultados (default: 20)
+**Query Parameters:**
+- `q` (string): Search term
+- `maxResults` (number): Maximum results (default: 20)
 
 #### GET /api/channels/[channelId]
-Obtém detalhes de um canal específico.
+Gets details of a specific channel.
 
 #### POST /api/channels/[channelId]/sync
-Sincroniza informações do canal.
+Syncs channel information.
 
 ### Playlists
 
 #### GET /api/playlists
-Busca playlists do YouTube.
+Searches YouTube playlists.
 
-**Parâmetros de Query:**
-- `channelId` (string): ID do canal
-- `q` (string): Termo de busca
-- `maxResults` (number): Máximo de resultados
+**Query Parameters:**
+- `channelId` (string): Channel ID
+- `q` (string): Search term
+- `maxResults` (number): Maximum results
 
 #### GET /api/playlists/[playlistId]
-Obtém detalhes de uma playlist específica.
+Gets details of a specific playlist.
 
 #### GET /api/playlists/[playlistId]/videos
-Obtém vídeos de uma playlist.
+Gets videos from a playlist.
 
 #### POST /api/playlists/[playlistId]/sync
-Sincroniza conteúdo da playlist.
+Syncs playlist content.
 
 ## 📊 Webhooks
 
@@ -401,7 +401,7 @@ Content-Type: application/json
 X-Hub-Signature: sha1=<signature>
 ```
 
-**Corpo da Requisição:**
+**Request Body:**
 ```json
 {
   "kind": "youtube#video",
@@ -417,59 +417,59 @@ X-Hub-Signature: sha1=<signature>
 
 ## 🔄 Rate Limiting
 
-### Limites por Endpoint
-- **GET /api/collections**: 1000 req/hora
-- **POST /api/collections**: 100 req/hora
-- **GET /api/videos**: 2000 req/hora
-- **POST /api/videos/sync**: 50 req/hora
-- **GET /api/notifications**: 500 req/hora
+### Limits per Endpoint
+- **GET /api/collections**: 1000 req/hour
+- **POST /api/collections**: 100 req/hour
+- **GET /api/videos**: 2000 req/hour
+- **POST /api/videos/sync**: 50 req/hour
+- **GET /api/notifications**: 500 req/hour
 
-### Headers de Rate Limit
+### Rate Limit Headers
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
 X-RateLimit-Reset: 1640995200
 ```
 
-## 🚨 Tratamento de Erros
+## 🚨 Error Handling
 
-### Códigos de Status HTTP
-- **200**: Sucesso
-- **201**: Criado
-- **400**: Requisição inválida
-- **401**: Não autorizado
-- **403**: Proibido
-- **404**: Não encontrado
-- **409**: Conflito
-- **422**: Entidade não processável
-- **429**: Muitas requisições
-- **500**: Erro interno do servidor
+### HTTP Status Codes
+- **200**: Success
+- **201**: Created
+- **400**: Bad Request
+- **401**: Unauthorized
+- **403**: Forbidden
+- **404**: Not Found
+- **409**: Conflict
+- **422**: Unprocessable Entity
+- **429**: Too Many Requests
+- **500**: Internal Server Error
 
-### Estrutura de Erro
+### Error Structure
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Dados de entrada inválidos",
+    "message": "Invalid input data",
     "details": {
       "field": "name",
-      "reason": "Campo obrigatório"
+      "reason": "Required field"
     }
   }
 }
 ```
 
-### Códigos de Erro Comuns
-- `VALIDATION_ERROR`: Dados inválidos
-- `AUTHENTICATION_ERROR`: Problema de autenticação
-- `AUTHORIZATION_ERROR`: Sem permissão
-- `NOT_FOUND_ERROR`: Recurso não encontrado
-- `CONFLICT_ERROR`: Conflito de dados
-- `RATE_LIMIT_ERROR`: Limite de requisições excedido
-- `EXTERNAL_API_ERROR`: Erro em API externa
-- `DATABASE_ERROR`: Erro no banco de dados
+### Common Error Codes
+- `VALIDATION_ERROR`: Invalid data
+- `AUTHENTICATION_ERROR`: Authentication problem
+- `AUTHORIZATION_ERROR`: No permission
+- `NOT_FOUND_ERROR`: Resource not found
+- `CONFLICT_ERROR`: Data conflict
+- `RATE_LIMIT_ERROR`: Request limit exceeded
+- `EXTERNAL_API_ERROR`: External API error
+- `DATABASE_ERROR`: Database error
 
-## 🔧 SDKs e Bibliotecas
+## 🔧 SDKs and Libraries
 
 ### JavaScript/TypeScript SDK
 ```typescript
@@ -480,7 +480,7 @@ const client = new YouTubeOrganizer({
   baseUrl: 'https://api.youtube-organizer.com'
 });
 
-// Exemplo de uso
+// Example usage
 const collections = await client.collections.list({
   page: 1,
   limit: 20
@@ -496,51 +496,51 @@ client = YouTubeOrganizer(
     base_url='https://api.youtube-organizer.com'
 )
 
-# Exemplo de uso
+# Example usage
 collections = client.collections.list(page=1, limit=20)
 ```
 
-## 📈 Limites e Cotas
+## 📈 Limits and Quotas
 
-### Limites da API
-- **Requisições por hora**: 10.000 (autenticado)
-- **Requisições por dia**: 100.000 (autenticado)
-- **Tamanho máximo de upload**: 10MB
-- **Timeout de requisição**: 30 segundos
+### API Limits
+- **Requests per hour**: 10,000 (authenticated)
+- **Requests per day**: 100,000 (authenticated)
+- **Maximum upload size**: 10MB
+- **Request timeout**: 30 seconds
 
-### Limites do YouTube
-- **Vídeos por busca**: 50 máximo
-- **Transcripts**: Limitado pela disponibilidade
-- **Rate limit do YouTube**: 10.000 unidades por dia
+### YouTube Limits
+- **Videos per search**: 50 maximum
+- **Transcripts**: Limited by availability
+- **YouTube rate limit**: 10,000 units per day
 
-## 🔒 Segurança
+## 🔒 Security
 
 ### HTTPS Only
-Todas as requisições devem usar HTTPS.
+All requests must use HTTPS.
 
-### Validação de Input
-- Sanitização automática de todos os inputs
-- Validação de schema com Zod
-- Proteção contra SQL injection
-- Proteção contra XSS
+### Input Validation
+- Automatic input sanitization
+- Schema validation with Zod
+- SQL injection protection
+- XSS protection
 
-### Logs de Segurança
-- Todas as requisições são logadas
-- Tentativas de acesso não autorizado
-- Mudanças críticas são auditadas
+### Security Logs
+- All requests are logged
+- Unauthorized access attempts
+- Critical changes are audited
 
-## 📞 Suporte
+## 📞 Support
 
-### Canais de Suporte
+### Support Channels
 - **Email**: api-support@youtube-organizer.com
 - **Discord**: https://discord.gg/youtube-organizer
 - **GitHub Issues**: https://github.com/youtube-organizer/api/issues
 
 ### SLA
-- **Disponibilidade**: 99.9%
-- **Tempo de resposta**: < 200ms (média)
-- **Suporte**: 24/7 para planos premium
+- **Availability**: 99.9%
+- **Response time**: < 200ms (average)
+- **Support**: 24/7 for premium plans
 
 ---
 
-Para mais detalhes sobre implementação específica ou exemplos de código, consulte a documentação completa em [docs.youtube-organizer.com](https://docs.youtube-organizer.com).
+For more details on specific implementation or code examples, consult the complete documentation at [docs.youtube-organizer.com](https://docs.youtube-organizer.com).

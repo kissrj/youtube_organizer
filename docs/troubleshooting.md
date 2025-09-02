@@ -1,114 +1,114 @@
-# 🔧 Guia de Solução de Problemas - YouTube Organizer
+# 🔧 Troubleshooting Guide - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-Este guia ajuda a diagnosticar e resolver problemas comuns no YouTube Organizer. Está organizado por categoria e inclui soluções passo-a-passo para os problemas mais frequentes.
+This guide helps diagnose and resolve common problems in YouTube Organizer. It is organized by category and includes step-by-step solutions for the most frequent problems.
 
-## 🚀 Problemas de Inicialização
+## 🚀 Initialization Problems
 
-### Aplicação Não Inicia
+### Application Does Not Start
 
-#### Sintomas
-- Erro ao executar `npm run dev`
-- Porta 3000 já em uso
-- Erros de dependências
+#### Symptoms
+- Error when running `npm run dev`
+- Port 3000 already in use
+- Dependency errors
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Porta Disponível**
+**1. Check Available Port**
 ```bash
-# Verificar se porta 3000 está em uso
+# Check if port 3000 is in use
 netstat -ano | findstr :3000
 
-# Matar processo usando a porta (Windows)
+# Kill process using the port (Windows)
 taskkill /PID <PID> /F
 
-# Ou usar porta alternativa
+# Or use alternative port
 npm run dev -- -p 3001
 ```
 
-**2. Limpar Cache e Node Modules**
+**2. Clean Cache and Node Modules**
 ```bash
-# Remover node_modules e package-lock.json
+# Remove node_modules and package-lock.json
 rm -rf node_modules package-lock.json
 
-# Limpar cache npm
+# Clean npm cache
 npm cache clean --force
 
-# Reinstalar dependências
+# Reinstall dependencies
 npm install
 ```
 
-**3. Verificar Node.js Version**
+**3. Check Node.js Version**
 ```bash
-# Verificar versão
+# Check version
 node --version
 npm --version
 
-# Se versão incorreta, instalar Node.js 18+
+# If incorrect version, install Node.js 18+
 # Windows: https://nodejs.org/
 # macOS: brew install node
 # Linux: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 ```
 
-#### Logs de Erro Comuns
-```
+#### Common Error Logs
+```bash
 Error: listen EADDRINUSE: address already in use :::3000
 ```
-**Solução:** Liberar porta 3000 ou usar porta alternativa
+**Solution:** Free port 3000 or use alternative port
 
-```
+```bash
 Error: Cannot find module 'next'
 ```
-**Solução:** Reinstalar dependências com `npm install`
+**Solution:** Reinstall dependencies with `npm install`
 
-### Banco de Dados Não Conecta
+### Database Does Not Connect
 
-#### Sintomas
-- Erro de conexão com Prisma
-- Migrações não aplicadas
-- Dados não salvos
+#### Symptoms
+- Prisma connection error
+- Migrations not applied
+- Data not saved
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Arquivo .env**
+**1. Check .env File**
 ```env
 # .env
 DATABASE_URL="file:./dev.db"
 ```
 
-**2. Aplicar Migrações**
+**2. Apply Migrations**
 ```bash
-# Gerar cliente Prisma
+# Generate Prisma client
 npx prisma generate
 
-# Aplicar migrações
+# Apply migrations
 npx prisma db push
 
-# Resetar banco (cuidado: perde dados)
+# Reset database (caution: loses data)
 npx prisma migrate reset
 ```
 
-**3. Verificar Permissões**
+**3. Check Permissions**
 ```bash
 # Linux/Mac
 chmod 644 dev.db
 
-# Windows - verificar permissões da pasta
+# Windows - check folder permissions
 ```
 
-## 🔐 Problemas de Autenticação
+## 🔐 Authentication Problems
 
-### Login Não Funciona
+### Login Does Not Work
 
-#### Sintomas
-- Erro ao fazer login com Google
-- Redirecionamento incorreto
-- Sessão não mantida
+#### Symptoms
+- Error logging in with Google
+- Incorrect redirection
+- Session not maintained
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Configuração OAuth**
+**1. Check OAuth Configuration**
 ```env
 # .env.local
 NEXTAUTH_URL="http://localhost:3000"
@@ -117,74 +117,74 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
-**2. Configurar Google OAuth**
-1. Acesse [Google Cloud Console](https://console.cloud.google.com/)
-2. Criar projeto ou selecionar existente
-3. Ativar Google+ API e YouTube Data API v3
-4. Criar credenciais OAuth 2.0
-5. Adicionar URI: `http://localhost:3000/api/auth/callback/google`
+**2. Configure Google OAuth**
+1. Access [Google Cloud Console](https://console.cloud.google.com/)
+2. Create project or select existing
+3. Activate Google+ API and YouTube Data API v3
+4. Configure OAuth 2.0 credentials
+5. Add URI: `http://localhost:3000/api/auth/callback/google`
 
-**3. Limpar Cookies e Cache**
+**3. Clear Cookies and Cache**
 ```javascript
-// No navegador: F12 > Application > Storage > Clear
-// Ou: Ctrl+Shift+Delete (Chrome)
+// In browser: F12 > Application > Storage > Clear
+// Or: Ctrl+Shift+Delete (Chrome)
 ```
 
-**4. Verificar Logs do Servidor**
+**4. Check Server Logs**
 ```bash
 npm run dev
-# Verificar console para erros de autenticação
+# Check console for authentication errors
 ```
 
-### Sessão Expira Frequentemente
+### Session Expires Frequently
 
-#### Causas Possíveis
-- NEXTAUTH_SECRET incorreto
-- Cookies bloqueados
-- Configuração de domínio incorreta
+#### Possible Causes
+- Incorrect NEXTAUTH_SECRET
+- Blocked cookies
+- Incorrect domain configuration
 
-#### Soluções
+#### Solutions
 ```javascript
 // lib/auth.ts
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: 'database', // ou 'jwt'
-    maxAge: 30 * 24 * 60 * 60, // 30 dias
+    strategy: 'database', // or 'jwt'
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 };
 ```
 
-## 📺 Problemas com YouTube API
+## 📺 YouTube API Problems
 
-### Vídeos Não Carregam
+### Videos Do Not Load
 
-#### Sintomas
-- Erro ao adicionar vídeos
-- Metadados não carregam
-- Transcripts indisponíveis
+#### Symptoms
+- Error adding videos
+- Metadata not loading
+- Transcripts unavailable
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Chave da API**
+**1. Check API Key**
 ```env
 # .env.local
 YOUTUBE_API_KEY="your-youtube-api-key"
 ```
 
-**2. Configurar YouTube API**
-1. Acesse [Google Cloud Console](https://console.cloud.google.com/)
-2. Ativar YouTube Data API v3
-3. Criar chave de API
-4. Configurar restrições (opcional)
+**2. Configure YouTube API**
+1. Access [Google Cloud Console](https://console.cloud.google.com/)
+2. Activate YouTube Data API v3
+3. Create API key
+4. Configure restrictions (optional)
 
-**3. Verificar Quota da API**
+**3. Check API Quota**
 ```javascript
-// Verificar uso da quota
-// Dashboard Google Cloud > APIs & Services > YouTube Data API v3
+// Check quota usage
+// Google Cloud Dashboard > APIs & Services > YouTube Data API v3
 ```
 
-**4. Tratamento de Erros da API**
+**4. Error Handling**
 ```typescript
 // lib/services/videos.ts
 export async function getVideoMetadata(videoId: string) {
@@ -194,118 +194,118 @@ export async function getVideoMetadata(videoId: string) {
     );
 
     if (response.status === 403) {
-      throw new Error('Quota da API do YouTube excedida');
+      throw new Error('YouTube API quota exceeded');
     }
 
     if (!response.ok) {
-      throw new Error(`Erro na API do YouTube: ${response.status}`);
+      throw new Error(`YouTube API error: ${response.status}`);
     }
 
     return response.json();
   } catch (error) {
-    console.error('Erro ao buscar metadados:', error);
+    console.error('Error fetching metadata:', error);
     throw error;
   }
 }
 ```
 
-### Transcripts Não Disponíveis
+### Transcripts Not Available
 
-#### Causas
-- Vídeo não tem legendas
-- Idioma não suportado
-- Vídeo muito longo
+#### Causes
+- Video has no captions
+- Unsupported language
+- Very long video
 
-#### Verificações
+#### Checks
 ```typescript
-// Verificar disponibilidade de transcripts
+// Check transcript availability
 const captionsResponse = await fetch(
   `https://www.googleapis.com/youtube/v3/captions?videoId=${videoId}&key=${apiKey}`
 );
 
 if (captionsResponse.ok) {
   const captions = await captionsResponse.json();
-  // Processar captions disponíveis
+  // Process available captions
 }
 ```
 
-## 🔄 Problemas de Sincronização
+## 🔄 Synchronization Problems
 
-### Feeds Não Atualizam
+### Feeds Do Not Update
 
-#### Sintomas
-- Novos vídeos não aparecem
-- Sincronização manual falha
-- Erros de timeout
+#### Symptoms
+- New videos do not appear
+- Manual sync fails
+- Timeout errors
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Configuração do Feed**
+**1. Check Feed Configuration**
 ```typescript
-// Verificar se feed está ativo
+// Check if feed is active
 const feed = await prisma.collectionFeed.findUnique({
   where: { id: feedId }
 });
 
 if (!feed.isActive) {
-  throw new Error('Feed está desabilitado');
+  throw new Error('Feed is disabled');
 }
 ```
 
-**2. Testar Sincronização Manual**
+**2. Test Manual Sync**
 ```bash
-# No navegador console
+# In browser console
 fetch('/api/feeds/{feedId}/sync', { method: 'POST' })
   .then(response => response.json())
   .then(data => console.log(data));
 ```
 
-**3. Verificar Logs de Sincronização**
+**3. Check Sync Logs**
 ```typescript
-// Adicionar logging detalhado
-console.log('Iniciando sincronização do feed:', feedId);
-console.log('Buscando vídeos desde:', lastFetched);
+// Add detailed logging
+console.log('Starting feed sync:', feedId);
+console.log('Fetching videos since:', lastFetched);
 
-// ... lógica de sincronização
+// ... sync logic
 
-console.log('Sincronização concluída:', {
-  novosVideos: newVideos.length,
-  erros: errors.length
+console.log('Sync completed:', {
+  newVideos: newVideos.length,
+  errors: errors.length
 });
 ```
 
-**4. Otimizar Performance**
+**4. Optimize Performance**
 ```typescript
-// Implementar batch processing
+// Implement batch processing
 const batchSize = 50;
 for (let i = 0; i < videoIds.length; i += batchSize) {
   const batch = videoIds.slice(i, i + batchSize);
   await processBatch(batch);
-  await delay(100); // Evitar rate limiting
+  await delay(100); // Avoid rate limiting
 }
 ```
 
-## 🔔 Problemas de Notificações
+## 🔔 Notification Problems
 
-### Notificações Não Chegam
+### Notifications Do Not Arrive
 
-#### Sintomas
-- Emails não são enviados
-- Push notifications não aparecem
-- Notificações atrasadas
+#### Symptoms
+- Emails not sent
+- Push notifications not appearing
+- Delayed notifications
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Configuração de Email**
+**1. Check Email Configuration**
 ```env
 # .env.local
 EMAIL_SERVER=smtp://username:password@smtp.example.com:587
 EMAIL_FROM=noreply@youtube-organizer.com
 ```
 
-**2. Testar Conexão SMTP**
+**2. Test SMTP Connection**
 ```javascript
-// Teste básico de email
+// Basic email test
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransporter({
@@ -320,45 +320,45 @@ const transporter = nodemailer.createTransporter({
 
 transporter.verify((error, success) => {
   if (error) {
-    console.log('Erro na configuração SMTP:', error);
+    console.log('SMTP configuration error:', error);
   } else {
-    console.log('SMTP configurado corretamente');
+    console.log('SMTP configured correctly');
   }
 });
 ```
 
-**3. Verificar Preferências do Usuário**
+**3. Check User Preferences**
 ```typescript
-// Verificar se notificações estão habilitadas
+// Check if notifications are enabled
 const preferences = await prisma.notificationPreference.findUnique({
   where: { userId }
 });
 
 if (!preferences.emailEnabled) {
-  console.log('Notificações por email desabilitadas');
+  console.log('Email notifications disabled');
 }
 ```
 
-**4. Verificar Spam/Junk Folder**
-- Adicionar domínio aos contatos seguros
-- Configurar SPF/DKIM records
-- Usar serviço de email profissional
+**4. Check Spam/Junk Folder**
+- Add domain to safe contacts
+- Configure SPF/DKIM records
+- Use professional email service
 
-### Push Notifications Não Funcionam
+### Push Notifications Do Not Work
 
-#### Verificações
-1. **Permissões do navegador**
-   - Verificar se notificações estão permitidas
-   - Resetar permissões se necessário
+#### Checks
+1. **Browser permissions**
+   - Check if notifications are allowed
+   - Reset permissions if necessary
 
 2. **Service Worker**
    ```javascript
-   // Verificar se SW está registrado
+   // Check if SW is registered
    navigator.serviceWorker.getRegistrations()
      .then(registrations => console.log(registrations));
    ```
 
-3. **Configuração do Firebase**
+3. **Firebase Configuration**
    ```env
    # .env.local
    FIREBASE_PROJECT_ID=your-project-id
@@ -366,18 +366,18 @@ if (!preferences.emailEnabled) {
    FIREBASE_CLIENT_EMAIL=your-client-email
    ```
 
-## 🗄️ Problemas de Banco de Dados
+## 🗄️ Database Problems
 
-### Erros de Conexão
+### Connection Errors
 
-#### Sintomas
-- Queries falham
-- Timeout de conexão
-- Dados corrompidos
+#### Symptoms
+- Queries fail
+- Connection timeout
+- Corrupted data
 
-#### Soluções
+#### Solutions
 
-**1. Verificar Conexão**
+**1. Check Connection**
 ```typescript
 // lib/prisma.ts
 import { PrismaClient } from '@prisma/client';
@@ -402,53 +402,53 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 
-**2. Otimizar Queries**
+**2. Optimize Queries**
 ```typescript
-// Evitar N+1 queries
+// Avoid N+1 queries
 const collections = await prisma.collection.findMany({
   include: {
     videos: {
       include: {
-        video: true, // Evita query adicional
+        video: true, // Avoid additional query
       },
     },
   },
 });
 ```
 
-**3. Implementar Connection Pooling**
+**3. Implement Connection Pooling**
 ```env
 # .env
 DATABASE_URL="postgresql://user:pass@localhost:5432/db?connection_limit=10"
 ```
 
-### Dados Corrompidos
+### Corrupted Data
 
-#### Recuperação
+#### Recovery
 ```bash
-# Fazer backup
+# Make backup
 cp dev.db dev.db.backup
 
-# Resetar banco
+# Reset database
 npx prisma migrate reset
 
-# Restaurar dados essenciais
-# (implementar script de recuperação)
+# Restore essential data
+# (implement recovery script)
 ```
 
-## 🚀 Problemas de Performance
+## 🚀 Performance Problems
 
-### Aplicação Lenta
+### Slow Application
 
-#### Diagnóstico
+#### Diagnosis
 
-**1. Verificar Bundle Size**
+**1. Check Bundle Size**
 ```bash
 npm run build
-# Verificar tamanho do bundle em .next/static
+# Check bundle size in .next/static
 ```
 
-**2. Otimizar Imagens**
+**2. Optimize Images**
 ```typescript
 // next.config.mjs
 /** @type {import('next').NextConfig} */
@@ -462,14 +462,14 @@ const nextConfig = {
 export default nextConfig;
 ```
 
-**3. Implementar Caching**
+**3. Implement Caching**
 ```typescript
 // lib/cache.ts
 import { LRUCache } from 'lru-cache';
 
 const cache = new LRUCache({
   max: 500,
-  ttl: 1000 * 60 * 5, // 5 minutos
+  ttl: 1000 * 60 * 5, // 5 minutes
 });
 
 export async function getCachedData(key: string, fetcher: () => Promise<any>) {
@@ -482,40 +482,40 @@ export async function getCachedData(key: string, fetcher: () => Promise<any>) {
 }
 ```
 
-**4. Otimizar Database Queries**
+**4. Optimize Database Queries**
 ```typescript
-// Adicionar índices
+// Add indexes
 // prisma/schema.prisma
 model Collection {
-  // ... outros campos
+  // ... other fields
   @@index([userId, createdAt])
   @@index([name])
 }
 ```
 
-### Memória Insuficiente
+### Insufficient Memory
 
-#### Soluções
+#### Solutions
 ```javascript
-// Verificar uso de memória
+// Check memory usage
 console.log(process.memoryUsage());
 
-// Otimizar grandes objetos
+// Optimize large objects
 const videos = await getVideos();
 const optimizedVideos = videos.map(video => ({
   id: video.id,
   title: video.title,
-  // Remover campos grandes
+  // Remove large fields
 }));
 ```
 
-## 🌐 Problemas de Rede
+## 🌐 Network Problems
 
-### API Calls Falham
+### API Calls Fail
 
-#### Diagnóstico
+#### Diagnosis
 ```typescript
-// Adicionar interceptors para debugging
+// Add interceptors for debugging
 import axios from 'axios';
 
 axios.interceptors.request.use(request => {
@@ -532,7 +532,7 @@ axios.interceptors.response.use(
 );
 ```
 
-#### Implementar Retry Logic
+#### Implement Retry Logic
 ```typescript
 // lib/api-client.ts
 export async function apiRequest(url: string, options = {}, retries = 3) {
@@ -542,7 +542,7 @@ export async function apiRequest(url: string, options = {}, retries = 3) {
       if (response.ok) return response.json();
 
       if (response.status >= 500) {
-        // Retry para erros de servidor
+        // Retry for server errors
         await delay(Math.pow(2, i) * 1000);
         continue;
       }
@@ -558,7 +558,7 @@ export async function apiRequest(url: string, options = {}, retries = 3) {
 
 ### CORS Errors
 
-#### Configuração
+#### Configuration
 ```typescript
 // next.config.mjs
 /** @type {import('next').NextConfig} */
@@ -580,38 +580,38 @@ const nextConfig = {
 export default nextConfig;
 ```
 
-## 📱 Problemas Mobile/Responsividade
+## 📱 Mobile/Responsiveness Problems
 
-### Interface Quebrada em Mobile
+### Broken Interface on Mobile
 
-#### Verificações
+#### Checks
 1. **Viewport Meta Tag**
    ```html
    <meta name="viewport" content="width=device-width, initial-scale=1" />
    ```
 
-2. **CSS Responsivo**
+2. **Responsive CSS**
    ```css
-   /* Verificar media queries */
+   /* Check media queries */
    @media (max-width: 768px) {
      .container { padding: 1rem; }
    }
    ```
 
-3. **Testar em Dispositivos Reais**
+3. **Test on Real Devices**
    ```bash
-   # Usar Chrome DevTools Device Mode
-   # Ou testar em dispositivos reais
+   # Use Chrome DevTools Device Mode
+   # Or test on real devices
    ```
 
-### Toque Não Funciona
+### Touch Does Not Work
 
-#### Soluções
+#### Solutions
 ```typescript
-// Adicionar event listeners apropriados
+// Add appropriate event listeners
 useEffect(() => {
   const handleTouch = (e: TouchEvent) => {
-    // Lidar com eventos de toque
+    // Handle touch events
   };
 
   element.addEventListener('touchstart', handleTouch);
@@ -619,37 +619,37 @@ useEffect(() => {
 }, []);
 ```
 
-## 🔧 Problemas de Desenvolvimento
+## 🔧 Development Problems
 
-### Hot Reload Não Funciona
+### Hot Reload Does Not Work
 
-#### Soluções
+#### Solutions
 ```bash
-# Limpar cache Next.js
+# Clean Next.js cache
 rm -rf .next
 
-# Verificar se arquivos estão sendo watched
-# Windows: verificar antivírus
-# macOS/Linux: verificar inotify limits
+# Check if files are being watched
+# Windows: check antivirus
+# macOS/Linux: check inotify limits
 ```
 
 ### TypeScript Errors
 
-#### Comandos Úteis
+#### Useful Commands
 ```bash
-# Verificar tipos
+# Check types
 npm run type-check
 
-# Gerar tipos automaticamente
+# Generate types automatically
 npx tsc --noEmit
 
-# Verificar tipos de dependências
+# Check dependency types
 npx tsc --noEmit --skipLibCheck
 ```
 
 ### ESLint Errors
 
-#### Configuração
+#### Configuration
 ```javascript
 // .eslintrc.json
 {
@@ -661,9 +661,9 @@ npx tsc --noEmit --skipLibCheck
 }
 ```
 
-## 📊 Monitoramento e Logs
+## 📊 Monitoring and Logs
 
-### Implementar Logging
+### Implement Logging
 
 ```typescript
 // lib/logger.ts
@@ -682,12 +682,12 @@ export const logger = winston.createLogger({
   ],
 });
 
-// Uso
-logger.info('Aplicação iniciada', { port: 3000 });
-logger.error('Erro na API', { error: error.message, stack: error.stack });
+// Usage
+logger.info('Application started', { port: 3000 });
+logger.error('API error', { error: error.message, stack: error.stack });
 ```
 
-### Monitoramento de Performance
+### Performance Monitoring
 
 ```typescript
 // lib/performance.ts
@@ -700,76 +700,76 @@ export function measurePerformance(name: string, fn: Function) {
   return result;
 }
 
-// Uso
+// Usage
 const data = measurePerformance('Database Query', () =>
   prisma.collection.findMany()
 );
 ```
 
-## 🚨 Contato e Suporte
+## 🚨 Contact and Support
 
-### Quando Pedir Ajuda
+### When to Ask for Help
 
-**Suporte Comunitário**
+**Community Support**
 - [GitHub Issues](https://github.com/youtube-organizer/issues)
 - [Discord Community](https://discord.gg/youtube-organizer)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/youtube-organizer)
 
-**Suporte Premium**
+**Premium Support**
 - Email: `support@youtube-organizer.com`
-- Chat ao vivo (24/7)
-- Telefone: +1 (555) 123-4567
+- Live chat (24/7)
+- Phone: +1 (555) 123-4567
 
-### Informações para Relatar Bugs
+### Information for Bug Reports
 
 ```markdown
-**Descrição do Problema:**
-[Descreva o problema detalhadamente]
+**Problem Description:**
+[Detailed description]
 
-**Passos para Reproduzir:**
-1. [Passo 1]
-2. [Passo 2]
-3. [Passo 3]
+**Steps to Reproduce:**
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
 
-**Comportamento Esperado:**
-[O que deveria acontecer]
+**Expected Behavior:**
+[What should happen]
 
-**Comportamento Atual:**
-[O que está acontecendo]
+**Current Behavior:**
+[What is happening]
 
-**Ambiente:**
+**Environment:**
 - OS: [Windows/macOS/Linux]
 - Browser: [Chrome/Firefox/Safari]
-- Node.js: [versão]
-- YouTube Organizer: [versão]
+- Node.js: [version]
+- YouTube Organizer: [version]
 
-**Logs de Erro:**
-[Inclua logs relevantes]
+**Error Logs:**
+[Include relevant logs]
 
 **Screenshots:**
-[Anexe screenshots se aplicável]
+[Attach screenshots if applicable]
 ```
 
 ---
 
-## 📝 Checklist de Troubleshooting
+## 📝 Troubleshooting Checklist
 
-### Antes de Reportar um Problema
-- [ ] Reproduzi o problema em ambiente limpo
-- [ ] Verifiquei logs do console do navegador
-- [ ] Testei em diferentes navegadores
-- [ ] Verifiquei conexão com internet
-- [ ] Limpei cache e cookies
-- [ ] Testei em modo incógnito
-- [ ] Verifiquei versão do Node.js
-- [ ] Atualizei dependências
+### Before Reporting a Problem
+- [ ] Reproduced the problem in clean environment
+- [ ] Checked browser console logs
+- [ ] Tested in different browsers
+- [ ] Checked internet connection
+- [ ] Cleared cache and cookies
+- [ ] Tested in incognito mode
+- [ ] Checked Node.js version
+- [ ] Updated dependencies
 
-### Informações Essenciais para Suporte
-- Versão do YouTube Organizer
-- Sistema operacional e versão
-- Navegador e versão
-- Logs de erro completos
-- Passos exatos para reproduzir
-- Comportamento esperado vs atual
+### Essential Information for Support
+- YouTube Organizer version
+- Operating system and version
+- Browser and version
+- Complete error logs
+- Exact steps to reproduce
+- Expected vs current behavior
 
-Seguindo este guia sistematicamente, a maioria dos problemas pode ser resolvida rapidamente. Para questões complexas, nossa equipe de suporte está sempre pronta para ajudar!
+Following this guide systematically, most problems can be resolved quickly. For complex issues, our support team is always ready to help!

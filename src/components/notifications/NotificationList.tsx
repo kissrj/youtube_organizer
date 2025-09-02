@@ -150,7 +150,7 @@ export function NotificationList({ userId }: NotificationListProps) {
   };
 
   if (loading) {
-    return <div>Carregando notificações...</div>;
+    return <div>Loading notificações...</div>;
   }
 
   return (
@@ -342,7 +342,7 @@ export function NotificationList({ userId }: NotificationListProps) {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => console.log('Excluir:', notification.id)}
+                      onClick={() => console.log('Delete:', notification.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -356,3 +356,4 @@ export function NotificationList({ userId }: NotificationListProps) {
     </div>
   );
 }
+

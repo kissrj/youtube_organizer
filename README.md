@@ -1,94 +1,94 @@
 # 🎬 YouTube Organizer
 
-Um organizador avançado de vídeos do YouTube com player integrado, transcripts automáticos e resumos inteligentes por IA.
+An advanced YouTube video organizer with integrated player, automatic transcripts, and intelligent AI summaries.
 
-## ✨ Funcionalidades Principais
+## ✨ Main Features
 
-### 🎬 **Modal com Player Avançado**
-- Player do YouTube integrado com interface elegante
-- Abas para Player, Transcript e Resumo IA
-- Controles intuitivos e responsivos
-- Informações detalhadas do vídeo
+### 🎬 **Modal with Advanced Player**
+- Integrated YouTube player with elegant interface
+- Tabs for Player, Transcript, and AI Summary
+- Intuitive and responsive controls
+- Detailed video information
 
-### 📝 **Sistema de Transcript**
-- Busca automática de transcripts via YouTube API
-- Exibição formatada com timestamps
-- Navegação interativa no texto
-- Suporte a múltiplos idiomas
+### 📝 **Transcript System**
+- Automatic transcript fetching via YouTube API
+- Formatted display with timestamps
+- Interactive navigation in text
+- Support for multiple languages
 
-### 🤖 **Resumo Inteligente por IA**
-- Integração com OpenAI GPT para gerar resumos
-- Resumos estruturados e concisos
-- Destaques dos pontos principais
-- Análise de sentimento e tópicos
+### 🤖 **Intelligent AI Summary**
+- Integration with OpenAI GPT for generating summaries
+- Structured and concise summaries
+- Main points highlights
+- Sentiment analysis and topic analysis
 
-### 📥 **Importação de Vídeos**
-- Importação automática de playlists do YouTube
-- Barra de progresso visual em tempo real
-- Tratamento inteligente de duplicatas
-- Estatísticas detalhadas de importação
+### 📥 **Video Import**
+- Automatic import of YouTube playlists
+- Visual progress bar in real-time
+- Intelligent duplicate handling
+- Detailed import statistics
 
-### 🔍 **Sistema de Filtros Avançados**
-- Busca por texto (título, canal, descrição, tags)
-- Filtros por categoria, tag, período e qualidade
-- Ordenação flexível por qualquer campo
-- Paginação inteligente
+### 🔍 **Advanced Filters System**
+- Search by text (title, channel, description, tags)
+- Filters by category, tag, period, and quality
+- Flexible sorting by any field
+- Intelligent pagination
 
-### 📁 **Organização por Categorias e Tags**
-- Sistema hierárquico de categorias
-- Tags personalizáveis
-- Relacionamentos muitos-para-muitos
-- Interface de drag-and-drop
+### 📁 **Organization by Categories and Tags**
+- Hierarchical category system
+- Customizable tags
+- Many-to-many relationships
+- Drag-and-drop interface
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Technologies Used
 
 ### **Frontend**
-- **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Lucide React** - Ícones modernos
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Static typing
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Modern icons
 
 ### **Backend**
-- **Next.js API Routes** - API RESTful
-- **Prisma** - ORM para banco de dados
-- **SQLite** - Banco de dados local
+- **Next.js API Routes** - RESTful API
+- **Prisma** - Database ORM
+- **SQLite** - Local database
 
-### **Autenticação**
-- **NextAuth.js** - Sistema de autenticação
-- **Google OAuth** - Login com Google
+### **Authentication**
+- **NextAuth.js** - Authentication system
+- **Google OAuth** - Login with Google
 
-### **APIs Externas**
-- **YouTube Data API v3** - Dados do YouTube
-- **OpenAI API** - Geração de resumos IA
-- **Google Translate API** - Tradução (opcional)
+### **External APIs**
+- **YouTube Data API v3** - YouTube data
+- **OpenAI API** - AI summary generation
+- **Google Translate API** - Translation (optional)
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
 - Node.js 18+
-- npm ou yarn
-- Conta Google (para APIs)
-- Chave da API do YouTube
-- Chave da API do OpenAI (opcional)
+- npm or yarn
+- Google account (for APIs)
+- YouTube API key
+- OpenAI API key (optional)
 
-## 🛠️ Instalação
+## 🛠️ Installation
 
-1. **Clone o repositório:**
+1. **Clone the repository:**
 ```bash
 git clone <repository-url>
 cd youtube-organizer
 ```
 
-2. **Instale as dependências:**
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-3. **Configure as variáveis de ambiente:**
+3. **Configure environment variables:**
 ```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com suas chaves:
+Edit the `.env` file with your keys:
 
 ```env
 # Database
@@ -101,7 +101,7 @@ NEXTAUTH_SECRET="your-secret-key-here"
 # YouTube Data API v3
 YOUTUBE_API_KEY="your-youtube-api-key-here"
 
-# OpenAI API (para resumos IA)
+# OpenAI API (for AI summaries)
 OPENAI_API_KEY="your-openai-api-key-here"
 
 # Google OAuth
@@ -109,135 +109,134 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
-4. **Configure o banco de dados:**
+4. **Configure the database:**
 ```bash
 npx prisma generate
 npx prisma migrate dev --name init
 ```
 
-5. **Execute o projeto:**
+5. **Run the project:**
 ```bash
 npm run dev
 ```
 
-Acesse: http://localhost:3000
+Access: http://localhost:3000
 
-## 📖 Como Usar
+## 📖 How to Use
 
-### **1. Configuração Inicial**
-- Configure suas chaves de API no arquivo `.env`
-- Faça login com sua conta Google
-- Configure suas categorias e tags
+### **1. Initial Configuration**
+- Configure your API keys in the `.env` file
+- Log in with your Google account
+- Configure your categories and tags
 
-### **2. Importar Playlists**
-- Na página "Playlists", clique em "Sincronizar Playlist"
-- Cole o ID ou URL da playlist do YouTube
-- Aguarde a sincronização automática
+### **2. Import Playlists**
+- In the "Playlists" page, click "Sync Playlist"
+- Paste the ID or URL of the YouTube playlist
+- Wait for automatic synchronization
 
-### **3. Importar Vídeos**
-- Na página "Playlists", clique em "Importar Vídeos" em qualquer playlist
-- Acompanhe o progresso da importação
-- Visualize as estatísticas de importação
+### **3. Import Videos**
+- In the "Playlists" page, click "Import Videos" on any playlist
+- Follow the import progress
+- View import statistics
 
-### **4. Organizar Vídeos**
-- Use categorias para agrupar vídeos por tema
-- Adicione tags para classificação granular
-- Utilize os filtros avançados para encontrar vídeos
+### **4. Organize Videos**
+- Use categories to group videos by theme
+- Add tags for granular classification
+- Use advanced filters to find videos
 
-### **5. Assistir e Estudar**
-- Clique em "Assistir" em qualquer vídeo
-- Use as abas para alternar entre Player, Transcript e Resumo IA
-- Navegue pelos timestamps do transcript
-- Leia resumos inteligentes gerados por IA
+### **5. Watch and Study**
+- Click "Watch" on any video
+- Use tabs to switch between Player, Transcript, and AI Summary
+- Navigate through transcript timestamps
+- Read AI-generated intelligent summaries
 
-## 🎯 Estrutura do Projeto
+## 🎯 Project Structure
 
 ```
 youtube-organizer/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── api/               # API Routes
-│   │   │   ├── auth/          # Autenticação
-│   │   │   ├── categories/    # CRUD de categorias
-│   │   │   ├── tags/          # CRUD de tags
-│   │   │   ├── playlists/     # CRUD de playlists
-│   │   │   └── videos/        # CRUD de vídeos
-│   │   ├── categories/        # Página de categorias
-│   │   ├── playlists/         # Página de playlists
-│   │   ├── tags/              # Página de tags
-│   │   ├── videos/            # Página de vídeos
-│   │   └── layout.tsx         # Layout principal
-│   ├── components/            # Componentes React
-│   │   ├── AuthGuard.tsx      # Proteção de rotas
-│   │   ├── VideoModal.tsx     # Modal com player
-│   │   ├── VideoFilters.tsx   # Sistema de filtros
-│   │   └── Pagination.tsx     # Componente de paginação
-│   └── lib/                   # Utilitários
-│       ├── prisma.ts          # Cliente Prisma
-│       ├── auth.ts            # Configuração NextAuth
-│       ├── youtube.ts         # Cliente YouTube API
-│       ├── services/          # Serviços da aplicação
-│       │   ├── transcript.ts  # Serviço de transcripts
-│       │   ├── ai-summary.ts  # Serviço de IA
-│       │   ├── playlist.ts    # Serviço de playlists
-│       │   ├── category.ts    # Serviço de categorias
-│       │   └── tag.ts         # Serviço de tags
-│       └── utils/             # Funções utilitárias
+├── src/                    # Next.js App Router
+│   ├── api/               # API Routes
+│   │   ├── auth/          # Authentication
+│   │   ├── categories/    # CRUD for categories
+│   │   ├── tags/          # CRUD for tags
+│   │   ├── playlists/     # CRUD for playlists
+│   │   └── videos/        # CRUD for videos
+│   ├── categories/        # Categories page
+│   ├── playlists/         # Playlists page
+│   ├── tags/              # Tags page
+│   ├── videos/            # Videos page
+│   └── layout.tsx         # Main layout
+├── components/            # React components
+│   ├── AuthGuard.tsx      # Route protection
+│   ├── VideoModal.tsx     # Modal with player
+│   ├── VideoFilters.tsx   # Filters system
+│   └── Pagination.tsx     # Pagination component
+└── lib/                   # Utilities
+    ├── prisma.ts          # Prisma client
+    ├── auth.ts            # NextAuth configuration
+    ├── youtube.ts         # YouTube API client
+    ├── services/          # Application services
+    │   ├── transcript.ts  # Transcript service
+    │   ├── ai-summary.ts  # AI service
+    │   ├── playlist.ts    # Playlist service
+    │   ├── category.ts    # Category service
+    │   └── tag.ts         # Tag service
+    └── utils/             # Utility functions
 ├── prisma/
-│   ├── schema.prisma          # Schema do banco
-│   └── migrations/            # Migrações do banco
-├── public/                    # Arquivos estáticos
-└── .env                       # Variáveis de ambiente
+│   ├── schema.prisma      # Database schema
+│   └── migrations/        # Database migrations
+├── public/                # Static assets
+└── .env                   # Environment variables
 ```
 
-## 🔧 APIs Implementadas
+## 🔧 Implemented APIs
 
-### **Vídeos**
-- `GET /api/videos` - Listar vídeos com filtros
-- `POST /api/videos/sync` - Importar vídeo do YouTube
-- `GET /api/videos/[id]/transcript` - Buscar transcript
-- `GET /api/videos/[id]/summary` - Gerar resumo IA
+### **Videos**
+- `GET /api/videos` - List videos with filters
+- `POST /api/videos/sync` - Import video from YouTube
+- `GET /api/videos/[id]/transcript` - Fetch transcript
+- `GET /api/videos/[id]/summary` - Generate AI summary
 
 ### **Playlists**
-- `GET /api/playlists` - Listar playlists
-- `POST /api/playlists/sync` - Sincronizar playlist
-- `POST /api/playlists/[id]/sync-videos` - Importar vídeos da playlist
+- `GET /api/playlists` - List playlists
+- `POST /api/playlists/sync` - Sync playlist
+- `POST /api/playlists/[id]/sync-videos` - Import videos from playlist
 
-### **Organização**
-- `GET /api/categories` - Listar categorias
-- `POST /api/categories` - Criar categoria
-- `GET /api/tags` - Listar tags
-- `POST /api/tags` - Criar tag
+### **Organization**
+- `GET /api/categories` - List categories
+- `POST /api/categories` - Create category
+- `GET /api/tags` - List tags
+- `POST /api/tags` - Create tag
 
-## 🎨 Interface e UX
+## 🎨 Interface and UX
 
 ### **Design System**
-- **Cores:** Paleta moderna com tons de azul, verde e roxo
-- **Tipografia:** Inter para melhor legibilidade
-- **Componentes:** Reutilizáveis e acessíveis
-- **Responsividade:** Mobile-first approach
+- **Colors:** Modern palette with blue, green, and purple tones
+- **Typography:** Inter for better readability
+- **Components:** Reusable and accessible
+- **Responsiveness:** Mobile-first approach
 
-### **Estados de Loading**
-- Spinners elegantes durante operações
-- Feedback visual em tempo real
-- Mensagens de progresso detalhadas
+### **Loading States**
+- Elegant spinners during operations
+- Real-time visual feedback
+- Detailed progress messages
 
-### **Tratamento de Erros**
-- Mensagens de erro amigáveis
-- Sugestões de solução
-- Fallbacks inteligentes
+### **Error Handling**
+- Friendly error messages
+- Solution suggestions
+- Intelligent fallbacks
 
-## � CI/CD e Deploy
+##  CI/CD and Deploy
 
 ### **GitHub Actions**
-O projeto inclui configuração completa de CI/CD com:
-- **Linting e Type Checking** automático
-- **Execução de Testes** em múltiplos estágios
-- **Build e Deploy** automatizado
-- **Relatórios de Cobertura** de testes
-- **Análise de Segurança** com CodeQL
+The project includes complete CI/CD configuration with:
+- **Automatic Linting and Type Checking**
+- **Test Execution** in multiple stages
+- **Build and Deploy** automation
+- **Coverage Reports** for tests
+- **Security Analysis** with CodeQL
 
-### **Configuração de Deploy**
+### **Deploy Configuration**
 ```yaml
 # .github/workflows/ci-cd.yml
 name: CI/CD Pipeline
@@ -261,254 +260,205 @@ jobs:
       - run: npm run test:e2e
 ```
 
-### **Ambientes de Deploy**
-- **Desenvolvimento:** Deploy automático a cada push
-- **Staging:** Deploy manual para testes
-- **Produção:** Deploy via pull request aprovado
+### **Deploy Environments**
+- **Development:** Automatic deploy on every push
+- **Staging:** Manual deploy for tests
+- **Production:** Deploy via approved pull request
 
-## 📈 Monitoramento e Analytics
+## 📈 Monitoring and Analytics
 
-### **Métricas de Performance**
-- **Core Web Vitals** monitorados
-- **Tempo de resposta** das APIs
-- **Taxa de erro** das operações
-- **Uso de recursos** (CPU, memória)
+### **Performance Metrics**
+- **Core Web Vitals** monitored
+- **API response times**
+- **Error rates** for operations
+- **Resource usage** (CPU, memory)
 
-### **Analytics de Uso**
-- **Páginas mais visitadas**
-- **Funcionalidades mais usadas**
-- **Tempo médio de sessão**
-- **Taxa de conversão** de usuários
+### **Usage Analytics**
+- **Most visited pages**
+- **Most used features**
+- **Average session time**
+- **User conversion rate**
 
-### **Ferramentas Integradas**
-- **Vercel Analytics** para métricas web
-- **Sentry** para monitoramento de erros
-- **DataDog** para métricas de sistema
-- **Custom Dashboards** para KPIs específicos
+### **Integrated Tools**
+- **Vercel Analytics** for web metrics
+- **Sentry** for error monitoring
+- **DataDog** for system metrics
+- **Custom Dashboards** for specific KPIs
 
-## 🧪 Testes e Qualidade
+## 🧪 Testing and Quality
 
-### **Cobertura de Testes**
-- **Testes Unitários:** Cobertura completa dos serviços e utilitários
-- **Testes de Integração:** Workflows completos e interações entre serviços
-- **Testes E2E:** Cenários completos de usuário com Playwright
-- **Testes de Performance:** Benchmarks e monitoramento de performance
+### **Test Coverage**
+- **Unit Tests:** Complete coverage of services and utilities
+- **Integration Tests:** Complete workflows and inter-service interactions
+- **E2E Tests:** Complete user scenarios with Playwright
+- **Performance Tests:** Benchmarks and performance monitoring
 
-### **Executar Testes**
+### **Run Tests**
 ```bash
-# Todos os testes
+# All tests
 npm test
 
-# Testes unitários
+# Unit tests
 npm run test:unit
 
-# Testes de integração
+# Integration tests
 npm run test:integration
 
-# Testes E2E
+# E2E tests
 npm run test:e2e
 
-# Testes de performance
+# Performance tests
 npm run test:performance
 
-# Cobertura de testes
+# Test coverage
 npm run test:coverage
 ```
 
-### **Estrutura de Testes**
+### **Test Structure**
 ```
 __tests__/
-├── unit/                    # Testes unitários
-│   ├── services/           # Testes dos serviços
-│   └── utils/              # Testes dos utilitários
-├── integration/            # Testes de integração
+├── unit/                    # Unit tests
+│   ├── services/           # Service tests
+│   └── utils/              # Utility tests
+├── integration/            # Integration tests
 │   ├── collections-workflow.test.ts
 │   └── api/
-├── e2e/                    # Testes end-to-end
+├── e2e/                    # End-to-end tests
 │   ├── collections-flow.test.ts
 │   ├── global-setup.ts
 │   └── global-teardown.ts
-└── performance/            # Testes de performance
+└── performance/            # Performance tests
     └── benchmark.test.ts
 ```
 
-## 📚 Documentação
+## 📚 Documentation
 
-### **Documentação Técnica**
-- [🏗️ Arquitetura do Sistema](./docs/architecture.md) - Visão geral completa da arquitetura, componentes e fluxos de dados
-- [📚 API Reference](./docs/api-reference.md) - Documentação completa da API REST com exemplos
-- [🛠️ Guia de Desenvolvimento](./docs/development-guide.md) - Setup, padrões de código e melhores práticas
-- [🧪 Estratégia de Testes](./docs/testing-strategy.md) - Testes unitários, integração, E2E e performance
+### **Technical Documentation**
+- [🏗️ System Architecture](./docs/architecture.md) - Complete overview of architecture, components, and data flows
+- [📚 API Reference](./docs/api-reference.md) - Complete REST API documentation with examples
+- [🛠️ Development Guide](./docs/development-guide.md) - Setup, code patterns, and best practices
+- [🧪 Testing Strategy](./docs/testing-strategy.md) - Unit, integration, E2E, and performance tests
 
-### **Documentação de Usuário**
-- [📖 Guia do Usuário](./docs/user-guide.md) - Guia completo para usar todas as funcionalidades
-- [❓ FAQ](./docs/faq.md) - Perguntas frequentes e soluções
-- [🔧 Troubleshooting](./docs/troubleshooting.md) - Solução de problemas comuns
+### **User Documentation**
+- [📖 User Guide](./docs/user-guide.md) - Complete guide for using all features
+- [❓ FAQ](./docs/faq.md) - Frequently asked questions and solutions
+- [🔧 Troubleshooting](./docs/troubleshooting.md) - Common problem solutions
+- [🌐 E2E Testing Guide](./docs/e2e-testing-guide.md) - How to run and write E2E tests with Playwright
 
-### **Documentação de Testes**
-- [🌐 Guia de Testes E2E](./docs/e2e-testing-guide.md) - Como executar e escrever testes E2E com Playwright
-- [📊 Relatórios de Performance](./__tests__/performance/benchmark.test.ts) - Benchmarks e métricas de performance
+## 🤝 Contribution
 
-## 🧪 Testes e Qualidade
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### **Cobertura de Testes**
-- **Testes Unitários:** Cobertura completa dos serviços e utilitários
-- **Testes de Integração:** Workflows completos e interações entre serviços
-- **Testes E2E:** Cenários completos de usuário com Playwright
-- **Testes de Performance:** Benchmarks e monitoramento de performance
+## 📝 License
 
-### **Executar Testes**
-```bash
-# Todos os testes
-npm test
+This project is under the MIT license. See the `LICENSE` file for more details.
 
-# Testes unitários
-npm run test:unit
+## 📞 Support
 
-# Testes de integração
-npm run test:integration
-
-# Testes E2E
-npm run test:e2e
-
-# Testes de performance
-npm run test:performance
-
-# Cobertura de testes
-npm run test:coverage
-```
-
-### **Estrutura de Testes**
-```
-__tests__/
-├── unit/                    # Testes unitários
-│   ├── services/           # Testes dos serviços
-│   └── utils/              # Testes dos utilitários
-├── integration/            # Testes de integração
-│   ├── collections-workflow.test.ts
-│   └── api/
-├── e2e/                    # Testes end-to-end
-│   ├── collections-flow.test.ts
-│   ├── global-setup.ts
-│   └── global-teardown.ts
-└── performance/            # Testes de performance
-    └── benchmark.test.ts
-```
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 📞 Suporte
-
-Para suporte, abra uma issue no GitHub ou entre em contato com a equipe de desenvolvimento.
+For support, open an issue on GitHub or contact the development team.
 
 ## 🗺️ Roadmap
 
-### **Próximas Funcionalidades**
+### **Next Features**
 
-#### **Fase 2: IA Avançada**
-- [ ] **Recomendações personalizadas** baseadas no histórico
-- [ ] **Análise de sentimento** em comentários
-- [ ] **Geração automática de tags** por IA
-- [ ] **Chatbot integrado** para perguntas sobre vídeos
+#### **Phase 2: Advanced AI**
+- [ ] **Personalized recommendations** based on history
+- [ ] **Sentiment analysis** in comments
+- [ ] **Automatic tag generation** by AI
+- [ ] **Integrated chatbot** for video questions
 
-#### **Fase 3: Colaboração**
-- [ ] **Compartilhamento de coleções** com outros usuários
-- [ ] **Comentários e anotações** em vídeos
-- [ ] **Workspaces colaborativos**
-- [ ] **Controle de versão** de coleções
+#### **Phase 3: Collaboration**
+- [ ] **Collection sharing** with other users
+- [ ] **Comments and annotations** on videos
+- [ ] **Collaborative workspaces**
+- [ ] **Version control** for collections
 
-#### **Fase 4: Mobile & PWA**
-- [ ] **Aplicativo PWA** completo
-- [ ] **Sincronização offline** avançada
-- [ ] **Notificações push** nativas
-- [ ] **Interface otimizada** para dispositivos móveis
+#### **Phase 4: Mobile & PWA**
+- [ ] **Complete PWA app**
+- [ ] **Offline synchronization** advanced
+- [ ] **Push notifications** native
+- [ ] **Interface optimized** for mobile devices
 
-#### **Fase 5: Enterprise**
-- [ ] **Multi-tenant** com isolamento de dados
-- [ ] **Integrações corporativas** (Slack, Teams, etc.)
-- [ ] **Analytics avançado** para equipes
-- [ ] **APIs para integração** com sistemas externos
+#### **Phase 5: Enterprise**
+- [ ] **Multi-tenant** with data isolation
+- [ ] **Corporate integrations** (Slack, Teams, etc.)
+- [ ] **Advanced analytics** for teams
+- [ ] **APIs for integration** with external systems
 
-### **Melhorias Técnicas Planejadas**
-- [ ] **Migração para PostgreSQL** para escalabilidade
-- [ ] **Implementação de Redis** para cache distribuído
-- [ ] **Microserviços** para componentes específicos
-- [ ] **GraphQL API** para queries flexíveis
-- [ ] **Real-time updates** com WebSockets
+### **Planned Technical Improvements**
+- [ ] **Migration to PostgreSQL** for scalability
+- [ ] **Redis implementation** for distributed cache
+- [ ] **Microservices** for specific components
+- [ ] **GraphQL API** for flexible queries
+- [ ] **Real-time updates** with WebSockets
 
-## 🤝 Contribuição
+## 🤝 Contribution
 
-### **Como Contribuir**
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+### **How to Contribute**
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### **Diretrizes de Contribuição**
-- Siga os padrões de código estabelecidos
-- Escreva testes para novas funcionalidades
-- Atualize a documentação quando necessário
-- Mantenha commits pequenos e descritivos
+### **Contribution Guidelines**
+- Follow established code patterns
+- Write tests for new features
+- Update documentation when necessary
+- Keep commits small and descriptive
 - Use conventional commits
 
-### **Configuração para Desenvolvimento**
+### **Development Setup**
 ```bash
-# Instalar dependências
+# Install dependencies
 npm install
 
-# Configurar pre-commit hooks
+# Configure pre-commit hooks
 npm run prepare
 
-# Executar linting
+# Run linting
 npm run lint
 
-# Executar testes
+# Run tests
 npm run test
 
-# Verificar cobertura
+# Check coverage
 npm run test:coverage
 ```
 
-## 📝 Licença
+## 📝 License
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+This project is under the MIT license. See the `LICENSE` file for more details.
 
-## 📞 Suporte e Contato
+## 📞 Support and Contact
 
-### **Canais de Suporte**
+### **Support Channels**
 - **📧 Email:** support@youtube-organizer.com
-- **💬 Discord:** [Comunidade YouTube Organizer](https://discord.gg/youtube-organizer)
-- **🐛 GitHub Issues:** [Reportar Bugs](https://github.com/youtube-organizer/issues)
-- **📚 Documentação:** [Centro de Ajuda](https://help.youtube-organizer.com)
+- **💬 Discord:** [YouTube Organizer Community](https://discord.gg/youtube-organizer)
+- **🐛 GitHub Issues:** [Report Bugs](https://github.com/youtube-organizer/issues)
+- **📚 Help Center:** [Help Center](https://help.youtube-organizer.com)
 
-### **Recursos Adicionais**
-- **📰 Blog:** Novidades e tutoriais
-- **🎥 YouTube:** Vídeos tutoriais
-- **📱 Newsletter:** Atualizações mensais
-- **🏷️ Status Page:** Status dos serviços
+### **Additional Resources**
+- **📰 Blog:** News and tutorials
+- **🎥 YouTube:** Tutorial videos
+- **📱 Newsletter:** Monthly updates
+- **🏷️ Status Page:** Service status
 
 ---
 
-## 🎉 Conclusão
+## 🎉 Conclusion
 
-O **YouTube Organizer** representa uma solução completa e moderna para organização de conteúdo do YouTube, combinando:
+The **YouTube Organizer** represents a complete and modern solution for YouTube content organization, combining:
 
-- ✨ **Interface elegante** e intuitiva
-- 🤖 **Inteligência artificial** avançada
-- 🧪 **Testes abrangentes** e qualidade garantida
-- 📚 **Documentação completa** e detalhada
-- 🚀 **Arquitetura escalável** e performática
-- 👥 **Comunidade ativa** e suporte dedicado
+- ✨ **Elegant interface** and intuitive
+- 🤖 **Advanced artificial intelligence**
+- 🧪 **Comprehensive testing** and guaranteed quality
+- 📚 **Complete documentation** and detailed
+- 🚀 **Scalable architecture** and performant
+- 👥 **Active community** and dedicated support
 
-**Transforme sua experiência de aprendizado no YouTube com organização inteligente e IA!** 🎬✨
+**Transform your YouTube learning experience with intelligent organization and AI!** 🎬✨

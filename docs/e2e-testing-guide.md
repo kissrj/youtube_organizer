@@ -1,72 +1,72 @@
-# 🌐 Guia de Testes E2E - YouTube Organizer
+# 🌐 E2E Testing Guide - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-Este guia fornece instruções completas para executar testes end-to-end (E2E) no YouTube Organizer usando Playwright. Os testes E2E simulam interações reais do usuário, garantindo que toda a aplicação funcione corretamente do ponto de vista do usuário final.
+This guide provides complete instructions for running end-to-end (E2E) tests in YouTube Organizer using Playwright. E2E tests simulate real user interactions, ensuring the entire application works correctly from the end user's perspective.
 
-## 🛠️ Configuração do Ambiente
+## 🛠️ Environment Setup
 
-### Pré-requisitos
+### Prerequisites
 
-#### Software Necessário
+#### Required Software
 - **Node.js 18+**
-- **npm ou yarn**
+- **npm or yarn**
 - **Git**
-- **VS Code** (recomendado)
+- **VS Code** (recommended)
 
-#### Dependências do Projeto
+#### Project Dependencies
 ```bash
 npm install
-# ou
+# or
 yarn install
 ```
 
-#### Instalação do Playwright
+#### Playwright Installation
 ```bash
-# Instalar Playwright e navegadores
+# Install Playwright and browsers
 npx playwright install
 
-# Instalar dependências do sistema (Linux)
+# Install system dependencies (Linux)
 npx playwright install-deps
 ```
 
-### Configuração do Ambiente de Teste
+### Test Environment Configuration
 
-#### Variáveis de Ambiente
-Crie um arquivo `.env.test` na raiz do projeto:
+#### Environment Variables
+Create a `.env.test` file in the project root:
 
 ```env
-# Base URL da aplicação
+# Application base URL
 BASE_URL=http://localhost:3000
 
-# Credenciais de teste
+# Test credentials
 TEST_USER_EMAIL=test@example.com
 TEST_USER_PASSWORD=password123
 
-# YouTube API (opcional para testes)
+# YouTube API (optional for tests)
 YOUTUBE_API_KEY=your-test-api-key
 
-# OpenAI API (opcional)
+# OpenAI API (optional)
 OPENAI_API_KEY=your-test-openai-key
 ```
 
-#### Banco de Dados de Teste
+#### Test Database
 ```bash
-# Configurar banco SQLite para testes
+# Configure SQLite database for tests
 cp .env.example .env.test
-# Editar DATABASE_URL para apontar para banco de teste
+# Edit DATABASE_URL to point to test database
 ```
 
-## 🚀 Executando Testes
+## 🚀 Running Tests
 
-### Comandos Básicos
+### Basic Commands
 
-#### Executar Todos os Testes E2E
+#### Run All E2E Tests
 ```bash
 npm run test:e2e
 ```
 
-#### Executar Testes em Navegador Específico
+#### Run Tests in Specific Browser
 ```bash
 # Chromium (Chrome)
 npx playwright test --project=chromium
@@ -78,72 +78,72 @@ npx playwright test --project=firefox
 npx playwright test --project=webkit
 ```
 
-#### Executar Teste Específico
+#### Run Specific Test
 ```bash
-# Por arquivo
+# By file
 npx playwright test collections-flow.test.ts
 
-# Por padrão de nome
+# By name pattern
 npx playwright test --grep "create and manage"
 ```
 
-#### Modo Interativo (Debug)
+#### Interactive Mode (Debug)
 ```bash
-# Abrir interface visual do Playwright
+# Open Playwright visual interface
 npx playwright test --ui
 
-# Executar em modo debug
+# Run in debug mode
 npx playwright test --debug
 ```
 
-### Opções Avançadas
+### Advanced Options
 
-#### Executar com Relatório HTML
+#### Run with HTML Report
 ```bash
 npx playwright test --reporter=html
-# Abre relatório automaticamente
+# Opens report automatically
 npx playwright show-report
 ```
 
-#### Executar em Paralelo
+#### Run in Parallel
 ```bash
-# Usar todos os núcleos disponíveis
+# Use all available cores
 npx playwright test --workers=4
 
-# Executar sequencialmente
+# Run sequentially
 npx playwright test --workers=1
 ```
 
-#### Executar com Screenshots
+#### Run with Screenshots
 ```bash
-# Sempre tirar screenshots em falhas
+# Always take screenshots on failures
 npx playwright test --screenshot=only-on-failure
 
-# Tirar screenshots de todos os steps
+# Take screenshots for all steps
 npx playwright test --screenshot=on
 ```
 
-## 📁 Estrutura dos Testes
+## 📁 Test Structure
 
-```
+```bash
 __tests__/
 ├── e2e/
-│   ├── global-setup.ts          # Configuração global
-│   ├── global-teardown.ts       # Limpeza global
-│   ├── auth-flow.test.ts        # Testes de autenticação
-│   ├── collections-flow.test.ts # Testes de coleções
-│   ├── feeds-flow.test.ts       # Testes de feeds
-│   ├── notifications-flow.test.ts # Testes de notificações
-│   ├── videos-flow.test.ts      # Testes de vídeos
-│   └── utils/                   # Utilitários de teste
+│   ├── global-setup.ts          # Global configuration
+│   ├── global-teardown.ts       # Global cleanup
+│   ├── auth-flow.test.ts        # Authentication tests
+│   ├── collections-flow.test.ts # Collection tests
+│   ├── feeds-flow.test.ts       # Feed tests
+│   ├── notifications-flow.test.ts # Notification tests
+│   ├── videos-flow.test.ts      # Video tests
+│   └── utils/                   # Test utilities
 │       ├── test-helpers.ts
 │       ├── api-helpers.ts
 │       └── data-generators.ts
 ```
 
-## 🔧 Utilitários de Teste
+## 🔧 Test Utilities
 
-### Helpers de Autenticação
+### Authentication Helpers
 
 ```typescript
 // __tests__/e2e/utils/auth-helpers.ts
@@ -162,7 +162,7 @@ export async function logoutUser(page: Page) {
 }
 
 export async function createTestUser() {
-  // Lógica para criar usuário de teste via API
+  // Logic to create test user via API
   const response = await fetch('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -176,7 +176,7 @@ export async function createTestUser() {
 }
 ```
 
-### Helpers de Coleções
+### Collection Helpers
 
 ```typescript
 // __tests__/e2e/utils/collection-helpers.ts
@@ -197,20 +197,20 @@ export async function createTestCollection(page: Page, name: string, options = {
 }
 
 export async function addVideoToCollection(page: Page, videoUrl: string, collectionName: string) {
-  // Abrir modal de adicionar vídeo
+  // Open add video modal
   await page.click('[data-testid="add-video"]');
 
-  // Inserir URL
+  // Insert URL
   await page.fill('[data-testid="video-url"]', videoUrl);
   await page.click('[data-testid="load-video"]');
 
-  // Aguardar carregamento dos metadados
+  // Wait for metadata loading
   await page.waitForSelector('[data-testid="video-preview"]');
 
-  // Selecionar coleção
+  // Select collection
   await page.selectOption('[data-testid="collection-select"]', collectionName);
 
-  // Confirmar
+  // Confirm
   await page.click('[data-testid="add-to-collection"]');
   await page.waitForSelector('[data-testid="success-message"]');
 }
@@ -223,7 +223,7 @@ export async function deleteTestCollection(page: Page, name: string) {
 }
 ```
 
-### Generators de Dados
+### Data Generators
 
 ```typescript
 // __tests__/e2e/utils/data-generators.ts
@@ -252,9 +252,9 @@ export function generateTestUserData() {
 }
 ```
 
-## 📝 Escrevendo Testes E2E
+## 📝 Writing E2E Tests
 
-### Estrutura Básica de um Teste
+### Basic Test Structure
 
 ```typescript
 // __tests__/e2e/collections-flow.test.ts
@@ -263,7 +263,7 @@ import { loginUser, createTestCollection, addVideoToCollection } from './utils/t
 
 test.describe('Collections Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Login antes de cada teste
+    // Login before each test
     await loginUser(page, process.env.TEST_USER_EMAIL!, process.env.TEST_USER_PASSWORD!);
   });
 
@@ -271,21 +271,21 @@ test.describe('Collections Flow', () => {
     // Arrange
     const collectionName = `Test Collection ${Date.now()}`;
 
-    // Act: Criar coleção
+    // Act: Create collection
     await createTestCollection(page, collectionName, {
       description: 'Test collection for E2E testing',
       isPublic: false
     });
 
-    // Assert: Verificar criação
+    // Assert: Verify creation
     await expect(page.locator('[data-testid="collection-title"]')).toContainText(collectionName);
     await expect(page.locator('[data-testid="collection-description"]')).toContainText('Test collection for E2E testing');
 
-    // Act: Adicionar vídeo
+    // Act: Add video
     const videoUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
     await addVideoToCollection(page, videoUrl, collectionName);
 
-    // Assert: Verificar vídeo na coleção
+    // Assert: Verify video in collection
     await expect(page.locator('[data-testid="collection-video"]')).toBeVisible();
     await expect(page.locator('[data-testid="video-title"]')).toContainText('Rick Astley');
 
@@ -295,16 +295,16 @@ test.describe('Collections Flow', () => {
   });
 
   test('should handle collection search and filtering', async ({ page }) => {
-    // Arrange: Criar múltiplas coleções
+    // Arrange: Create multiple collections
     await createTestCollection(page, 'React Collection');
     await createTestCollection(page, 'Vue Collection');
     await createTestCollection(page, 'Angular Collection');
 
-    // Act: Pesquisar
+    // Act: Search
     await page.fill('[data-testid="search-collections"]', 'React');
     await page.click('[data-testid="search-button"]');
 
-    // Assert: Apenas coleção React deve aparecer
+    // Assert: Only React collection should appear
     await expect(page.locator('[data-testid="collection-item"]')).toHaveCount(1);
     await expect(page.locator('[data-testid="collection-title"]')).toContainText('React Collection');
 
@@ -320,31 +320,31 @@ test.describe('Collections Flow', () => {
 });
 ```
 
-### Padrões de Teste Recomendados
+### Recommended Test Patterns
 
-#### 1. Teste de Jornada Completa
+#### 1. Complete Journey Test
 ```typescript
 test('should complete full user journey', async ({ page }) => {
   // 1. Login
   await loginUser(page, email, password);
 
-  // 2. Criar coleção
+  // 2. Create collection
   await createTestCollection(page, 'My Journey Collection');
 
-  // 3. Adicionar vídeos
+  // 3. Add videos
   await addVideoToCollection(page, videoUrl1);
   await addVideoToCollection(page, videoUrl2);
 
-  // 4. Organizar conteúdo
+  // 4. Organize content
   await page.click('[data-testid="organize-videos"]');
   await page.dragAndDrop('[data-testid="video-1"]', '[data-testid="drop-zone"]');
 
-  // 5. Compartilhar coleção
+  // 5. Share collection
   await page.click('[data-testid="share-collection"]');
   await page.check('[data-testid="public-share"]');
   await page.click('[data-testid="generate-link"]');
 
-  // 6. Verificar compartilhamento
+  // 6. Verify sharing
   const shareLink = await page.locator('[data-testid="share-link"]').inputValue();
   expect(shareLink).toBeTruthy();
 
@@ -353,7 +353,7 @@ test('should complete full user journey', async ({ page }) => {
 });
 ```
 
-#### 2. Teste de Funcionalidade Específica
+#### 2. Specific Functionality Test
 ```typescript
 test('should handle bulk video operations', async ({ page }) => {
   // Arrange
@@ -363,7 +363,7 @@ test('should handle bulk video operations', async ({ page }) => {
   // Act
   await page.click('[data-testid="bulk-add-mode"]');
 
-  // Adicionar múltiplas URLs
+  // Add multiple URLs
   const videoUrls = [
     'https://www.youtube.com/watch?v=video1',
     'https://www.youtube.com/watch?v=video2',
@@ -382,47 +382,47 @@ test('should handle bulk video operations', async ({ page }) => {
 });
 ```
 
-#### 3. Teste de Responsividade
+#### 3. Responsiveness Test
 ```typescript
 test('should work on mobile viewport', async ({ page }) => {
-  // Configurar viewport mobile
+  // Configure mobile viewport
   await page.setViewportSize({ width: 375, height: 667 });
 
   await loginUser(page, email, password);
 
-  // Verificar menu mobile
+  // Check mobile menu
   await page.click('[data-testid="mobile-menu"]');
   await expect(page.locator('[data-testid="mobile-nav"]')).toBeVisible();
 
-  // Testar funcionalidade em mobile
+  // Test functionality on mobile
   await page.click('[data-testid="create-collection-mobile"]');
   await expect(page.locator('[data-testid="collection-form"]')).toBeVisible();
 });
 ```
 
-## 🔍 Debugging de Testes
+## 🔍 Test Debugging
 
-### Técnicas de Debug
+### Debugging Techniques
 
-#### 1. Screenshots e Videos
+#### 1. Screenshots and Videos
 ```typescript
 test('debug test with screenshots', async ({ page }) => {
   await page.goto('/');
 
-  // Tirar screenshot
+  // Take screenshot
   await page.screenshot({ path: 'debug-screenshot.png' });
 
-  // Continuar teste...
+  // Continue test...
 });
 ```
 
-#### 2. Pause e Step-through
+#### 2. Pause and Step-through
 ```typescript
 test('debug with pause', async ({ page }) => {
   await page.goto('/');
-  await page.pause(); // Pausa execução para debug manual
+  await page.pause(); // Pause execution for manual debug
 
-  // Código continua após interação manual
+  // Code continues after manual interaction
 });
 ```
 
@@ -432,7 +432,7 @@ test('debug with console logs', async ({ page }) => {
   page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
   await page.goto('/');
-  // Logs da página serão mostrados no console
+  // Page logs will be shown in console
 });
 ```
 
@@ -451,9 +451,9 @@ test('debug network requests', async ({ page }) => {
 });
 ```
 
-### Debugging com VS Code
+### VS Code Debugging
 
-#### Configuração do Launch.json
+#### Launch.json Configuration
 ```json
 {
   "version": "0.2.0",
@@ -471,44 +471,44 @@ test('debug network requests', async ({ page }) => {
 }
 ```
 
-## 📊 Relatórios e Análise
+## 📊 Reports and Analysis
 
-### Tipos de Relatório
+### Report Types
 
-#### 1. Relatório HTML
+#### 1. HTML Report
 ```bash
 npx playwright test --reporter=html
 npx playwright show-report
 ```
 
-#### 2. Relatório JUnit (para CI/CD)
+#### 2. JUnit Report (for CI/CD)
 ```bash
 npx playwright test --reporter=junit
 ```
 
-#### 3. Relatório JSON
+#### 3. JSON Report
 ```bash
 npx playwright test --reporter=json
 ```
 
-### Análise de Resultados
+### Results Analysis
 
-#### Métricas Importantes
-- **Taxa de sucesso**: Percentual de testes que passam
-- **Tempo médio de execução**: Performance dos testes
-- **Flaky tests**: Testes que falham intermitentemente
-- **Cobertura de cenários**: Quão bem os testes cobrem funcionalidades
+#### Important Metrics
+- **Success rate**: Percentage of passing tests
+- **Average execution time**: Test performance
+- **Flaky tests**: Tests that fail intermittently
+- **Scenario coverage**: How well tests cover functionalities
 
-#### Identificando Problemas
+#### Identifying Problems
 ```typescript
-// Teste flaky - pode falhar aleatoriamente
+// Flaky test - may fail randomly
 test('flaky test example', async ({ page }) => {
-  // Este teste pode falhar devido a timing
+  // This test may fail due to timing
   await page.click('[data-testid="async-button"]');
   await expect(page.locator('[data-testid="result"]')).toBeVisible();
 });
 
-// Solução: Adicionar waits apropriados
+// Solution: Add appropriate waits
 test('stable test example', async ({ page }) => {
   await page.click('[data-testid="async-button"]');
   await page.waitForSelector('[data-testid="result"]', { timeout: 10000 });
@@ -516,7 +516,7 @@ test('stable test example', async ({ page }) => {
 });
 ```
 
-## 🚀 Integração com CI/CD
+## 🚀 CI/CD Integration
 
 ### GitHub Actions
 
@@ -557,7 +557,7 @@ jobs:
           retention-days: 30
 ```
 
-### Configuração para Diferentes Ambientes
+### Configuration for Different Environments
 
 ```typescript
 // playwright.config.ts
@@ -582,139 +582,139 @@ const config = {
 };
 ```
 
-## 🎯 Boas Práticas
+## 🎯 Best Practices
 
-### Princípios Gerais
-1. **Teste jornadas completas do usuário**
-2. **Use seletores estáveis (data-testid)**
-3. **Evite sleeps, use waits apropriados**
-4. **Limpe dados de teste após execução**
-5. **Mantenha testes independentes**
+### General Principles
+1. **Test complete user journeys**
+2. **Use stable selectors (data-testid)**
+3. **Avoid sleeps, use appropriate waits**
+4. **Clean test data after execution**
+5. **Keep tests independent**
 
-### Estrutura de Teste
+### Test Structure
 ```typescript
 test.describe('Feature Name', () => {
   test.beforeAll(async () => {
-    // Setup global (ex: criar usuário de teste)
+    // Global setup (ex: create test user)
   });
 
   test.beforeEach(async ({ page }) => {
-    // Setup por teste (ex: login)
+    // Per-test setup (ex: login)
   });
 
   test.afterEach(async ({ page }) => {
-    // Cleanup por teste
+    // Per-test cleanup
   });
 
   test.afterAll(async () => {
-    // Cleanup global
+    // Global cleanup
   });
 
   test('should do something', async ({ page }) => {
-    // Teste específico
+    // Specific test
   });
 });
 ```
 
-### Padrões de Seletores
+### Selector Patterns
 ```typescript
-// ✅ Bom - Usar data-testid
+// ✅ Good - Use data-testid
 await page.click('[data-testid="create-collection"]');
 
-// ❌ Ruim - Dependente de CSS
+// ❌ Bad - Implementation dependent
 await page.click('.btn-primary');
 
-// ❌ Ruim - Dependente de texto
-await page.click('text=Criar Coleção');
+// ❌ Bad - Text dependent
+await page.click('text=Create Collection');
 ```
 
-### Tratamento de Timing
+### Timing Handling
 ```typescript
-// ✅ Bom - Wait específico
+// ✅ Good - Specific wait
 await page.waitForSelector('[data-testid="result"]');
 
-// ❌ Ruim - Sleep arbitrário
+// ❌ Bad - Arbitrary sleep
 await page.waitForTimeout(5000);
 
-// ✅ Bom - Wait por condição
+// ✅ Good - Wait for condition
 await expect(page.locator('[data-testid="loading"]')).toBeHidden();
 ```
 
 ## 🔧 Troubleshooting
 
-### Problemas Comuns
+### Common Problems
 
-#### Testes Falham Intermitentemente
-**Causas possíveis:**
+#### Intermittently Failing Tests
+**Possible causes:**
 - Timing issues
-- Estado não limpo entre testes
-- Dependências de rede
+- Unclean state between tests
+- Network dependencies
 
-**Soluções:**
+**Solutions:**
 ```typescript
-// Adicionar retries
+// Add retries
 test('flaky test', async ({ page }) => {
-  // Lógica do teste
+  // Test logic
 }).retries(3);
 
-// Adicionar waits mais robustos
+// Add more robust waits
 await page.waitForLoadState('networkidle');
 ```
 
-#### Elementos Não Encontrados
-**Verificações:**
-1. O seletor está correto?
-2. O elemento está em iframe?
-3. Há loading states?
+#### Elements Not Found
+**Checks:**
+1. Is the selector correct?
+2. Is the element in an iframe?
+3. Are there loading states?
 
-**Solução:**
+**Solution:**
 ```typescript
-// Verificar se elemento existe
+// Check if element exists
 const element = page.locator('[data-testid="element"]');
 await expect(element).toBeVisible();
 
-// Para iframes
+// For iframes
 const frame = page.frameLocator('iframe');
 await frame.locator('[data-testid="element"]').click();
 ```
 
-#### Navegador Não Inicia
-**Verificações:**
-1. Playwright instalado corretamente?
-2. Dependências do sistema instaladas?
-3. Porta 3000 livre?
+#### Browser Does Not Start
+**Checks:**
+1. Is Playwright installed correctly?
+2. Are system dependencies installed?
+3. Is port 3000 free?
 
-**Solução:**
+**Solution:**
 ```bash
-# Reinstalar Playwright
+# Reinstall Playwright
 npx playwright install --force
 
-# Instalar dependências
+# Install dependencies
 npx playwright install-deps
 ```
 
-## 📈 Métricas e Monitoramento
+## 📈 Metrics and Monitoring
 
-### Monitorando Qualidade dos Testes
+### Monitoring Test Quality
 
-#### 1. Taxa de Sucesso
+#### 1. Success Rate
 ```bash
-# Verificar taxa de sucesso geral
+# Check overall success rate
 npx playwright test --reporter=json | jq '.stats.expected'
 ```
 
-#### 2. Tempo de Execução
+#### 2. Execution Time
 ```bash
-# Medir tempo dos testes
+# Measure test time
 time npm run test:e2e
 ```
 
-#### 3. Cobertura de Cenários
-- Manter lista de cenários críticos cobertos
-- Revisar cobertura periodicamente
-- Adicionar testes para novas funcionalidades
+#### 3. Scenario Coverage
+- Maintain list of covered critical scenarios
+- Review coverage periodically
+- Add tests for new features
 
-### Alertas e Notificações
+### Alerts and Notifications
 
 #### Slack Integration
 ```yaml
@@ -727,31 +727,31 @@ time npm run test:e2e
     text: 'E2E tests failed'
 ```
 
-#### Dashboard de Métricas
-- Tempo médio de execução
-- Taxa de sucesso por suite
-- Tendências de falhas
-- Cobertura de testes
+#### Metrics Dashboard
+- Average execution time
+- Success rate by suite
+- Failure trends
+- Test coverage
 
 ---
 
-## 📚 Recursos Adicionais
+## 📚 Additional Resources
 
-### Documentação Oficial
+### Official Documentation
 - [Playwright Docs](https://playwright.dev/docs/intro)
 - [Playwright API](https://playwright.dev/docs/api/class-playwright)
 - [Best Practices](https://playwright.dev/docs/best-practices)
 
-### Comunidades
+### Communities
 - [Playwright Slack](https://playwright.dev/community)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/playwright)
 - [GitHub Discussions](https://github.com/microsoft/playwright/discussions)
 
-### Ferramentas Úteis
+### Useful Tools
 - [Playwright Trace Viewer](https://playwright.dev/docs/trace-viewer)
 - [Playwright Codegen](https://playwright.dev/docs/codegen)
 - [Playwright Test Runner](https://playwright.dev/docs/test-runner)
 
 ---
 
-Seguindo este guia, você terá uma suíte robusta de testes E2E que garante a qualidade e confiabilidade do YouTube Organizer do ponto de vista do usuário final.
+Following this guide, you will have a robust E2E test suite that ensures the quality and reliability of YouTube Organizer from the end user's perspective.

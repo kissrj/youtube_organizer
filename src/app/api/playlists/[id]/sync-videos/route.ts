@@ -12,7 +12,7 @@ export async function POST(
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { id: playlistId } = await params
@@ -27,7 +27,7 @@ export async function POST(
     })
 
     if (!playlist) {
-      return NextResponse.json({ error: 'Playlist não encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Playlist not found' }, { status: 404 })
     }
 
     // Buscar vídeos da playlist no YouTube
@@ -35,7 +35,7 @@ export async function POST(
 
     if (youtubeVideos.length === 0) {
       return NextResponse.json({
-        message: 'Nenhum vídeo encontrado na playlist',
+        message: 'No videos found in playlist',
         imported: 0,
         skipped: 0,
         errors: 0
@@ -63,7 +63,7 @@ export async function POST(
           results.push({
             videoId: youtubeVideo.videoId,
             status: 'skipped',
-            reason: 'Vídeo já importado'
+            reason: 'Video already imported'
           })
           continue
         }
@@ -76,10 +76,23 @@ export async function POST(
           results.push({
             videoId: youtubeVideo.videoId,
             status: 'error',
-            reason: 'Não foi possível obter detalhes do vídeo'
+            reason: 'Could not fetch video details'
           })
           continue
         }
+
+        // Prepare video tags including playlist information
+        const videoTags = videoDetails.tags || []
+        const playlistInfo = {
+          playlistId: playlistId,
+          playlistTitle: playlist.title,
+          playlistYoutubeId: playlist.youtubeId,
+          importedAt: new Date().toISOString(),
+          position: youtubeVideos.indexOf(youtubeVideo) // Position in playlist
+        }
+
+        // Add playlist info to tags with a simpler format for easier searching
+        const updatedTags = [...videoTags, `playlist_${playlistId}`, `playlist:${JSON.stringify(playlistInfo)}`]
 
         // Criar o vídeo no banco
         const newVideo = await prisma.video.create({
@@ -101,7 +114,7 @@ export async function POST(
             projection: videoDetails.projection,
             defaultAudioLanguage: videoDetails.defaultAudioLanguage,
             categoryId: videoDetails.categoryId,
-            videoTags: videoDetails.tags ? JSON.stringify(videoDetails.tags) : null,
+            videoTags: JSON.stringify(updatedTags),
             userId,
           },
         })
@@ -125,7 +138,7 @@ export async function POST(
     }
 
     return NextResponse.json({
-      message: `Importação concluída: ${imported} importados, ${skipped} pulados, ${errors} erros`,
+      message: `Import completed: ${imported} imported, ${skipped} skipped, ${errors} errors`,
       imported,
       skipped,
       errors,
@@ -150,7 +163,7 @@ async function fetchVideoDetails(videoId: string) {
     )
 
     if (!response.ok) {
-      throw new Error('Erro na API do YouTube')
+      throw new Error('YouTube API error')
     }
 
     const data = await response.json()
@@ -184,7 +197,7 @@ async function fetchVideoDetails(videoId: string) {
       tags: snippet.tags || []
     }
   } catch (error) {
-    console.error('Erro ao buscar detalhes do vídeo:', error)
+    console.error('Error fetching video details:', error)
     return null
   }
 }

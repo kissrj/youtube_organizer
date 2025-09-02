@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
 
 interface Tag {
@@ -96,7 +97,7 @@ export default function TagsPage() {
           onClick={() => setShowForm(!showForm)}
           className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
         >
-          {showForm ? 'Cancelar' : 'Nova Tag'}
+          {showForm ? 'Cancel' : 'New Tag'}
         </button>
       </div>
 
@@ -104,7 +105,7 @@ export default function TagsPage() {
       {showForm && (
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Criar Nova Tag
+            Criar New Tag
           </h2>
           <form onSubmit={createTag} className="flex gap-4">
             <input
@@ -126,7 +127,7 @@ export default function TagsPage() {
               onClick={() => setShowForm(false)}
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
             >
-              Cancelar
+              Cancel
             </button>
           </form>
         </div>
@@ -158,9 +159,11 @@ export default function TagsPage() {
                   {tag.playlists.slice(0, 2).map((pt) => (
                     <div key={pt.playlist.id} className="flex items-center space-x-2">
                       {pt.playlist.thumbnailUrl && (
-                        <img
+                        <Image
                           src={pt.playlist.thumbnailUrl}
                           alt={pt.playlist.title}
+                          width={24}
+                          height={24}
                           className="w-6 h-6 rounded object-cover"
                         />
                       )}
@@ -192,3 +195,4 @@ export default function TagsPage() {
     </AuthGuard>
   )
 }
+

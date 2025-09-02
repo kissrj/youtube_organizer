@@ -1,0 +1,105 @@
+// src/components/collections/CollectionGrid.tsx
+'use client'
+
+import React, { useState } from 'react'
+import { Collection } from '@/lib/types'
+import { CollectionCard } from './CollectionCard'
+import { CreateCollectionDialog } from './CreateCollectionDialog'
+
+interface CollectionGridProps {
+  collections: Collection[]
+  onCollectionSelect: (collection: Collection) => void
+  onCreateCollection: (data: any) => void
+  selectedCollectionId?: string
+  isLoading?: boolean
+  error?: string | null
+}
+
+export function CollectionGrid({
+  collections,
+  onCollectionSelect,
+  onCreateCollection,
+  selectedCollectionId,
+  isLoading = false,
+  error = null
+}: CollectionGridProps) {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div className="collection-grid">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Minhas Coleções</h2>
+          <div className="animate-pulse bg-gray-200 rounded px-4 py-2">
+            <span className="text-gray-500">Loading�</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 animate-pulse">
+              <div className="h-32 bg-gray-200 rounded-t-lg"></div>
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="collection-grid">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <p className="text-red-600 text-center">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="collection-grid space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Minhas Coleções</h2>
+        <button
+          onClick={() => setIsCreateDialogOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <span>+ Nova Coleção</span>
+        </button>
+      </div>
+
+      {collections.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">Nenhuma coleção encontrada</div>
+          <button
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Criar primeira coleção
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {collections.map(collection => (
+            <CollectionCard
+              key={collection.id}
+              collection={collection}
+              isSelected={selectedCollectionId === collection.id}
+              onClick={() => onCollectionSelect(collection)}
+            />
+          ))}
+        </div>
+      )}
+
+      <CreateCollectionDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSubmit={onCreateCollection}
+      />
+    </div>
+  )
+}
+

@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
 
 interface Category {
@@ -46,7 +47,6 @@ export default function PlaylistsPage() {
   const [youtubeId, setYoutubeId] = useState('')
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
   const [showOrganizer, setShowOrganizer] = useState(false)
-  const [syncVideosLoading, setSyncVideosLoading] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPlaylists()
@@ -61,7 +61,7 @@ export default function PlaylistsPage() {
         setPlaylists(data)
       }
     } catch (error) {
-      console.error('Erro ao buscar playlists:', error)
+      console.error('Error fetching playlists:', error)
     } finally {
       setLoading(false)
     }
@@ -84,20 +84,20 @@ export default function PlaylistsPage() {
         setTags(tagsData)
       }
     } catch (error) {
-      console.error('Erro ao buscar categorias e tags:', error)
+      console.error('Error fetching categories and tags:', error)
     }
   }
 
   const extractYouTubePlaylistId = (input: string): string | null => {
     const trimmed = input.trim()
 
-    // Se já é um ID válido (34 caracteres), retorna como está
+    // If it's already a valid ID (34 characters), return as is
     const playlistRegex = /^[A-Za-z0-9_-]{34}$/
     if (playlistRegex.test(trimmed)) {
       return trimmed
     }
 
-    // Tenta extrair ID de uma URL completa
+    // Try to extract ID from a complete URL
     const urlRegex = /[?&]list=([A-Za-z0-9_-]{34})/
     const match = trimmed.match(urlRegex)
 
@@ -114,7 +114,7 @@ export default function PlaylistsPage() {
     if (!extractedId) {
       return {
         isValid: false,
-        error: 'Formato inválido. Deve ser um ID de 34 caracteres ou uma URL do YouTube com parâmetro list='
+        error: 'Invalid format. Must be a 34-character ID or a YouTube URL with list parameter'
       }
     }
 
@@ -128,14 +128,14 @@ export default function PlaylistsPage() {
     const trimmedInput = youtubeId.trim()
     if (!trimmedInput) return
 
-    // Validação e extração do ID
+    // Validation and ID extraction
     const validation = validateYouTubePlaylistId(trimmedInput)
     if (!validation.isValid) {
       alert(`❌ ${validation.error}\n\n` +
-            '💡 Você pode:\n' +
-            '• Copiar apenas o ID (34 caracteres)\n' +
-            '• Ou colar a URL completa do YouTube\n\n' +
-            'Exemplos válidos:\n' +
+            '💡 You can:\n' +
+            '• Copy just the ID (34 characters)\n' +
+            '• Or paste the full YouTube URL\n\n' +
+            'Valid examples:\n' +
             '• PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI\n' +
             '• https://www.youtube.com/playlist?list=PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI')
       return
@@ -154,58 +154,65 @@ export default function PlaylistsPage() {
       })
 
       if (response.ok) {
+        const data = await response.json()
         setYoutubeId('')
         fetchPlaylists()
-        alert('✅ Playlist sincronizada com sucesso!')
+
+        const videoSyncResult = data.videoSyncResult
+        if (videoSyncResult) {
+          alert(`✅ Playlist added successfully!\n\n📊 Video Import Results:\n• ${videoSyncResult.imported} videos imported\n• ${videoSyncResult.skipped} videos skipped\n• ${videoSyncResult.errors} errors\n\nTotal: ${videoSyncResult.total} videos processed`)
+        } else {
+          alert('✅ Playlist added successfully!\n\nVideos will be imported automatically in the background.')
+        }
       } else {
         const errorData = await response.json()
-        const errorMessage = errorData.error || 'Erro ao sincronizar playlist'
+        const errorMessage = errorData.error || 'Error synchronizing playlist'
 
-        // Mostra mensagem de erro mais amigável
-        if (errorMessage.includes('ID da playlist inválido')) {
-          alert('❌ ID da playlist inválido!\n\n' +
-                'O ID deve ter exatamente 34 caracteres.\n' +
-                'Exemplo: PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI\n\n' +
-                'Certifique-se de copiar apenas o ID, não a URL completa.')
-        } else if (errorMessage.includes('não encontrada no YouTube')) {
-          alert('❌ Playlist não encontrada!\n\n' +
-                'Verifique se:\n' +
-                '• O ID da playlist está correto\n' +
-                '• A playlist é pública\n' +
-                '• A playlist não foi excluída\n' +
-                '• Você tem permissão para acessá-la')
-        } else if (errorMessage.includes('Acesso negado')) {
-          alert('❌ Problema com a API do YouTube!\n\n' +
-                'Verifique se:\n' +
-                '• A chave da API está correta\n' +
-                '• A quota diária não foi excedida\n' +
-                '• A API do YouTube Data v3 está habilitada')
+        // Show more user-friendly error message
+        if (errorMessage.includes('Invalid playlist ID')) {
+          alert('❌ Invalid playlist ID!\n\n' +
+                'The ID must be exactly 34 characters.\n' +
+                'Example: PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI\n\n' +
+                'Make sure to copy only the ID, not the full URL.')
+        } else if (errorMessage.includes('not found on YouTube')) {
+          alert('❌ Playlist not found!\n\n' +
+                'Check if:\n' +
+                '• The playlist ID is correct\n' +
+                '• The playlist is public\n' +
+                '• The playlist hasn\'t been deleted\n' +
+                '• You have permission to access it')
+        } else if (errorMessage.includes('Access denied')) {
+          alert('❌ Problem with YouTube API!\n\n' +
+                'Check if:\n' +
+                '• The API key is correct\n' +
+                '• The daily quota hasn\'t been exceeded\n' +
+                '• The YouTube Data v3 API is enabled')
         } else if (errorMessage.includes('quota')) {
-          alert('❌ Quota da API excedida!\n\n' +
-                'A quota diária da API do YouTube foi excedida.\n' +
-                'Tente novamente amanhã ou considere fazer upgrade do plano.')
+          alert('❌ API quota exceeded!\n\n' +
+                'The daily YouTube API quota has been exceeded.\n' +
+                'Try again tomorrow or consider upgrading your plan.')
         } else {
-          alert(`❌ Erro: ${errorMessage}`)
+          alert(`âŒ Erro: ${errorMessage}`)
         }
 
-        // Mostrar mensagem de erro mais amigável
-        if (errorMessage.includes('não encontrada ou privada')) {
-          alert(`❌ Playlist não encontrada!\n\n💡 Tente usar uma playlist pública conhecida:\n\n📺 ID: PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI\n📝 Título: Popular Music Videos\n\nOu configure OAuth para acessar suas playlists privadas.`)
+        // Show more user-friendly error message
+        if (errorMessage.includes('not found or private')) {
+          alert(`❌ Playlist not found!\n\n💡 Try using a known public playlist:\n\n📺 ID: PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI\n🎵 Title: Popular Music Videos\n\nOr configure OAuth to access your private playlists.`)
         } else {
-          alert(`❌ Erro: ${errorMessage}`)
+          alert(`❌ Error: ${errorMessage}`)
         }
-        console.error('Erro ao sincronizar playlist:', errorMessage)
+        console.error('Error synchronizing playlist:', errorMessage)
       }
     } catch (error) {
-      console.error('Erro ao sincronizar playlist:', error)
+      console.error('Error synchronizing playlist:', error)
 
-      // Verifica se é um erro de rede
+      // Check if it's a network error
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        alert('❌ Erro de conexão!\n\n' +
-              'Verifique sua conexão com a internet e tente novamente.')
+        alert('❌ Connection error!\n\n' +
+              'Check your internet connection and try again.')
       } else {
-        alert('❌ Erro inesperado!\n\n' +
-              'Tente novamente em alguns instantes.')
+        alert('❌ Unexpected error!\n\n' +
+              'Try again in a few moments.')
       }
     } finally {
       setSyncLoading(false)
@@ -226,7 +233,7 @@ export default function PlaylistsPage() {
         fetchPlaylists()
       }
     } catch (error) {
-      console.error('Erro ao adicionar categoria:', error)
+      console.error('Error adding category:', error)
     }
   }
 
@@ -244,7 +251,7 @@ export default function PlaylistsPage() {
         fetchPlaylists()
       }
     } catch (error) {
-      console.error('Erro ao remover categoria:', error)
+      console.error('Error removing category:', error)
     }
   }
 
@@ -262,7 +269,7 @@ export default function PlaylistsPage() {
         fetchPlaylists()
       }
     } catch (error) {
-      console.error('Erro ao adicionar tag:', error)
+      console.error('Error adding tag:', error)
     }
   }
 
@@ -280,7 +287,7 @@ export default function PlaylistsPage() {
         fetchPlaylists()
       }
     } catch (error) {
-      console.error('Erro ao remover tag:', error)
+      console.error('Error removing tag:', error)
     }
   }
 
@@ -289,31 +296,6 @@ export default function PlaylistsPage() {
     setShowOrganizer(true)
   }
 
-  const syncPlaylistVideos = async (playlist: Playlist) => {
-    setSyncVideosLoading(playlist.id)
-
-    try {
-      const response = await fetch(`/api/playlists/${playlist.id}/sync-videos`, {
-        method: 'POST',
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        alert(`✅ Vídeos importados com sucesso!\n\n📊 Estatísticas:\n• ${data.imported} vídeos importados\n• ${data.skipped} vídeos pulados\n• ${data.errors} erros\n\nTotal: ${data.total} vídeos processados`)
-
-        // Recarregar playlists para atualizar contadores
-        fetchPlaylists()
-      } else {
-        alert(`❌ Erro ao importar vídeos: ${data.error || 'Erro desconhecido'}`)
-      }
-    } catch (error) {
-      console.error('Erro ao sincronizar vídeos:', error)
-      alert('❌ Erro ao conectar com o servidor. Tente novamente.')
-    } finally {
-      setSyncVideosLoading(null)
-    }
-  }
 
   if (loading) {
     return (
@@ -330,17 +312,17 @@ export default function PlaylistsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Playlists</h1>
         </div>
 
-      {/* Formulário para sincronizar playlist */}
+      {/* Form to synchronize playlist */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Sincronizar Playlist do YouTube
+          Add YouTube Playlist
         </h2>
         <div className="flex gap-4">
           <input
             type="text"
             value={youtubeId}
             onChange={(e) => setYoutubeId(e.target.value)}
-            placeholder="Cole o ID da playlist do YouTube"
+            placeholder="Paste the YouTube playlist ID"
             className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
           />
           <button
@@ -348,54 +330,71 @@ export default function PlaylistsPage() {
             disabled={syncLoading || !youtubeId.trim()}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {syncLoading ? 'Sincronizando...' : 'Sincronizar'}
+            {syncLoading ? 'Adding Playlist & Importing Videos...' : 'Add Playlist'}
           </button>
         </div>
 
-        {/* Botão de teste rápido */}
+        {/* Quick test button */}
         <div className="flex items-center gap-2 mt-4">
-          <span className="text-sm text-gray-600">Teste rápido:</span>
+          <span className="text-sm text-gray-600">Quick test:</span>
           <button
             onClick={() => setYoutubeId('PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')}
             className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
           >
-            🎵 Popular Music Videos
+            ðŸŽµ Popular Music Videos
           </button>
           <span className="text-xs text-gray-500">
-            (Playlist pública conhecida que funciona)
+            (Known working public playlist)
           </span>
         </div>
 
         <div className="text-sm text-gray-600 mt-2 space-y-1">
-          <p><strong>✅ Você pode colar:</strong></p>
+          <p><strong>✅ You can paste:</strong></p>
           <div className="bg-green-50 border border-green-200 rounded p-3 space-y-2">
             <div>
-              <span className="font-medium text-green-800">Apenas o ID:</span>
+              <span className="font-medium text-green-800">Just the ID:</span>
               <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2">PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
             </div>
             <div>
-              <span className="font-medium text-green-800">Ou a URL completa:</span>
+              <span className="font-medium text-green-800">Or the full URL:</span>
               <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2 break-all">https://www.youtube.com/playlist?list=PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
             </div>
           </div>
+          <div className="bg-blue-50 border border-blue-200 rounded p-3 mt-3">
+            <p className="text-blue-800 font-medium">🚀 Automatic Video Import</p>
+            <p className="text-blue-700 text-sm mt-1">
+              When you add a playlist, all videos from that playlist will be automatically imported and tagged appropriately.
+              These videos will only appear in this playlist's workspace, not in your general videos section.
+            </p>
+          </div>
           <p className="text-xs text-gray-500 mt-2">
-            💡 O sistema extrairá automaticamente o ID da playlist da URL se necessário.
+            💡 The system will automatically extract the playlist ID from the URL if necessary.
           </p>
         </div>
       </div>
 
-      {/* Lista de playlists */}
+      {/* Playlist list */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {playlists.map((playlist) => (
-          <div key={playlist.id} className="bg-white rounded-lg shadow overflow-hidden">
+          <div
+            key={playlist.id}
+            className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => window.location.href = `/playlists/${playlist.id}`}
+          >
             <div className="aspect-video bg-gray-200 relative">
               {playlist.thumbnailUrl && (
-                <img
+                <Image
                   src={playlist.thumbnailUrl}
                   alt={playlist.title}
+                  width={1280}
+                  height={720}
                   className="w-full h-full object-cover"
                 />
               )}
+              {/* Click indicator */}
+              <div className="absolute top-2 right-2 bg-blue-600 bg-opacity-90 text-white text-xs px-2 py-1 rounded">
+                Click to view videos
+              </div>
             </div>
             <div className="p-4">
               <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
@@ -405,10 +404,10 @@ export default function PlaylistsPage() {
                 {playlist.channelTitle}
               </p>
               <p className="text-sm text-gray-500 mb-3">
-                {playlist.itemCount} vídeos
+                {playlist.itemCount} videos
               </p>
 
-              {/* Categorias */}
+              {/* Categories */}
               {playlist.categories.length > 0 && (
                 <div className="mb-3">
                   <div className="flex flex-wrap gap-1">
@@ -442,30 +441,43 @@ export default function PlaylistsPage() {
                 </div>
               )}
 
-              {/* Botões de ação */}
+              {/* Action buttons */}
               <div className="flex gap-2 mt-4">
                 <button
-                  onClick={() => syncPlaylistVideos(playlist)}
-                  disabled={syncVideosLoading === playlist.id}
-                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  onClick={() => window.location.href = `/playlists/${playlist.id}`}
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                 >
-                  {syncVideosLoading === playlist.id ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Importando...
-                    </>
-                  ) : (
-                    <>
-                      📥 Importar Vídeos
-                    </>
-                  )}
+                  <span>📺</span>
+                  View Videos
                 </button>
                 <button
                   onClick={() => window.open(`https://www.youtube.com/playlist?list=${playlist.youtubeId}`, '_blank')}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-                  title="Abrir no YouTube"
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
                 >
-                  📺
+                  <span>▶️</span>
+                  Watch
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!confirm('Are you sure you want to delete this playlist? This action is irreversible.')) return
+                    try {
+                      const res = await fetch(`/api/playlists/${playlist.id}`, { method: 'DELETE' })
+                      if (res.ok) {
+                        // refresh list
+                        fetchPlaylists()
+                      } else {
+                        const err = await res.json()
+                        alert(err.error || 'Error deleting playlist')
+                      }
+                    } catch (e) {
+                      console.error('Error deleting playlist:', e)
+                      alert('Error deleting playlist')
+                    }
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                  title="Delete playlist"
+                >
+                  🗑️ Delete
                 </button>
               </div>
             </div>
@@ -476,7 +488,7 @@ export default function PlaylistsPage() {
       {playlists.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500">
-            Nenhuma playlist encontrada. Sincronize uma playlist do YouTube para começar.
+            No playlists found. Synchronize a YouTube playlist to get started.
           </p>
         </div>
       )}
@@ -484,3 +496,4 @@ export default function PlaylistsPage() {
     </AuthGuard>
   )
 }
+

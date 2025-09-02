@@ -1,332 +1,332 @@
-# ❓ Perguntas Frequentes (FAQ) - YouTube Organizer
+# ❓ Frequently Asked Questions (FAQ) - YouTube Organizer
 
-## 📋 Perguntas Gerais
+## 📋 General Questions
 
-### O que é o YouTube Organizer?
-O YouTube Organizer é uma aplicação web moderna que ajuda usuários a organizar, gerenciar e descobrir conteúdo do YouTube de forma inteligente. Utilizando IA avançada, feeds automatizados e uma interface intuitiva, permite criar coleções personalizadas, acompanhar canais favoritos e descobrir novos conteúdos relevantes.
+### What is YouTube Organizer?
+YouTube Organizer is a modern web application that helps users organize, manage, and discover YouTube content in an intelligent way. Using advanced AI, automated feeds, and an intuitive interface, it allows creating personalized collections, tracking favorite channels, and discovering new relevant content.
 
-### Como funciona a IA do YouTube Organizer?
-Nossa IA analisa padrões de consumo, preferências de conteúdo e metadados de vídeos para:
-- **Recomendar conteúdo** relevante baseado no seu histórico
-- **Gerar resumos automáticos** de vídeos longos
-- **Categorizar vídeos** automaticamente
-- **Encontrar conteúdo relacionado** de forma inteligente
-- **Otimizar feeds** com machine learning
+### How does the AI in YouTube Organizer work?
+Our AI analyzes consumption patterns, content preferences, and video metadata to:
+- **Recommend relevant content** based on your history
+- **Generate automatic summaries** of long videos
+- **Categorize videos** automatically
+- **Find related content** intelligently
+- **Optimize feeds** with machine learning
 
-### É gratuito?
-Sim! Oferecemos um plano gratuito com recursos essenciais:
-- Até 10 coleções
-- 1000 vídeos organizados
-- Feeds básicos
-- Sincronização manual
-- Suporte comunitário
+### Is it free?
+Yes! We offer a free plan with essential features:
+- Up to 10 collections
+- 1000 organized videos
+- Basic feeds
+- Manual synchronization
+- Community support
 
-Para recursos avançados, consulte nosso [plano premium](#plano-premium).
+For advanced features, check our [premium plan](#premium-plan).
 
-### Quais navegadores são suportados?
+### Which browsers are supported?
 - **Chrome/Edge**: 90+
 - **Firefox**: 88+
 - **Safari**: 14+
 - **Mobile**: iOS Safari 14+, Chrome Mobile 90+
 
-## 🚀 Começando
+## 🚀 Getting Started
 
-### Como criar minha primeira coleção?
-1. Faça login na plataforma
-2. No dashboard, clique em "Nova Coleção"
-3. Preencha nome e descrição
-4. Clique em "Criar"
-5. Comece adicionando vídeos!
+### How do I create my first collection?
+1. Log in to the platform
+2. In the dashboard, click "New Collection"
+3. Fill in name and description
+4. Click "Create"
+5. Start adding videos!
 
-### Como adicionar vídeos às coleções?
-**Método 1 - URL direta:**
-1. Abra a coleção
-2. Clique em "Adicionar Vídeo"
-3. Cole a URL do YouTube
-4. Clique em "Adicionar"
+### How do I add videos to collections?
+**Method 1 - Direct URL:**
+1. Open the collection
+2. Click "Add Video"
+3. Paste the YouTube URL
+4. Click "Add"
 
-**Método 2 - Pesquisa:**
-1. Use a barra de pesquisa
-2. Encontre o vídeo desejado
-3. Clique em "Adicionar à coleção"
-4. Selecione a coleção de destino
+**Method 2 - Search:**
+1. Use the search bar
+2. Find the desired video
+3. Click "Add to collection"
+4. Select the target collection
 
-**Método 3 - Massa:**
-1. Clique em "Adicionar Múltiplos"
-2. Cole várias URLs (uma por linha)
-3. Selecione a coleção
-4. Confirme
+**Method 3 - Bulk:**
+1. Click "Add Multiple"
+2. Paste multiple URLs (one per line)
+3. Select the collection
+4. Confirm
 
-### Posso organizar vídeos em pastas dentro das coleções?
-Sim! As coleções suportam hierarquia:
-1. Crie uma coleção pai
-2. Adicione subcoleções
-3. Arraste vídeos entre níveis
-4. Use para categorização avançada
+### Can I organize videos in folders within collections?
+Yes! Collections support hierarchy:
+1. Create a parent collection
+2. Add subcollections
+3. Drag videos between levels
+4. Use for advanced categorization
 
-## 🔍 Pesquisa e Descoberta
+## 🔍 Search and Discovery
 
-### Como usar a pesquisa inteligente?
-- **Busca básica**: Digite palavras-chave na barra de pesquisa
-- **Busca avançada**: Use operadores como `canal:`, `data:`, `duração:`
-- **Busca por IA**: Descreva o que procura em linguagem natural
+### How do I use intelligent search?
+- **Basic search**: Type keywords in the search bar
+- **Advanced search**: Use operators like `channel:`, `date:`, `duration:`
+- **AI search**: Describe what you want in natural language
 
-### Exemplos de busca avançada:
+### Examples of advanced search:
 ```
-"react tutorial" canal:Traversy Media
-vídeos sobre IA data:2024
-tutoriais curtos duração:<10min
+"react tutorial" channel:Traversy Media
+AI videos date:2024
+short tutorials duration:<10min
 ```
 
-### Como funcionam os feeds automatizados?
-Os feeds monitoram conteúdo baseado em regras:
-- **Por palavras-chave**: Novos vídeos com termos específicos
-- **Por canal**: Uploads de canais seguidos
-- **Por categoria**: Conteúdo de categorias de interesse
-- **Inteligente**: IA encontra conteúdo relacionado
+### How do automated feeds work?
+Feeds monitor content based on rules:
+- **By keywords**: New videos with specific terms
+- **By channel**: Uploads from followed channels
+- **By category**: Content from categories of interest
+- **Intelligent**: AI finds related content
 
-## 📱 Dispositivos e Sincronização
+## 📱 Devices and Synchronization
 
-### Funciona em dispositivos móveis?
-Sim! Temos:
-- **Aplicativo nativo** para iOS e Android
-- **Site responsivo** otimizado para mobile
-- **Sincronização automática** entre dispositivos
-- **Funcionalidades offline** básicas
+### Does it work on mobile devices?
+Yes! We have:
+- **Native app** for iOS and Android
+- **Responsive website** optimized for mobile
+- **Automatic data synchronization** between devices
+- **Basic offline features**
 
-### Como sincronizar entre dispositivos?
-1. Faça login com a mesma conta
-2. Dados são sincronizados automaticamente
-3. Alterações em tempo real via WebSocket
-4. Backup automático na nuvem
+### How do I synchronize between devices?
+1. Log in with the same account
+2. Data is synchronized automatically
+3. Real-time updates via WebSocket
+4. Automatic cloud backup
 
-### Posso usar offline?
-Recursos offline limitados:
-- **Visualizar coleções** salvas
-- **Ler metadados** de vídeos
-- **Acesso básico** sem internet
-- **Sincronização** quando reconectar
+### Can I use it offline?
+Limited offline features:
+- **View saved collections**
+- **Read video metadata**
+- **Basic access** without internet
+- **Synchronization** when reconnecting
 
-## 🔐 Segurança e Privacidade
+## 🔐 Security and Privacy
 
-### Meus dados estão seguros?
-**Medidas de segurança:**
-- **Criptografia end-to-end** para dados sensíveis
-- **Autenticação OAuth** com Google
-- **Backups automáticos** e redundantes
-- **Auditoria de segurança** regular
-- **Conformidade GDPR** e LGPD
+### Is my data secure?
+**Security measures:**
+- **End-to-end encryption** for sensitive data
+- **OAuth authentication** with Google
+- **Automatic and redundant backups**
+- **Regular security auditing**
+- **GDPR and LGPD compliance**
 
-### Quem pode ver minhas coleções?
-- **Privadas**: Apenas você (padrão)
-- **Compartilhadas**: Pessoas convidadas
-- **Públicas**: Qualquer pessoa com o link
-- **Controle granular** de permissões
+### Who can see my collections?
+- **Private**: Only you (default)
+- **Shared**: Invited people
+- **Public**: Anyone with the link
+- **Granular permission control**
 
-### Como excluir minha conta?
-1. Vá para Configurações > Conta
-2. Clique em "Excluir Conta"
-3. Confirme com senha
-4. Dados serão removidos em 30 dias
+### How do I delete my account?
+1. Go to Settings > Account
+2. Click "Delete Account"
+3. Confirm with password
+4. Data will be removed in 30 days
 
-## 🔔 Notificações
+## 🔔 Notifications
 
-### Como configurar notificações?
-1. Vá para Configurações > Notificações
-2. Escolha canais: Email, Push, SMS
-3. Configure horários e tipos
-4. Salve preferências
+### How do I configure notifications?
+1. Go to Settings > Notifications
+2. Choose channels: Email, Push, SMS
+3. Configure schedules and types
+4. Save preferences
 
-### Tipos de notificações disponíveis:
-- **Novos vídeos** em feeds
-- **Recomendações de IA**
-- **Atualizações de coleções**
-- **Alertas do sistema**
-- **Atividades de colaboradores**
+### Available notification types:
+- **New videos** in feeds
+- **AI recommendations**
+- **Collection updates**
+- **System alerts**
+- **Collaborator activities**
 
-### Por que não recebo notificações?
-Possíveis causas:
-- **Email em spam** - Verifique pasta spam
-- **Configurações desabilitadas** - Ative em preferências
-- **Horário silencioso** - Configure período ativo
-- **Problema técnico** - Contate suporte
+### Why am I not receiving notifications?
+Possible causes:
+- **Email in spam** - Check spam folder
+- **Disabled settings** - Enable in preferences
+- **Silent time** - Configure active period
+- **Technical issue** - Contact support
 
-## 🔧 Problemas Técnicos
+## 🔧 Technical Problems
 
-### Vídeos não carregam
-**Soluções:**
-1. Verifique conexão com internet
-2. Limpe cache do navegador (Ctrl+F5)
-3. Tente outro navegador
-4. Desabilite extensões temporariamente
-5. Contate suporte se persistir
+### Videos not loading
+**Solutions:**
+1. Check internet connection
+2. Clear browser cache (Ctrl+F5)
+3. Try another browser
+4. Disable extensions temporarily
+5. Contact support if it persists
 
-### Sincronização falha
-**Verificações:**
-1. Permissões do YouTube estão ativas?
-2. Conta Google conectada corretamente?
-3. API do YouTube funcionando?
-4. Tente reautorizar a integração
+### Synchronization failed
+**Checks:**
+1. Are YouTube permissions active?
+2. Is Google account connected correctly?
+3. Is YouTube API working?
+4. Try reauthorizing the integration
 
-### Aplicativo lento
-**Otimização:**
-1. Feche outras abas/aplicativos
-2. Limpe cache e cookies
-3. Atualize para versão mais recente
-4. Verifique uso de memória/disco
-5. Reinicie dispositivo
+### Application slow
+**Optimization:**
+1. Close other tabs/applications
+2. Clear cache and cookies
+3. Update to latest version
+4. Check memory/disk usage
+5. Restart device
 
-### Erro "Quota excedida"
-O YouTube limita requisições da API:
-- **Aguarde algumas horas**
-- **Reduza frequência de sincronização**
-- **Atualize para plano premium** (quotas maiores)
-- **Otimize uso da API**
+### "Quota exceeded" error
+YouTube limits API requests:
+- **Wait a few hours**
+- **Reduce synchronization frequency**
+- **Upgrade to premium plan** (higher quotas)
+- **Optimize API usage**
 
-## 💰 Planos e Pagamento
+## 💰 Plans and Payment
 
-### Diferenças entre planos:
+### Differences between plans:
 
-| Recurso | Gratuito | Premium | Empresarial |
-|---------|----------|---------|-------------|
-| Coleções | 10 | Ilimitadas | Ilimitadas |
-| Vídeos | 1.000 | Ilimitados | Ilimitados |
-| Feeds | 3 | 50 | Ilimitados |
-| Sincronização | Manual | Automática | Avançada |
-| Suporte | Comunitário | Prioritário | Dedicado |
-| Analytics | Básico | Avançado | Empresarial |
+| Feature | Free | Premium | Enterprise |
+|---------|------|---------|------------|
+| Collections | 10 | Unlimited | Unlimited |
+| Videos | 1,000 | Unlimited | Unlimited |
+| Feeds | 3 | 50 | Unlimited |
+| Synchronization | Manual | Automatic | Advanced |
+| Support | Community | Priority | Dedicated |
+| Analytics | Basic | Advanced | Enterprise |
 
-### Como fazer upgrade?
-1. Vá para Configurações > Plano
-2. Clique em "Upgrade para Premium"
-3. Escolha período de cobrança
-4. Complete pagamento
-5. Acesso imediato aos recursos
+### How do I upgrade?
+1. Go to Settings > Plan
+2. Click "Upgrade to Premium"
+3. Choose billing period
+4. Complete payment
+5. Immediate access to features
 
-### Posso cancelar a qualquer momento?
-Sim! Cancelamento:
-- **Imediato** no painel de controle
-- **Reembolso** proporcional
-- **Acesso mantido** até fim do período
-- **Dados preservados** por 30 dias
+### Can I cancel anytime?
+Yes! Cancellation:
+- **Immediate** in control panel
+- **Proportional refund**
+- **Access maintained** until period end
+- **Data preserved** for 30 days
 
-### Formas de pagamento aceitas?
-- **Cartão de crédito** (Visa, Master, Amex)
+### Accepted payment methods?
+- **Credit card** (Visa, Master, Amex)
 - **PayPal**
-- **Boleto bancário** (Brasil)
-- **PIX** (Brasil)
-- **Transferência bancária** (empresarial)
+- **Bank slip** (Brazil)
+- **PIX** (Brazil)
+- **Bank transfer** (enterprise)
 
-## 🤝 Colaboração
+## 🤝 Collaboration
 
-### Como compartilhar coleções?
-1. Abra a coleção
-2. Clique em "Compartilhar"
-3. Configure permissões:
-   - **Visualizar**: Apenas leitura
-   - **Editar**: Modificar conteúdo
-   - **Administrar**: Controle total
-4. Gere link ou convide por email
+### How do I share collections?
+1. Open the collection
+2. Click "Share"
+3. Configure permissions:
+   - **View**: Read only
+   - **Edit**: Modify content
+   - **Administer**: Full control
+4. Generate link or invite by email
 
-### Posso trabalhar em equipe?
-Recursos de colaboração:
-- **Convite por email**
-- **Roles e permissões**
-- **Histórico de atividades**
-- **Comentários em tempo real**
-- **Notificações de equipe**
+### Can I work in a team?
+Collaboration features:
+- **Email invitation**
+- **Roles and permissions**
+- **Activity history**
+- **Real-time comments**
+- **Team notifications**
 
-### Limites de colaboradores?
-- **Gratuito**: Até 2 colaboradores por coleção
-- **Premium**: Até 10 colaboradores
-- **Empresarial**: Ilimitados
+### Collaborator limits?
+- **Free**: Up to 2 collaborators per collection
+- **Premium**: Up to 10 collaborators
+- **Enterprise**: Unlimited
 
-## 📊 Analytics e Relatórios
+## 📊 Analytics and Reports
 
-### Que métricas estão disponíveis?
-**Métricas básicas:**
-- Total de coleções e vídeos
-- Tempo de visualização
-- Canais mais assistidos
-- Atividade por período
+### What metrics are available?
+**Basic metrics:**
+- Total collections and videos
+- Watch time
+- Most watched channels
+- Activity by period
 
 **Premium:**
-- Análise de engajamento
-- Padrões de consumo
-- Recomendações personalizadas
-- Relatórios exportáveis
+- Engagement analysis
+- Consumption patterns
+- Personalized recommendations
+- Exportable reports
 
-### Como exportar dados?
-1. Vá para Analytics
-2. Selecione período
-3. Escolha formato (PDF, CSV, JSON)
-4. Clique em "Exportar"
-5. Download automático
+### How do I export data?
+1. Go to Analytics
+2. Select period
+3. Choose format (PDF, CSV, JSON)
+4. Click "Export"
+5. Automatic download
 
-## 🔄 Backup e Recuperação
+## 🔄 Backup and Recovery
 
-### Como fazer backup?
-**Automático:**
-- Dados salvos na nuvem
-- Backup diário (premium)
-- Recuperação point-in-time
+### How do I backup?
+**Automatic:**
+- Data saved in cloud
+- Daily backup (premium)
+- Point-in-time recovery
 
 **Manual:**
-- Exportar coleções em JSON
-- Download de metadados
-- Backup completo da conta
+- Export collections in JSON
+- Download metadata
+- Complete account backup
 
-### Posso recuperar dados excluídos?
-- **Lixeira**: 30 dias para recuperação
-- **Backup**: Até 90 dias (premium)
-- **Suporte**: Ajuda para casos especiais
-- **Garantia**: Dados críticos nunca perdidos
+### Can I recover deleted data?
+- **Trash**: 30 days for recovery
+- **Backup**: Up to 90 days (premium)
+- **Support**: Help for special cases
+- **Guarantee**: Critical data never lost
 
-## 🌟 Recursos Avançados
+## 🌟 Advanced Features
 
-### Como usar a IA para descoberta?
-1. Clique em "Descobrir com IA"
-2. Descreva conteúdo desejado
-3. Exemplo: "Vídeos sobre React dos últimos 3 meses"
-4. IA encontra e sugere conteúdo relevante
+### How do I use AI for discovery?
+1. Click "Discover with AI"
+2. Describe desired content
+3. Example: "React videos from last 3 months"
+4. AI finds and suggests relevant content
 
-### Transcripts automáticos funcionam?
-**Disponibilidade:**
-- Vídeos com legendas oficiais: 100%
-- IA gera transcripts: 80% de acurácia
-- Idiomas suportados: 50+ idiomas
-- Sincronização automática
+### Do automatic transcripts work?
+**Availability:**
+- Videos with official captions: 100%
+- AI generates transcripts: 80% accuracy
+- Supported languages: 50+ languages
+- Automatic synchronization
 
-### Integrações disponíveis?
-**Plataformas:**
-- **Google Drive**: Backup automático
-- **Slack/Discord**: Notificações
-- **IFTTT/Zapier**: Automação
-- **API REST**: Integração customizada
+### Available integrations?
+**Platforms:**
+- **Google Drive**: Automatic backup
+- **Slack/Discord**: Notifications
+- **IFTTT/Zapier**: Automation
+- **REST API**: Custom integration
 
-## 📞 Suporte
+## 📞 Support
 
-### Canais de suporte:
-- **Chat ao vivo**: 24/7 (premium)
+### Support channels:
+- **Live chat**: 24/7 (premium)
 - **Email**: `support@youtube-organizer.com`
-- **Centro de ajuda**: `help.youtube-organizer.com`
-- **Comunidade**: Fórum e Discord
+- **Help center**: `help.youtube-organizer.com`
+- **Community**: Forum and Discord
 
-### Tempos de resposta:
-- **Urgente**: < 1 hora
-- **Alta prioridade**: < 4 horas
-- **Normal**: < 24 horas
-- **Baixa**: 2-3 dias úteis
+### Response times:
+- **Urgent**: < 1 hour
+- **High priority**: < 4 hours
+- **Normal**: < 24 hours
+- **Low**: 2-3 business days
 
-### Como reportar bugs?
-1. Vá para Centro de Ajuda
-2. Clique em "Reportar Problema"
-3. Descreva detalhadamente
-4. Inclua screenshots/logs
-5. Prioridade será definida automaticamente
+### How do I report bugs?
+1. Go to Help Center
+2. Click "Report Problem"
+3. Describe in detail
+4. Include screenshots/logs
+5. Priority defined automatically
 
 ---
 
-**Não encontrou sua resposta?** Entre em contato conosco!
+**Didn't find your answer?** Contact us!
 
-**Última atualização:** Janeiro 2024
+**Last update:** January 2024

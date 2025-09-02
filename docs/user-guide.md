@@ -1,403 +1,403 @@
-# 📖 Guia do Usuário - YouTube Organizer
+# 📖 User Guide - YouTube Organizer
 
-## Bem-vindo ao YouTube Organizer!
+## Welcome to YouTube Organizer!
 
-O YouTube Organizer é uma aplicação web moderna e intuitiva que ajuda você a organizar, gerenciar e descobrir conteúdo do YouTube de forma eficiente. Com recursos avançados de IA, feeds automatizados e uma interface elegante, você pode criar coleções personalizadas, acompanhar canais favoritos e descobrir novos conteúdos relevantes.
+YouTube Organizer is a modern and intuitive web application that helps you organize, manage, and discover YouTube content efficiently. With advanced AI features, automated feeds, and an elegant interface, you can create personalized collections, track favorite channels, and discover new relevant content.
 
-## 🚀 Primeiros Passos
+## 🚀 Getting Started
 
-### Criando sua Conta
+### Creating Your Account
 
-1. **Acesse a aplicação** em `https://youtube-organizer.com`
-2. **Clique em "Entrar"** no canto superior direito
-3. **Escolha seu método de login:**
-   - Google OAuth (recomendado)
-   - Email e senha
-4. **Complete seu perfil** com informações básicas
+1. **Access the application** at `https://youtube-organizer.com`
+2. **Click "Sign In"** in the top right corner
+3. **Choose your login method:**
+   - Google OAuth (recommended)
+   - Email and password
+4. **Complete your profile** with basic information
 
-### Configuração Inicial
+### Initial Configuration
 
-Após o login, você será direcionado ao dashboard onde pode:
+After logging in, you will be directed to the dashboard where you can:
 
-1. **Configurar preferências** de notificação
-2. **Conectar sua conta do YouTube** (opcional)
-3. **Explorar tutoriais** interativos
-4. **Criar sua primeira coleção**
+1. **Configure notification preferences**
+2. **Connect your YouTube account** (optional)
+3. **Explore interactive tutorials**
+4. **Create your first collection**
 
-## 📁 Gerenciando Coleções
+## 📁 Managing Collections
 
-### Criando uma Nova Coleção
+### Creating a New Collection
 
-1. **No dashboard**, clique em "Nova Coleção"
-2. **Preencha os detalhes:**
-   - **Nome**: Título da coleção
-   - **Descrição**: Descrição opcional
-   - **Visibilidade**: Pública ou privada
-   - **Categoria**: Para organização
-3. **Clique em "Criar"**
+1. **In the dashboard**, click "New Collection"
+2. **Fill in the details:**
+   - **Name**: Collection title
+   - **Description**: Optional description
+   - **Visibility**: Public or private
+   - **Category**: For organization
+3. **Click "Create"**
 
-### Organizando Vídeos em Coleções
+### Organizing Videos in Collections
 
-#### Adicionando Vídeos Individualmente
-1. **Abra uma coleção**
-2. **Clique em "Adicionar Vídeo"**
-3. **Cole o URL do YouTube** ou pesquise por título
-4. **Selecione o vídeo** e confirme
+#### Adding Videos Individually
+1. **Open a collection**
+2. **Click "Add Video"**
+3. **Paste the YouTube URL** or search by title
+4. **Select the video** and confirm
 
-#### Adicionando Vídeos em Massa
-1. **Na visualização de coleção**, clique em "Adicionar Múltiplos"
-2. **Cole múltiplas URLs** (uma por linha)
-3. **Ou pesquise e selecione** vários vídeos
-4. **Confirme a adição**
+#### Adding Videos in Bulk
+1. **In the collection view**, click "Add Multiple"
+2. **Paste multiple URLs** (one per line)
+3. **Or search and select** several videos
+4. **Confirm the addition**
 
-#### Organizando Vídeos Dentro da Coleção
-- **Arraste e solte** para reordenar
-- **Use pastas/categorias** dentro da coleção
-- **Adicione tags** para classificação
+#### Organizing Videos Within the Collection
+- **Drag and drop** to reorder
+- **Use folders/categories** within the collection
+- **Add tags** for classification
 
-### Gerenciando Coleções
+### Managing Collections
 
-#### Editando uma Coleção
-1. **Clique nos três pontos** (⋮) na coleção
-2. **Selecione "Editar"**
-3. **Modifique nome, descrição ou configurações**
-4. **Salve as alterações**
+#### Editing a Collection
+1. **Click the three dots** (⋮) on the collection
+2. **Select "Edit"**
+3. **Modify name, description, or settings**
+4. **Save the changes**
 
-#### Compartilhando Coleções
-1. **Para coleções públicas**, copie o link de compartilhamento
-2. **Configure permissões** de visualização
-3. **Convide colaboradores** (pró)
+#### Sharing Collections
+1. **For public collections**, copy the sharing link
+2. **Configure viewing permissions**
+3. **Invite collaborators** (pro)
 
-#### Excluindo uma Coleção
-1. **Clique nos três pontos** (⋮) na coleção
-2. **Selecione "Excluir"**
-3. **Confirme a exclusão** (esta ação não pode ser desfeita)
+#### Deleting a Collection
+1. **Click the three dots** (⋮) on the collection
+2. **Select "Delete"**
+3. **Confirm the deletion** (this action cannot be undone)
 
-## 🔍 Descobrindo e Pesquisando Vídeos
+## 🔍 Discovering and Searching Videos
 
-### Pesquisa Básica
-1. **Use a barra de pesquisa** no topo
-2. **Digite palavras-chave** relacionadas ao conteúdo
-3. **Pressione Enter** ou clique na lupa
+### Basic Search
+1. **Use the search bar** at the top
+2. **Type keywords** related to the content
+3. **Press Enter** or click the search icon
 
-### Pesquisa Avançada
-- **Filtros por data**: Hoje, semana, mês, ano
-- **Filtros por duração**: Curto, médio, longo
-- **Filtros por canal**: Canais específicos
-- **Ordenação**: Por relevância, data, visualizações
+### Advanced Search
+- **Date filters**: Today, week, month, year
+- **Duration filters**: Short, medium, long
+- **Channel filters**: Specific channels
+- **Sorting**: By relevance, date, views
 
-### Usando a IA para Descobrir Conteúdo
-1. **Clique em "Descobrir com IA"**
-2. **Descreva o que você procura** em linguagem natural
-3. **Exemplo**: "Vídeos sobre React hooks dos últimos 6 meses"
-4. **A IA encontrará** conteúdo relevante baseado na sua descrição
+### Using AI for Content Discovery
+1. **Click "Discover with AI"**
+2. **Describe what you're looking for** in natural language
+3. **Example**: "React hooks videos from the last 6 months"
+4. **AI will find** relevant content based on your description
 
-## 📡 Gerenciando Feeds
+## 📡 Managing Feeds
 
-### Criando um Feed Automatizado
+### Creating an Automated Feed
 
-1. **Vá para "Feeds"** no menu lateral
-2. **Clique em "Novo Feed"**
-3. **Configure os parâmetros:**
-   - **Nome do feed**
-   - **Coleção de destino**
-   - **Palavras-chave ou canais**
-   - **Frequência de atualização**
-   - **Filtros automáticos**
+1. **Go to "Feeds"** in the side menu
+2. **Click "New Feed"**
+3. **Configure the parameters:**
+   - **Feed name**
+   - **Target collection**
+   - **Keywords or channels**
+   - **Update frequency**
+   - **Automatic filters**
 
-### Tipos de Feeds
+### Feed Types
 
-#### Feed por Palavras-Chave
-- Monitora novos vídeos com termos específicos
-- Exemplo: "machine learning tutorial"
+#### Keyword Feed
+- Monitors new videos with specific terms
+- Example: "programming tutorial"
 
-#### Feed por Canal
-- Acompanha uploads de canais específicos
-- Perfeito para criadores favoritos
+#### Channel Feed
+- Tracks uploads from specific channels
+- Perfect for favorite creators
 
-#### Feed por Categoria
-- Vídeos de uma categoria específica
-- Exemplo: Tecnologia, Ciência, Entretenimento
+#### Category Feed
+- Videos from a specific category
+- Example: Technology, Science, Entertainment
 
-#### Feed Inteligente
-- Usa IA para encontrar conteúdo relacionado
-- Aprende com suas preferências
+#### Intelligent Feed
+- Uses AI to find related content
+- Learns from your preferences
 
-### Gerenciando Feeds Ativos
-- **Pausar/reativar** feeds
-- **Editar filtros** e configurações
-- **Ver histórico** de vídeos adicionados
-- **Estatísticas** de performance
+### Managing Active Feeds
+- **Pause/reactivate** feeds
+- **Edit filters** and settings
+- **View history** of added videos
+- **Performance statistics**
 
-## 🔔 Sistema de Notificações
+## 🔔 Notification System
 
-### Configurando Preferências
+### Configuring Preferences
 
-1. **Vá para "Configurações" > "Notificações"**
-2. **Escolha seus canais de notificação:**
+1. **Go to "Settings" > "Notifications"**
+2. **Choose your notification channels:**
    - Email
    - Push notifications
-   - SMS (pró)
-3. **Configure horários:**
-   - Horário comercial
-   - Fins de semana
-   - Modo silencioso
+   - SMS (pro)
+3. **Configure schedules:**
+   - Business hours
+   - Weekends
+   - Silent mode
 
-### Tipos de Notificações
+### Notification Types
 
-#### Notificações de Vídeos
-- Novos vídeos em feeds
-- Vídeos recomendados pela IA
-- Atualizações em coleções
+#### Video Notifications
+- New videos in feeds
+- AI-recommended videos
+- Collection updates
 
-#### Notificações de Sistema
-- Manutenção programada
-- Novos recursos disponíveis
-- Alertas de segurança
+#### System Notifications
+- Scheduled maintenance
+- New available features
+- Security alerts
 
-#### Notificações de Colaboração
-- Convites para coleções
-- Comentários em coleções compartilhadas
-- Atividades de colaboradores
+#### Collaboration Notifications
+- Invites to collections
+- Comments on shared collections
+- Collaborator activities
 
-### Gerenciando Notificações
-- **Marcar como lida** individualmente
-- **Arquivar** notificações antigas
-- **Excluir** notificações indesejadas
-- **Configurar regras** de filtragem
+### Managing Notifications
+- **Mark as read** individually
+- **Archive** old notifications
+- **Delete** unwanted notifications
+- **Configure filtering rules**
 
-## 📊 Analytics e Estatísticas
+## 📊 Analytics and Statistics
 
-### Dashboard de Analytics
+### Analytics Dashboard
 
-#### Métricas Gerais
-- **Total de coleções**
-- **Vídeos organizados**
-- **Tempo de visualização**
-- **Canais acompanhados**
+#### General Metrics
+- **Total collections**
+- **Organized videos**
+- **Watch time**
+- **Tracked channels**
 
-#### Análise de Conteúdo
-- **Tópicos mais assistidos**
-- **Canais favoritos**
-- **Padrões de consumo**
-- **Descobertas por IA**
+#### Content Analysis
+- **Most watched topics**
+- **Favorite channels**
+- **Consumption patterns**
+- **AI discoveries**
 
-### Relatórios Personalizados
-1. **Vá para "Analytics"**
-2. **Escolha o período** de análise
-3. **Selecione métricas** de interesse
-4. **Exporte** relatórios em PDF ou CSV
+### Custom Reports
+1. **Go to "Analytics"**
+2. **Choose the analysis period**
+3. **Select metrics** of interest
+4. **Export** reports in PDF or CSV
 
-## ⚙️ Configurações Avançadas
+## ⚙️ Advanced Settings
 
-### Perfil e Conta
+### Profile and Account
 
-#### Editando Perfil
-1. **Vá para "Configurações" > "Perfil"**
-2. **Atualize informações:**
-   - Foto de perfil
-   - Nome e sobrenome
-   - Biografia
-   - Links sociais
+#### Editing Profile
+1. **Go to "Settings" > "Profile"**
+2. **Update information:**
+   - Profile picture
+   - Name and surname
+   - Biography
+   - Social links
 
-#### Segurança da Conta
-- **Alterar senha**
-- **Configurar autenticação de dois fatores**
-- **Gerenciar dispositivos conectados**
-- **Histórico de login**
+#### Account Security
+- **Change password**
+- **Configure two-factor authentication**
+- **Manage connected devices**
+- **Login history**
 
-### Integrações
+### Integrations
 
-#### Conectando YouTube
-1. **Em "Configurações" > "Integrações"**
-2. **Clique em "Conectar YouTube"**
-3. **Autorize permissões**
-4. **Configure sincronização automática**
+#### Connecting YouTube
+1. **In "Settings" > "Integrations"**
+2. **Click "Connect YouTube"**
+3. **Authorize permissions**
+4. **Configure automatic synchronization**
 
-#### Outras Integrações
-- **Google Drive**: Backup de coleções
-- **Slack/Discord**: Notificações
-- **IFTTT/Zapier**: Automação
+#### Other Integrations
+- **Google Drive**: Collection backup
+- **Slack/Discord**: Notifications
+- **IFTTT/Zapier**: Automation
 
-### Personalização
+### Personalization
 
-#### Tema e Aparência
-- **Modo claro/escuro**
-- **Temas de cor**
-- **Layout da interface**
-- **Idioma da aplicação**
+#### Theme and Appearance
+- **Light/dark mode**
+- **Color themes**
+- **Interface layout**
+- **Application language**
 
-#### Preferências de Conteúdo
-- **Idiomas preferidos**
-- **Qualidade de vídeo padrão**
-- **Configurações de player**
-- **Filtros de conteúdo**
+#### Content Preferences
+- **Preferred languages**
+- **Default video quality**
+- **Player settings**
+- **Content filters**
 
-## 🔄 Sincronização e Backup
+## 🔄 Synchronization and Backup
 
-### Sincronização Automática
-- **Vídeos são sincronizados** automaticamente
-- **Metadados atualizados** regularmente
-- **Transcripts baixados** quando disponíveis
-- **Thumbnails otimizados** para performance
+### Automatic Synchronization
+- **Videos are synchronized** automatically
+- **Metadata updated** regularly
+- **Transcripts downloaded** when available
+- **Thumbnails optimized** for performance
 
-### Backup de Dados
-1. **Vá para "Configurações" > "Backup"**
-2. **Escolha frequência:**
-   - Diária
-   - Semanal
+### Data Backup
+1. **Go to "Settings" > "Backup"**
+2. **Choose frequency:**
+   - Daily
+   - Weekly
    - Manual
-3. **Selecione destino:**
+3. **Select destination:**
    - Google Drive
    - Dropbox
-   - Download local
+   - Local download
 
-### Exportando Dados
-- **Exportar coleções** em JSON
-- **Exportar estatísticas** em CSV
-- **Backup completo** da conta
-- **Migração** para outras plataformas
+### Exporting Data
+- **Export collections** in JSON
+- **Export statistics** in CSV
+- **Complete backup** of account
+- **Migration** to other platforms
 
-## 📱 Usando em Dispositivos Móveis
+## 📱 Using on Mobile Devices
 
-### Aplicativo Mobile
-1. **Baixe o app** na App Store ou Google Play
-2. **Faça login** com sua conta
-3. **Sincronize** dados automaticamente
+### Mobile App
+1. **Download the app** from App Store or Google Play
+2. **Log in** with your account
+3. **Synchronize** data automatically
 
-### Recursos Mobile
-- **Interface otimizada** para toque
-- **Sincronização offline** de coleções
-- **Notificações push**
-- **Scanner QR** para adicionar vídeos rapidamente
+### Mobile Features
+- **Optimized interface** for touch
+- **Offline synchronization** of collections
+- **Push notifications**
+- **QR scanner** for quickly adding videos
 
-### Navegação Mobile
-- **Gestos intuitivos** para navegação
-- **Modo paisagem** para visualização de coleções
-- **Busca por voz** para conveniência
+### Mobile Navigation
+- **Intuitive gestures** for navigation
+- **Landscape mode** for collection viewing
+- **Voice search** for convenience
 
-## 🤝 Colaboração e Compartilhamento
+## 🤝 Collaboration and Sharing
 
-### Compartilhando Coleções
-1. **Abra a coleção** desejada
-2. **Clique em "Compartilhar"**
-3. **Configure permissões:**
-   - Visualização apenas
-   - Edição limitada
-   - Controle total
-4. **Gere link** ou convide por email
+### Sharing Collections
+1. **Open the desired collection**
+2. **Click "Share"**
+3. **Configure permissions:**
+   - Read-only viewing
+   - Limited editing
+   - Full control
+4. **Generate link** or invite by email
 
-### Trabalhando em Equipe
-- **Convide membros** para coleções
-- **Atribua roles** (viewer, editor, admin)
-- **Acompanhe atividades** da equipe
-- **Comentários** e discussões
+### Working in Teams
+- **Invite team members** to collections
+- **Assign roles** (viewer, editor, admin)
+- **Track team activities**
+- **Comments** and discussions
 
-### Coleções Públicas
-- **Publique coleções** para comunidade
-- **Receba feedback** e avaliações
-- **Inspire outros usuários**
-- **Ganhe reconhecimento**
+### Public Collections
+- **Publish collections** for community
+- **Receive feedback** and ratings
+- **Inspire other users**
+- **Gain recognition**
 
-## ❓ Solução de Problemas
+## ❓ Troubleshooting
 
-### Problemas Comuns
+### Common Problems
 
-#### Vídeos Não Carregam
-- **Verifique conexão** com internet
-- **Limpe cache** do navegador
-- **Tente outro navegador**
-- **Contate suporte** se persistir
+#### Videos Not Loading
+- **Check internet connection**
+- **Clear browser cache**
+- **Try another browser**
+- **Contact support** if it persists
 
-#### Sincronização Falha
-- **Verifique permissões** do YouTube
-- **Reautorize** a integração
-- **Aguarde** alguns minutos
-- **Verifique status** do serviço
+#### Synchronization Failed
+- **Check YouTube permissions**
+- **Reauthorize integration**
+- **Wait a few minutes**
+- **Check service status**
 
-#### Notificações Não Chegam
-- **Verifique configurações** de email/push
-- **Confirme endereço** de email
-- **Verifique pasta** de spam
-- **Reconfigure** preferências
+#### Notifications Not Arriving
+- **Check email settings** and push
+- **Confirm email address**
+- **Check spam folder**
+- **Reconfigure preferences**
 
-### Suporte Técnico
+### Technical Support
 
-#### Canais de Suporte
-- **Centro de Ajuda**: `help.youtube-organizer.com`
-- **Chat ao vivo**: Disponível 24/7
+#### Support Channels
+- **Help Center**: `help.youtube-organizer.com`
+- **Live chat**: Available 24/7
 - **Email**: `support@youtube-organizer.com`
-- **Comunidade**: Fórum da plataforma
+- **Community**: Platform forum
 
-#### Relatando Problemas
-1. **Descreva o problema** detalhadamente
-2. **Inclua screenshots** quando possível
-3. **Forneça informações do sistema**
-4. **Aguarde resposta** da equipe
+#### Reporting Problems
+1. **Describe the problem** in detail
+2. **Include screenshots** when possible
+3. **Provide system information**
+4. **Wait for team response**
 
-## 🎯 Dicas e Truques
+## 🎯 Tips and Tricks
 
-### Otimizando sua Experiência
+### Optimizing Your Experience
 
-#### Organização Eficiente
-- **Use nomes descritivos** para coleções
-- **Aplique tags consistentes**
-- **Crie hierarquias lógicas**
-- **Revise coleções regularmente**
+#### Efficient Organization
+- **Use descriptive names** for collections
+- **Apply consistent tags**
+- **Create logical hierarchies**
+- **Review collections regularly**
 
-#### Descoberta Inteligente
-- **Seja específico** nas buscas com IA
-- **Use feeds automatizados** para acompanhar tópicos
-- **Aproveite recomendações** personalizadas
-- **Explore conteúdo relacionado**
+#### Intelligent Discovery
+- **Be specific** in AI searches
+- **Use automated feeds** to track topics
+- **Take advantage of recommendations** personalized
+- **Explore related content**
 
-#### Produtividade
-- **Configure notificações** relevantes
-- **Use atalhos de teclado** (pró)
-- **Automatize tarefas repetitivas**
-- **Acompanhe progresso** com analytics
+#### Productivity
+- **Configure relevant notifications**
+- **Use keyboard shortcuts** (pro)
+- **Automate repetitive tasks**
+- **Track progress** with analytics
 
-### Atalhos de Teclado
-- `Ctrl/Cmd + K`: Busca rápida
-- `Ctrl/Cmd + N`: Nova coleção
-- `Ctrl/Cmd + Enter`: Salvar alterações
-- `Esc`: Fechar modais
+### Keyboard Shortcuts
+- `Ctrl/Cmd + K`: Quick search
+- `Ctrl/Cmd + N`: New collection
+- `Ctrl/Cmd + Enter`: Save changes
+- `Esc`: Close modals
 
-## 📋 Plano Premium
+## 📋 Premium Plan
 
-### Recursos Exclusivos
-- **Coleções ilimitadas**
-- **Sincronização avançada**
-- **Analytics detalhados**
-- **Suporte prioritário**
-- **Integrações avançadas**
+### Exclusive Features
+- **Unlimited collections**
+- **Advanced synchronization**
+- **Detailed analytics**
+- **Priority support**
+- **Advanced integrations**
 
-### Preços
-- **Mensal**: R$ 19,90/mês
-- **Anual**: R$ 199,90/ano (17% desconto)
-- **Empresarial**: Preços sob consulta
+### Pricing
+- **Monthly**: R$ 19.90/month
+- **Annual**: R$ 199.90/year (17% discount)
+- **Enterprise**: Prices on request
 
-### Experimente Grátis
-- **14 dias grátis** no plano premium
-- **Sem compromisso**
-- **Cancelamento a qualquer momento**
+### Try Free
+- **14 days free** on premium plan
+- **No commitment**
+- **Cancel anytime**
 
-## 🔄 Atualizações e Novidades
+## 🔄 Updates and News
 
-### Mantendo-se Atualizado
-- **Notificações de novos recursos**
-- **Changelog detalhado**
-- **Webinars mensais**
-- **Beta testing** de novas funcionalidades
+### Staying Updated
+- **Feature notifications**
+- **Detailed changelog**
+- **Monthly webinars**
+- **Beta testing** of new features
 
 ### Roadmap
-- **IA avançada** para descoberta de conteúdo
-- **Realidade aumentada** para visualização
-- **Integrações** com mais plataformas
-- **Recursos sociais** aprimorados
+- **Advanced AI** for content discovery
+- **Augmented reality** for visualization
+- **More platform integrations**
+- **Enhanced social features**
 
 ---
 
-Obrigado por escolher o YouTube Organizer! Esperamos que esta ferramenta transforme sua experiência com conteúdo do YouTube. Se tiver dúvidas ou sugestões, nossa equipe está sempre pronta para ajudar.
+Thank you for choosing YouTube Organizer! We hope this tool transforms your YouTube content experience. If you have questions or suggestions, our team is always ready to help.
 
-**Última atualização:** Janeiro 2024
+**Last update:** January 2024

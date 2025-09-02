@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Video } from '@/lib/types'
 import { Search, Filter, Calendar, Eye, Heart, MessageCircle, Clock, ArrowLeft } from 'lucide-react'
 
@@ -49,7 +50,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
         setPagination(data.pagination)
       }
     } catch (error) {
-      console.error('Erro ao carregar vídeos:', error)
+      console.error('Error loading videos:', error)
     } finally {
       setLoading(false)
     }
@@ -99,7 +100,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
@@ -107,12 +108,12 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
             className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
-            Voltar
+            Back
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Vídeos do Feed</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Feed Videos</h1>
             <p className="text-gray-600 mt-1">
-              {pagination.total} vídeo{pagination.total !== 1 ? 's' : ''} encontrado{pagination.total !== 1 ? 's' : ''}
+              {pagination.total} video{pagination.total !== 1 ? 's' : ''} found
             </p>
           </div>
         </div>
@@ -123,7 +124,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Buscar vídeos..."
+                placeholder="Search videos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -134,7 +135,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Filter className="h-4 w-4" />
-              Filtrar
+              Filter
             </button>
           </form>
         </div>
@@ -147,10 +148,10 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
             <Search className="h-16 w-16 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Nenhum vídeo encontrado
+            No videos found
           </h3>
           <p className="text-gray-600">
-            Tente ajustar os filtros ou termos de busca
+            Try adjusting the filters or search terms
           </p>
         </div>
       ) : (
@@ -163,9 +164,11 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
               <div className="flex gap-4">
                 {/* Thumbnail */}
                 <div className="flex-shrink-0 relative">
-                  <img
+                  <Image
                     src={video.thumbnailUrl || '/placeholder-video.png'}
                     alt={video.title}
+                    width={192}
+                    height={128}
                     className="w-48 h-32 object-cover rounded-lg"
                   />
                   {video.duration && (
@@ -175,7 +178,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                   )}
                 </div>
 
-                {/* Conteúdo */}
+                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
                     {video.title}
@@ -187,7 +190,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                     </p>
                   )}
 
-                  {/* Metadados */}
+                  {/* Metadata */}
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                     {video.publishedAt && (
                       <div className="flex items-center gap-1">
@@ -199,32 +202,34 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                     {video.viewCount && (
                       <div className="flex items-center gap-1">
                         <Eye className="h-4 w-4" />
-                        <span>{formatNumber(video.viewCount)} visualizações</span>
+                        <span>{formatNumber(video.viewCount)} views</span>
                       </div>
                     )}
 
                     {video.likeCount && (
                       <div className="flex items-center gap-1">
                         <Heart className="h-4 w-4" />
-                        <span>{formatNumber(video.likeCount)} curtidas</span>
+                        <span>{formatNumber(video.likeCount)} likes</span>
                       </div>
                     )}
 
                     {video.commentCount && (
                       <div className="flex items-center gap-1">
                         <MessageCircle className="h-4 w-4" />
-                        <span>{formatNumber(video.commentCount)} comentários</span>
+                        <span>{formatNumber(video.commentCount)} comments</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Canal e tags */}
+                  {/* Channel and tags */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {video.channel?.thumbnailUrl && (
-                        <img
+                        <Image
                           src={video.channel.thumbnailUrl}
                           alt={video.channel.title}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full"
                         />
                       )}
@@ -266,7 +271,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
         </div>
       )}
 
-      {/* Paginação */}
+      {/* Pagination */}
       {pagination.pages > 1 && (
         <div className="flex justify-center items-center gap-4">
           <button
@@ -274,11 +279,11 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
             disabled={pagination.page === 1}
             className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Anterior
+            Previous
           </button>
 
           <span className="text-gray-600">
-            Página {pagination.page} de {pagination.pages}
+            Page {pagination.page} of {pagination.pages}
           </span>
 
           <button
@@ -286,7 +291,7 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
             disabled={pagination.page === pagination.pages}
             className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Próxima
+            Next
           </button>
         </div>
       )}

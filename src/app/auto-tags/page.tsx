@@ -12,9 +12,9 @@ export default function AutoTagsPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Tags Automáticas</h1>
+        <h1 className="text-3xl font-bold mb-2">Auto Tags</h1>
         <p className="text-muted-foreground">
-          Sistema inteligente de análise e sugestão de tags para vídeos
+          Intelligent system for video analysis and automatic tag suggestions
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export default function AutoTagsPage() {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Regras
+            Rules
           </button>
           <button
             onClick={() => setActiveTab('analysis')}
@@ -38,7 +38,7 @@ export default function AutoTagsPage() {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Análise
+            Analysis
           </button>
           <button
             onClick={() => setActiveTab('stats')}
@@ -48,35 +48,35 @@ export default function AutoTagsPage() {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Estatísticas
+            Statistics
           </button>
         </nav>
       </div>
 
       <div className="space-y-6">
-        {/* Regras Section */}
+        {/* Rules Section */}
         {activeTab === 'rules' && (
           <div>
             <AutoTagRules />
           </div>
         )}
 
-        {/* Análise Section */}
+        {/* Analysis Section */}
         {activeTab === 'analysis' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold mb-2">Análise de Vídeo</h2>
+              <h2 className="text-xl font-semibold mb-2">Video Analysis</h2>
               <p className="text-gray-600 mb-4">
-                Selecione um vídeo para analisar e obter sugestões de tags automáticas
+                Select a video to analyze and get automatic tag suggestions
               </p>
 
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID do Vídeo
+                  Video ID
                 </label>
                 <input
                   type="text"
-                  placeholder="Digite o ID do vídeo do YouTube"
+                  placeholder="Enter the YouTube video ID"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setSelectedVideoId(e.target.value)}
                   value={selectedVideoId || ''}
@@ -88,20 +88,20 @@ export default function AutoTagsPage() {
               <VideoAnalysis
                 videoId={selectedVideoId}
                 onAnalysisComplete={(analysis) => {
-                  console.log('Análise completa:', analysis);
+                  console.log('Analysis complete:', analysis);
                 }}
               />
             )}
           </div>
         )}
 
-        {/* Estatísticas Section */}
+        {/* Statistics Section */}
         {activeTab === 'stats' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold mb-2">Estatísticas de Tags Automáticas</h2>
+              <h2 className="text-xl font-semibold mb-2">Auto Tags Statistics</h2>
               <p className="text-gray-600">
-                Métricas e desempenho do sistema de tags automáticas
+                Metrics and performance of the automatic tagging system
               </p>
             </div>
 

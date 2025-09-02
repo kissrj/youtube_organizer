@@ -9,7 +9,7 @@ export async function GET() {
 
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Usuário não autenticado' },
+        { error: 'User not authenticated' },
         { status: 401 }
       )
     }
@@ -17,9 +17,9 @@ export async function GET() {
     const categories = await getUserCategories(session.user.id)
     return NextResponse.json(categories)
   } catch (error) {
-    console.error('Erro ao buscar categorias:', error)
+    console.error('Error fetching categories:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Usuário não autenticado' },
+        { error: 'User not authenticated' },
         { status: 401 }
       )
     }
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       return NextResponse.json(
-        { error: 'Nome é obrigatório' },
+        { error: 'Name is required' },
         { status: 400 }
       )
     }
@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(category)
   } catch (error) {
-    console.error('Erro ao criar categoria:', error)
+    console.error('Error creating category:', error)
     return NextResponse.json(
-      { error: 'Erro ao criar categoria' },
+      { error: 'Error creating category' },
       { status: 500 }
     )
   }

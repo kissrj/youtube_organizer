@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { FeedCard } from './FeedCard'
 import { Feed, FeedSortBy, FeedSortOrder } from '@/lib/types'
 import { Plus, Video } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useToast } from '@/components/ui/ToastProvider'
 
 interface FeedListProps {
   collectionId: string
@@ -16,6 +18,9 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
   const [error, setError] = useState<string | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [toDelete, setToDelete] = useState<Feed | null>(null)
+  const { toast } = useToast()
   const [newFeed, setNewFeed] = useState({
     title: '',
     description: '',
@@ -40,8 +45,8 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
         setError(problem)
       }
     } catch (error) {
-      console.error('Erro ao carregar feeds:', error)
-      setError('Falha ao carregar feeds. Tente novamente.')
+      console.error('Error loading feeds:', error)
+      setError('Failed to load feeds. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -63,6 +68,7 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
         const createdFeed = await response.json()
         setFeeds([...feeds, createdFeed])
         setIsCreateDialogOpen(false)
+        toast({ title: 'Feed created', description: `"${createdFeed?.title || newFeed.title}" added`, variant: 'success' })
         setNewFeed({
           title: '',
           description: '',
@@ -73,10 +79,13 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
       } else {
         const problem = await safeParseError(response)
         setError(problem)
+        toast({ title: 'Failed to create feed', description: problem, variant: 'error' })
       }
     } catch (error) {
-      console.error('Erro ao criar feed:', error)
-      setError('Falha ao criar o feed. Verifique sua conexão e tente novamente.')
+      console.error('Error creating feed:', error)
+      const msg = 'Failed to create feed. Check your connection and try again.'
+      setError(msg)
+      toast({ title: 'Erro ao criar feed', description: msg, variant: 'error' })
     } finally {
       setIsCreating(false)
     }
@@ -99,19 +108,56 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
     }
   }
 
-  const handleDeleteFeed = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este feed?')) return
+  const confirmDelete = (feed: Feed) => {
+    setToDelete(feed)
+    setConfirmOpen(true)
+  }
 
+  const handleDeleteFeed = async () => {
+    if (!toDelete) return
+    const backup = toDelete
     try {
-      const response = await fetch(`/api/collections/feeds/${id}`, {
-        method: 'DELETE'
-      })
-
+      const response = await fetch(`/api/collections/feeds/${backup.id}`, { method: 'DELETE' })
       if (response.ok) {
-        setFeeds(feeds.filter(feed => feed.id !== id))
+        setFeeds(feeds.filter(f => f.id !== backup.id))
+        toast({
+          title: 'Feed deleted',
+          description: `"${backup.title}" removed`,
+          actionLabel: 'Undo',
+          onAction: async () => {
+            try {
+              const body = {
+                title: backup.title,
+                description: (backup as any).description || '',
+                sortBy: backup.sortBy,
+                sortOrder: backup.sortOrder,
+                isActive: (backup as any).isActive ?? true,
+              }
+              const r = await fetch(`/api/collections/${collectionId}/feeds`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+              })
+              if (r.ok) {
+                const recreated = await r.json()
+                setFeeds(prev => [...prev, recreated])
+                toast({ title: 'Action undone', description: 'Feed restored', variant: 'success' })
+              } else {
+                toast({ title: 'Undo failed', description: 'Could not restore', variant: 'error' })
+              }
+            } catch {
+              toast({ title: 'Undo failed', description: 'Check your connection', variant: 'error' })
+            }
+          },
+          variant: 'success',
+        })
+      } else {
+        const problem = await safeParseError(response)
+        toast({ title: 'Delete failed', description: problem, variant: 'error' })
       }
     } catch (error) {
-      console.error('Erro ao excluir feed:', error)
+      console.error('Error deleting feed:', error)
+      toast({ title: 'Delete failed', description: 'Network error', variant: 'error' })
+    } finally {
+      setToDelete(null)
     }
   }
 
@@ -134,17 +180,15 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Feeds Personalizados</h2>
-          <p className="text-gray-600 mt-1">
-            Crie feeds personalizados para organizar vídeos por filtros específicos
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900">Custom Feeds</h2>
+          <p className="text-gray-600 mt-1">Create feeds to organize videos by filters</p>
         </div>
         <button
           onClick={() => setIsCreateDialogOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-5 w-5" />
-          Novo Feed
+          New Feed
         </button>
       </div>
 
@@ -160,16 +204,16 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
             <Video className="h-16 w-16 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Nenhum feed personalizado criado ainda
+            No feeds yet
           </h3>
           <p className="text-gray-600 mb-6">
-            Crie feeds personalizados para organizar vídeos por filtros específicos
+            Create custom feeds to organize videos by filters
           </p>
           <button
             onClick={() => setIsCreateDialogOpen(true)}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Criar Primeiro Feed
+            Create First Feed
           </button>
         </div>
       ) : (
@@ -179,19 +223,22 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
               key={feed.id}
               feed={feed}
               onUpdate={handleUpdateFeed}
-              onDelete={handleDeleteFeed}
+              onDelete={(id) => {
+                const f = feeds.find(ff => ff.id === id)
+                if (f) confirmDelete(f)
+              }}
               onVideosClick={onFeedSelect}
             />
           ))}
         </div>
       )}
 
-      {/* Modal de criação */}
+      {/* Create modal */}
       {isCreateDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Criar Novo Feed</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Create New Feed</h3>
               <button
                 onClick={() => setIsCreateDialogOpen(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -208,27 +255,27 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
               )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Título *
+                  Title *
                 </label>
                 <input
                   type="text"
                   value={newFeed.title}
                   onChange={(e) => setNewFeed({ ...newFeed, title: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Nome do feed"
+                  placeholder="Feed name"
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Descrição
+                  Description
                 </label>
                 <textarea
                   value={newFeed.description}
                   onChange={(e) => setNewFeed({ ...newFeed, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Descrição opcional"
+                  placeholder="Optional description"
                   rows={3}
                 />
               </div>
@@ -236,33 +283,33 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ordenar por
+                    Sort by
                   </label>
                   <select
                     value={newFeed.sortBy}
                     onChange={(e) => setNewFeed({ ...newFeed, sortBy: e.target.value as FeedSortBy })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="RECENT">Mais Recente</option>
-                    <option value="VIEWS">Mais Visualizações</option>
-                    <option value="LIKES">Mais Curtidas</option>
-                    <option value="COMMENTS">Mais Comentários</option>
-                    <option value="DURATION">Duração</option>
-                    <option value="RELEVANCE">Relevância</option>
+                    <option value="RECENT">Most Recent</option>
+                    <option value="VIEWS">Most Views</option>
+                    <option value="LIKES">Most Likes</option>
+                    <option value="COMMENTS">Most Comments</option>
+                    <option value="DURATION">Duration</option>
+                    <option value="RELEVANCE">Relevance</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ordem
+                    Order
                   </label>
                   <select
                     value={newFeed.sortOrder}
                     onChange={(e) => setNewFeed({ ...newFeed, sortOrder: e.target.value as FeedSortOrder })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="DESC">Decrescente</option>
-                    <option value="ASC">Crescente</option>
+                    <option value="DESC">Descending</option>
+                    <option value="ASC">Ascending</option>
                   </select>
                 </div>
               </div>
@@ -276,7 +323,7 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
-                  Feed ativo
+                  Active feed
                 </label>
               </div>
 
@@ -286,7 +333,7 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
                   onClick={() => setIsCreateDialogOpen(false)}
                   className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
                 >
-                  Cancelar
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -294,13 +341,23 @@ export function FeedList({ collectionId, onFeedSelect }: FeedListProps) {
                   disabled={!newFeed.title.trim() || isCreating}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isCreating ? 'Criando…' : 'Criar Feed'}
+                  {isCreating ? 'Creating…' : 'Create Feed'}
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete feed"
+        description={`Are you sure you want to delete "${toDelete?.title}"?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive
+        onConfirm={handleDeleteFeed}
+        onClose={() => setConfirmOpen(false)}
+      />
     </div>
   )
 }

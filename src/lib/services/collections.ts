@@ -169,12 +169,12 @@ export const batchOperationsSchema = z.object({
 })
 
 /**
- * Serviço principal para gerenciamento de coleções
+ * Main service for collection management
  */
 export class CollectionsService {
   /**
-   * Listar coleções do usuário
-   */
+    * List user collections
+    */
   static async getCollections(filters: CollectionFilters = {}) {
     const { includeChildren = false, includeContent = false, includeSettings = false, parentId, userId } = filters
 
@@ -183,7 +183,7 @@ export class CollectionsService {
     if (parentId !== undefined) {
       where.parentId = parentId
     } else {
-      where.parentId = null // Coleções raiz
+      where.parentId = null // Root collections
     }
 
     const include: any = {}
@@ -232,12 +232,12 @@ export class CollectionsService {
   }
 
   /**
-   * Criar nova coleção
-   */
+    * Create new collection
+    */
   static async createCollection(data: CreateCollectionData) {
     const validatedData = createCollectionSchema.parse(data)
 
-    // Verificar se já existe uma coleção com o mesmo nome
+    // Check if a collection with the same name already exists
     const existing = await prisma.collection.findFirst({
       where: {
         name: validatedData.name,
@@ -246,7 +246,7 @@ export class CollectionsService {
     })
 
     if (existing) {
-      throw new Error('Já existe uma coleção com este nome')
+      throw new Error('A collection with this name already exists')
     }
 
     const collection = await prisma.collection.create({
@@ -261,7 +261,7 @@ export class CollectionsService {
       }
     })
 
-    // Criar configurações padrão
+    // Create default settings
     await prisma.collectionSettings.create({
       data: {
         collectionId: collection.id,
@@ -281,8 +281,8 @@ export class CollectionsService {
   }
 
   /**
-   * Obter coleção por ID
-   */
+    * Get collection by ID
+    */
   static async getCollectionById(id: string, filters: CollectionFilters = {}) {
     const { includeChildren = false, includeContent = false, includeSettings = false } = filters
 
@@ -335,18 +335,18 @@ export class CollectionsService {
   }
 
   /**
-   * Atualizar coleção
-   */
+    * Update collection
+    */
   static async updateCollection(id: string, data: UpdateCollectionData) {
     const validatedData = updateCollectionSchema.parse(data)
 
-    // Verificar se a coleção existe e pertence ao usuário
+    // Check if collection exists and belongs to user
     const existing = await prisma.collection.findFirst({
       where: { id }
     })
 
     if (!existing) {
-      throw new Error('Coleção não encontrada')
+      throw new Error('Collection not found')
     }
 
     const updated = await prisma.collection.update({
@@ -366,18 +366,18 @@ export class CollectionsService {
   }
 
   /**
-   * Excluir coleção
-   */
+    * Delete collection
+    */
   static async deleteCollection(id: string) {
     const collection = await prisma.collection.findFirst({
       where: { id }
     })
 
     if (!collection) {
-      throw new Error('Coleção não encontrada')
+      throw new Error('Collection not found')
     }
 
-    // Excluir coleção e todo seu conteúdo (cascade)
+    // Delete collection and all its content (cascade)
     await prisma.collection.delete({
       where: { id }
     })
@@ -386,8 +386,8 @@ export class CollectionsService {
   }
 
   /**
-   * Adicionar itens à coleção
-   */
+    * Add items to collection
+    */
   static async addItemsToCollection(
     collectionId: string,
     items: AddItemsData
@@ -397,7 +397,7 @@ export class CollectionsService {
     })
 
     if (!collection) {
-      throw new Error('Coleção não encontrada')
+      throw new Error('Collection not found')
     }
 
     const results = {
@@ -465,8 +465,8 @@ export class CollectionsService {
   }
 
   /**
-   * Remover itens da coleção
-   */
+    * Remove items from collection
+    */
   static async removeItemsFromCollection(
     collectionId: string,
     items: RemoveItemsData
@@ -509,22 +509,22 @@ export class CollectionsService {
   }
 
   /**
-   * Mover coleção (alterar posição ou pai)
-   */
+    * Move collection (change position or parent)
+    */
   static async moveCollection(id: string, newParentId?: string, newPosition?: number) {
     const collection = await prisma.collection.findFirst({
       where: { id }
     })
 
     if (!collection) {
-      throw new Error('Coleção não encontrada')
+      throw new Error('Collection not found')
     }
 
-    // Verificar se o novo pai é válido (não pode ser descendente da coleção atual)
+    // Check if new parent is valid (cannot be descendant of current collection)
     if (newParentId) {
       const isDescendant = await this.isDescendant(newParentId, id)
       if (isDescendant) {
-        throw new Error('Não é possível mover uma coleção para um de seus descendentes')
+        throw new Error('Cannot move a collection to one of its descendants')
       }
     }
 
@@ -540,15 +540,15 @@ export class CollectionsService {
   }
 
   /**
-   * Verificar se uma coleção é descendente de outra
-   */
+    * Check if a collection is descendant of another
+    */
   static async isDescendant(ancestorId: string, descendantId: string): Promise<boolean> {
     let currentId = descendantId
     const visited = new Set<string>()
 
     while (currentId) {
       if (visited.has(currentId)) {
-        throw new Error('Ciclo detectado na hierarquia de coleções')
+        throw new Error('Cycle detected in collection hierarchy')
       }
       visited.add(currentId)
 
@@ -566,8 +566,8 @@ export class CollectionsService {
   }
 
   /**
-   * Obter conteúdo da coleção
-   */
+    * Get collection content
+    */
   static async getCollectionContent(collectionId: string, filters: CollectionContentFilters = {}) {
     const { type = 'all', limit = 50, offset = 0, sortBy = 'addedAt', sortOrder = 'desc' } = filters
 
@@ -620,8 +620,8 @@ export class CollectionsService {
   }
 
   /**
-   * Atualizar configurações da coleção
-   */
+    * Update collection settings
+    */
   static async updateCollectionSettings(collectionId: string, settings: UpdateSettingsData) {
     return await prisma.collectionSettings.upsert({
       where: { collectionId },
@@ -634,8 +634,8 @@ export class CollectionsService {
   }
 
   /**
-   * Buscar coleções
-   */
+    * Search collections
+    */
   static async searchCollections(userId: string, query: string, options: { includeContent?: boolean; limit?: number } = {}) {
     const { includeContent = false, limit = 20 } = options
 
@@ -664,8 +664,8 @@ export class CollectionsService {
   }
 
   /**
-   * Exportar coleções
-   */
+    * Export collections
+    */
   static async exportCollections(userId: string, options: { format?: string; includeContent?: boolean } = {}) {
     const collections = await this.getCollections({
       includeChildren: true,
@@ -690,8 +690,8 @@ export class CollectionsService {
   }
 
   /**
-   * Importar coleções
-   */
+    * Import collections
+    */
   static async importCollections(userId: string, data: any, options: { merge?: boolean } = {}) {
     const results = {
       imported: 0,
@@ -704,7 +704,7 @@ export class CollectionsService {
 
       for (const collectionData of collections) {
         try {
-          // Verificar conflitos
+          // Check for conflicts
           const existing = await prisma.collection.findFirst({
             where: {
               name: collectionData.name,
@@ -736,8 +736,8 @@ export class CollectionsService {
   }
 
   /**
-   * Operações em lote
-   */
+    * Batch operations
+    */
   static async batchOperations(data: BatchOperationsData) {
     const { operation, collectionIds, targetParentId } = data
 
@@ -758,8 +758,8 @@ export class CollectionsService {
             }
             break
           case 'copy':
-            // Implementação de cópia seria mais complexa
-            throw new Error('Operação de cópia não implementada')
+            // Copy implementation would be more complex
+            throw new Error('Copy operation not implemented')
         }
         results.success.push(collectionId)
       } catch (error) {
@@ -771,15 +771,15 @@ export class CollectionsService {
   }
 
   /**
-   * Move uma coleção para um novo pai e posição
-   */
+    * Move a collection to a new parent and position
+    */
   static async moveCollection(collectionId: string, newParentId: string, newPosition: number) {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
-      throw new Error('Usuário não autenticado')
+      throw new Error('User not authenticated')
     }
 
-    // Verificar se a coleção existe e pertence ao usuário
+    // Check if collection exists and belongs to user
     const collection = await prisma.collection.findFirst({
       where: {
         id: collectionId,
@@ -791,7 +791,7 @@ export class CollectionsService {
       throw new Error('Coleção não encontrada')
     }
 
-    // Se tem novo pai, verificar se existe e pertence ao usuário
+    // If has new parent, check if exists and belongs to user
     if (newParentId) {
       const parentCollection = await prisma.collection.findFirst({
         where: {
@@ -801,12 +801,12 @@ export class CollectionsService {
       })
 
       if (!parentCollection) {
-        throw new Error('Coleção pai não encontrada')
+        throw new Error('Parent collection not found')
       }
 
-      // Evitar ciclos (não permitir que uma coleção seja movida para dentro de si mesma ou seus filhos)
+      // Avoid cycles (do not allow a collection to be moved inside itself or its children)
       if (newParentId === collectionId) {
-        throw new Error('Não é possível mover uma coleção para dentro de si mesma')
+        throw new Error('Cannot move a collection inside itself')
       }
     }
 
@@ -835,15 +835,15 @@ export class CollectionsService {
   }
 
   /**
-   * Move um item (vídeo, canal ou playlist) para uma coleção diferente
-   */
+    * Move an item (video, channel or playlist) to a different collection
+    */
   static async moveItem(itemId: string, itemType: string, targetCollectionId: string) {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
-      throw new Error('Usuário não autenticado')
+      throw new Error('User not authenticated')
     }
 
-    // Verificar se a coleção de destino existe e pertence ao usuário
+    // Check if target collection exists and belongs to user
     const targetCollection = await prisma.collection.findFirst({
       where: {
         id: targetCollectionId,
@@ -852,7 +852,7 @@ export class CollectionsService {
     })
 
     if (!targetCollection) {
-      throw new Error('Coleção de destino não encontrada')
+      throw new Error('Target collection not found')
     }
 
     let updatedItem
@@ -901,7 +901,7 @@ export class CollectionsService {
         break
 
       default:
-        throw new Error('Tipo de item inválido')
+        throw new Error('Invalid item type')
     }
 
     return updatedItem

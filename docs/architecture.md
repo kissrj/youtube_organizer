@@ -1,74 +1,69 @@
-# 🏗️ Arquitetura do Sistema YouTube Organizer
+# 🏗️ System Architecture - YouTube Organizer
 
-## Visão Geral
+## Overview
 
-O YouTube Organizer é uma aplicação web moderna construída com Next.js 14, TypeScript e Prisma, projetada para organizar e gerenciar coleções de vídeos do YouTube com recursos avançados de IA e transcripts.
+The YouTube Organizer is a modern web application built with Next.js 14, TypeScript, and Prisma, designed to organize and manage YouTube video collections with advanced AI and transcript features.
 
-## 🏛️ Arquitetura Geral
+## 🏛️ General Architecture
 
-### Padrão Arquitetural
-- **Frontend:** Componentes React com hooks personalizados
-- **Backend:** API Routes do Next.js (Serverless)
-- **Banco de Dados:** SQLite com Prisma ORM
-- **Autenticação:** NextAuth.js com Google OAuth
-- **APIs Externas:** YouTube Data API, OpenAI API
+### Architectural Pattern
+- **Frontend:** React components with custom hooks
+- **Backend:** Next.js API Routes (Serverless)
+- **Database:** SQLite with Prisma ORM
+- **Authentication:** NextAuth.js with Google OAuth
+- **External APIs:** YouTube Data API, OpenAI API
 
-### Fluxo de Dados
+### Data Flow
 ```
-Usuário → Next.js App → API Routes → Prisma → SQLite
+User → Next.js App → API Routes → Prisma → SQLite
                               ↓
-                        APIs Externas
+                        External APIs
                         (YouTube, OpenAI)
 ```
 
-## 📁 Estrutura de Diretórios
+## 📁 Directory Structure
 
 ```
 src/
 ├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Rotas de autenticação
-│   ├── (dashboard)/              # Dashboard principal
-│   │   ├── collections/          # Gestão de coleções
-│   │   ├── feeds/                # Gestão de feeds
-│   │   ├── notifications/        # Centro de notificações
-│   │   └── settings/             # Configurações
+│   ├── (auth)/                   # Authentication routes
+│   ├── (dashboard)/              # Main dashboard
+│   │   ├── collections/          # Collection management
+│   │   ├── feeds/                # Feed management
+│   │   ├── notifications/        # Notification center
+│   │   └── settings/             # Settings
 │   ├── api/                      # API Routes
-│   │   ├── auth/                 # Autenticação
-│   │   ├── collections/          # CRUD de coleções
-│   │   ├── feeds/                # CRUD de feeds
-│   │   ├── notifications/        # Sistema de notificações
-│   │   └── videos/               # Operações com vídeos
-│   ├── globals.css               # Estilos globais
-│   ├── layout.tsx                # Layout raiz
-│   └── page.tsx                  # Página inicial
-├── components/                   # Componentes React
-│   ├── ui/                       # Componentes base da UI
-│   ├── forms/                    # Formulários
-│   ├── modals/                   # Modais e dialogs
-│   ├── layout/                   # Componentes de layout
+│   ├── globals.css               # Global styles
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Home page
+├── components/                   # React components
+│   ├── ui/                       # Base UI components
+│   ├── forms/                    # Forms
+│   ├── modals/                   # Modals and dialogs
+│   ├── layout/                   # Layout components
 │   └── providers/                # Context providers
-├── lib/                          # Utilitários e configurações
-│   ├── prisma/                   # Cliente e configurações Prisma
-│   ├── auth/                     # Configuração NextAuth
-│   ├── services/                 # Serviços da aplicação
-│   │   ├── collections.ts        # Serviço de coleções
-│   │   ├── feeds.ts              # Serviço de feeds
-│   │   ├── notifications.ts      # Serviço de notificações
-│   │   ├── videos.ts             # Serviço de vídeos
-│   │   └── youtube.ts            # Cliente YouTube API
-│   ├── utils/                    # Funções utilitárias
+├── lib/                          # Utilities and configurations
+│   ├── prisma/                   # Prisma client and configurations
+│   ├── auth/                     # NextAuth configuration
+│   ├── services/                 # Application services
+│   │   ├── collections.ts        # Collection service
+│   │   ├── feeds.ts              # Feed service
+│   │   ├── notifications.ts      # Notification service
+│   │   ├── videos.ts             # Video service
+│   │   └── youtube.ts            # YouTube API client
+│   ├── utils/                    # Utility functions
 │   ├── hooks/                    # Custom hooks
-│   ├── types/                    # Definições de tipos
-│   └── validations/              # Schemas de validação
-├── styles/                       # Estilos adicionais
-└── middleware.ts                 # Middleware Next.js
+│   ├── types/                    # Type definitions
+│   └── validations/              # Validation schemas
+├── styles/                       # Additional styles
+└── middleware.ts                 # Next.js middleware
 ```
 
-## 🗄️ Modelo de Dados
+## 🗄️ Data Model
 
-### Entidades Principais
+### Main Entities
 
-#### Collection (Coleção)
+#### Collection (Collection)
 ```typescript
 interface Collection {
   id: string;
@@ -81,7 +76,7 @@ interface Collection {
   createdAt: Date;
   updatedAt: Date;
 
-  // Relacionamentos
+  // Relationships
   children?: Collection[];
   parent?: Collection;
   videos?: CollectionVideo[];
@@ -93,7 +88,7 @@ interface Collection {
 }
 ```
 
-#### Video (Vídeo)
+#### Video (Video)
 ```typescript
 interface Video {
   id: string;
@@ -112,7 +107,7 @@ interface Video {
   createdAt: Date;
   updatedAt: Date;
 
-  // Relacionamentos
+  // Relationships
   collections?: CollectionVideo[];
   transcripts?: Transcript[];
 }
@@ -134,12 +129,12 @@ interface CollectionFeed {
   createdAt: Date;
   updatedAt: Date;
 
-  // Relacionamentos
+  // Relationships
   collection: Collection;
 }
 ```
 
-#### Notification (Notificação)
+#### Notification (Notification)
 ```typescript
 interface Notification {
   id: string;
@@ -162,7 +157,7 @@ interface Notification {
 }
 ```
 
-### Relacionamentos
+### Relationships
 
 ```
 User (1) ──── (N) Collection
@@ -177,73 +172,73 @@ User (1) ──── (1) NotificationPreference
 User (1) ──── (N) NotificationChannel
 ```
 
-## 🔧 Serviços da Aplicação
+## 🔧 Application Services
 
 ### CollectionsService
-**Responsabilidades:**
-- CRUD de coleções
-- Gerenciamento de hierarquia
-- Operações em lote
-- Validação de dados
-- Estatísticas e analytics
+**Responsibilities:**
+- CRUD for collections
+- Hierarchy management
+- Batch operations
+- Data validation
+- Statistics and analytics
 
-**Métodos Principais:**
-- `createCollection()` - Criar nova coleção
-- `getCollections()` - Listar coleções com filtros
-- `updateCollection()` - Atualizar coleção
-- `deleteCollection()` - Excluir coleção
-- `moveCollection()` - Mover na hierarquia
-- `getCollectionContent()` - Obter conteúdo da coleção
-- `searchCollections()` - Buscar coleções
-- `exportCollections()` - Exportar dados
-- `importCollections()` - Importar dados
+**Main Methods:**
+- `createCollection()` - Create new collection
+- `getCollections()` - List collections with filters
+- `updateCollection()` - Update collection
+- `deleteCollection()` - Delete collection
+- `moveCollection()` - Move in hierarchy
+- `getCollectionContent()` - Get collection content
+- `searchCollections()` - Search collections
+- `exportCollections()` - Export data
+- `importCollections()` - Import data
 
 ### FeedsService
-**Responsabilidades:**
-- Gerenciamento de feeds RSS/Atom
-- Sincronização automática
-- Filtragem e ordenação
-- Processamento de conteúdo
+**Responsibilities:**
+- RSS/Atom feed management
+- Automatic synchronization
+- Filtering and sorting
+- Content processing
 
-**Métodos Principais:**
-- `createFeed()` - Criar novo feed
-- `getFeed()` - Obter feed por ID
-- `updateFeed()` - Atualizar feed
-- `deleteFeed()` - Excluir feed
-- `syncFeed()` - Sincronizar conteúdo
-- `getFeedVideos()` - Obter vídeos do feed
+**Main Methods:**
+- `createFeed()` - Create new feed
+- `getFeed()` - Get feed by ID
+- `updateFeed()` - Update feed
+- `deleteFeed()` - Delete feed
+- `syncFeed()` - Sync content
+- `getFeedVideos()` - Get feed videos
 
 ### NotificationsService
-**Responsabilidades:**
-- Gerenciamento de notificações
-- Envio por múltiplos canais
-- Preferências do usuário
-- Templates de notificação
+**Responsibilities:**
+- Notification management
+- Multi-channel sending
+- User preferences
+- Notification templates
 
-**Métodos Principais:**
-- `createNotification()` - Criar notificação
-- `getUserNotifications()` - Listar notificações
-- `markAsRead()` - Marcar como lida
-- `archiveNotification()` - Arquivar notificação
-- `getUserPreferences()` - Obter preferências
-- `updatePreferences()` - Atualizar preferências
-- `addChannel()` - Adicionar canal de notificação
+**Main Methods:**
+- `createNotification()` - Create notification
+- `getUserNotifications()` - List notifications
+- `markAsRead()` - Mark as read
+- `archiveNotification()` - Archive notification
+- `getUserPreferences()` - Get preferences
+- `updatePreferences()` - Update preferences
+- `addChannel()` - Add notification channel
 
 ### VideosService
-**Responsabilidades:**
-- Integração com YouTube API
-- Processamento de metadados
-- Gerenciamento de transcripts
-- Geração de resumos IA
+**Responsibilities:**
+- YouTube API integration
+- Metadata processing
+- Transcript management
+- AI summary generation
 
-**Métodos Principais:**
-- `syncVideo()` - Sincronizar vídeo do YouTube
-- `getVideoTranscript()` - Obter transcript
-- `generateSummary()` - Gerar resumo IA
-- `updateVideoMetadata()` - Atualizar metadados
-- `searchVideos()` - Buscar vídeos
+**Main Methods:**
+- `syncVideo()` - Sync video from YouTube
+- `getVideoTranscript()` - Get transcript
+- `generateSummary()` - Generate AI summary
+- `updateVideoMetadata()` - Update metadata
+- `searchVideos()` - Search videos
 
-## 🔐 Autenticação e Autorização
+## 🔐 Authentication and Authorization
 
 ### NextAuth.js Configuration
 ```typescript
@@ -265,7 +260,7 @@ export const authOptions: NextAuthOptions = {
 };
 ```
 
-### Middleware de Autorização
+### Authorization Middleware
 ```typescript
 // middleware.ts
 export async function middleware(request: NextRequest) {
@@ -273,7 +268,7 @@ export async function middleware(request: NextRequest) {
 
   if (!session && request.nextUrl.pathname.startsWith('/api')) {
     return NextResponse.json(
-      { error: 'Não autorizado' },
+      { error: 'Unauthorized' },
       { status: 401 }
     );
   }
@@ -282,74 +277,74 @@ export async function middleware(request: NextRequest) {
 }
 ```
 
-## 🌐 APIs Externas
+## 🌐 External APIs
 
 ### YouTube Data API v3
-**Endpoints utilizados:**
-- `videos.list` - Metadados dos vídeos
-- `channels.list` - Informações dos canais
-- `playlists.list` - Listas de reprodução
-- `playlistItems.list` - Itens das playlists
-- `captions.list` - Transcripts dos vídeos
+**Used endpoints:**
+- `videos.list` - Video metadata
+- `channels.list` - Channel information
+- `playlists.list` - Playlists
+- `playlistItems.list` - Playlist items
+- `captions.list` - Video transcripts
 
 ### OpenAI API
-**Modelos utilizados:**
-- `gpt-3.5-turbo` - Geração de resumos
-- `gpt-4` - Análise avançada (opcional)
+**Used models:**
+- `gpt-3.5-turbo` - Summary generation
+- `gpt-4` - Advanced analysis (optional)
 
-**Prompts otimizados:**
-- Resumos concisos e estruturados
-- Extração de pontos principais
-- Análise de sentimento e tópicos
+**Optimized prompts:**
+- Concise and structured summaries
+- Main points extraction
+- Sentiment analysis and topic analysis
 
-## 📊 Estratégia de Cache
+## 📊 Cache Strategy
 
-### Redis (Futuro)
-- Cache de metadados do YouTube
-- Cache de resumos IA
-- Cache de resultados de busca
-- Cache de preferências do usuário
+### Redis (Future)
+- YouTube metadata cache
+- AI summary cache
+- Search results cache
+- User preferences cache
 
-### In-Memory Cache (Atual)
-- Cache de configurações
-- Cache de templates
-- Cache de dados estáticos
+### In-Memory Cache (Current)
+- Configuration cache
+- Template cache
+- Static data cache
 
-## 🔍 Estratégia de Busca
+## 🔍 Search Strategy
 
 ### Full-Text Search
-- Busca em títulos, descrições e tags
-- Busca por canal e categoria
-- Filtros avançados por data, visualizações, etc.
+- Search in titles, descriptions, and tags
+- Search by channel and category
+- Advanced filters by date, views, etc.
 
-### Algoritmo de Relevância
-- Peso por campo (título > descrição > tags)
-- Boost por recência e engajamento
-- Filtros booleanos e de range
+### Relevance Algorithm
+- Field weight (title > description > tags)
+- Recency and engagement boost
+- Boolean and range filters
 
-## 📈 Monitoramento e Analytics
+## 📈 Monitoring and Analytics
 
-### Métricas Principais
-- Performance das queries
-- Taxa de erro das APIs
-- Tempo de resposta das operações
-- Utilização de recursos
+### Main Metrics
+- Query performance
+- API error rates
+- Operation response times
+- Resource usage
 
-### Ferramentas
-- **Vercel Analytics** - Métricas de uso
-- **Sentry** - Monitoramento de erros
-- **DataDog** - Monitoramento de performance
-- **Custom Dashboards** - Métricas específicas
+### Tools
+- **Vercel Analytics** - Usage metrics
+- **Sentry** - Error monitoring
+- **DataDog** - Performance monitoring
+- **Custom Dashboards** - Specific metrics
 
-## 🚀 Estratégia de Deploy
+## 🚀 Deploy Strategy
 
-### Vercel (Recomendado)
-- Deploy automático via Git
-- CDN global integrado
-- Funções serverless otimizadas
-- Análise de performance integrada
+### Vercel (Recommended)
+- Automatic deploy via Git
+- Integrated global CDN
+- Optimized serverless functions
+- Integrated performance analysis
 
-### Docker (Alternativo)
+### Docker (Alternative)
 ```dockerfile
 FROM node:18-alpine
 WORKDIR /app
@@ -361,62 +356,138 @@ EXPOSE 3000
 CMD ["npm", "start"]
 ```
 
-## 🔒 Segurança
+## 🔒 Security
 
-### Medidas Implementadas
-- **Sanitização de Input:** Validação com Zod
-- **Rate Limiting:** Controle de requisições
-- **CORS:** Configuração adequada
-- **Headers de Segurança:** Helmet-like
-- **Autenticação:** JWT com refresh tokens
+### Implemented Measures
+- **Input Sanitization:** Validation with Zod
+- **Rate Limiting:** Request control
+- **CORS:** Proper configuration
+- **Security Headers:** Helmet-like
+- **Authentication:** JWT with refresh tokens
 
-### Boas Práticas
-- **Princípio do Menor Privilégio**
-- **Validação em Múltiplas Camadas**
-- **Logs de Segurança**
-- **Atualizações Regulares**
+### Best Practices
+- **Least Privilege Principle**
+- **Multi-layer Validation**
+- **Security Logs**
+- **Regular Updates**
 
-## 📚 Padrões de Código
+## 📚 Code Patterns
 
 ### TypeScript
-- Strict mode habilitado
-- Interfaces bem definidas
-- Generics para reutilização
-- Utility types do TypeScript
+- Strict mode enabled
+- Well-defined interfaces
+- Generics for reusability
+- TypeScript utility types
+
+```typescript
+// ✅ Good
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+const config = {
+  apiUrl: 'https://api.example.com',
+  timeout: 5000,
+} as const;
+
+// ❌ Bad
+interface User {
+  id: any;
+  name: string;
+  email?: string;
+}
+
+const config = {
+  apiUrl: 'https://api.example.com',
+  timeout: 5000,
+};
+```
 
 ### React/Next.js
-- Server Components quando possível
-- Client Components quando necessário
-- Custom hooks para lógica reutilizável
-- Error boundaries para tratamento de erros
+- Server Components when possible
+- Client Components when necessary
+- Error boundaries for error handling
+- Custom hooks for reusable logic
 
-### Estilização
-- Tailwind CSS para consistência
-- CSS Modules para isolamento
-- Design system bem definido
-- Responsividade mobile-first
+```typescript
+// ✅ Good - Server Component
+export default function CollectionsPage() {
+  const collections = await getCollections();
 
-## 🧪 Estratégia de Testes
+  return (
+    <div>
+      {collections.map(collection => (
+        <CollectionCard key={collection.id} collection={collection} />
+      ))}
+    </div>
+  );
+}
 
-### Pirâmide de Testes
+// ✅ Good - Custom Hook
+function useCollections() {
+  const [collections, setCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCollections().then(setCollections).finally(() => setLoading(false));
+  }, []);
+
+  return { collections, loading };
+}
 ```
-E2E Tests (Playwright) - Cenários completos
-  ↑
-Integration Tests (Jest) - Workflows e APIs
-  ↑
-Unit Tests (Jest) - Funções e componentes
+
+### Styling
+- Tailwind CSS for consistency
+- Follow defined design system
+- CSS Modules for specific styles
+- Mobile-first responsiveness
+
+```typescript
+// ✅ Good
+export function Button({ variant = 'primary', children, ...props }: ButtonProps) {
+  const baseClasses = 'px-4 py-2 rounded-md font-medium transition-colors';
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+  };
+
+  return (
+    <button
+      className={`${baseClasses} ${variantClasses[variant]}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 ```
 
-### Cobertura Alvo
-- **Unit Tests:** 80%+ cobertura
-- **Integration Tests:** Principais workflows
-- **E2E Tests:** Jornada crítica do usuário
+## 🧪 Testing Strategy
 
-### Ferramentas
-- **Jest** - Framework de testes
-- **React Testing Library** - Testes de componentes
-- **Playwright** - Testes E2E
-- **Mock Service Worker** - Mocks de API
+### Testing Pyramid
+```
+E2E Tests (Playwright) - Complete scenarios
+  ↑
+Integration Tests (Jest) - Workflows and APIs
+  ↑
+Unit Tests (Jest) - Functions and components
+  ↑
+Static Analysis (TypeScript, ESLint)
+```
+
+### Target Coverage
+- **Unit Tests:** 80%+ code coverage
+- **Integration Tests:** Main workflows
+- **E2E Tests:** Critical user journey
+
+### Tools
+- **Jest** - Testing framework
+- **React Testing Library** - Component tests
+- **Playwright** - E2E tests
+- **Mock Service Worker** - API mocks
 
 ## 🔄 CI/CD Pipeline
 
@@ -451,29 +522,29 @@ jobs:
 5. **Build**
 6. **Deploy**
 
-## 📋 Roadmap Técnico
+## 📋 Roadmap Technical
 
-### Fase 1 (Atual)
-- ✅ Estrutura base com Next.js 14
-- ✅ Autenticação com NextAuth.js
-- ✅ Integração com YouTube API
-- ✅ Sistema de coleções básico
-- ✅ Interface responsiva
+### Phase 1 (Current)
+- ✅ Base structure with Next.js 14
+- ✅ Authentication with NextAuth.js
+- ✅ YouTube API integration
+- ✅ Basic collection system
+- ✅ Responsive interface
 
-### Fase 2 (Próxima)
-- 🔄 Sistema de feeds avançado
-- 🔄 Notificações em tempo real
-- 🔄 Cache com Redis
+### Phase 2 (Next)
+- 🔄 Advanced feed system
+- 🔄 Real-time notifications
+- 🔄 Redis cache
 - 🔄 PWA capabilities
-- 🔄 Tema dark/light
+- 🔄 Dark/light theme
 
-### Fase 3 (Futuro)
-- 🔄 Microserviços
+### Phase 3 (Future)
+- 🔄 Microservices
 - 🔄 Multi-tenant
-- 🔄 Analytics avançado
-- 🔄 Integração com outras plataformas
-- 🔄 IA avançada com machine learning
+- 🔄 Advanced analytics
+- 🔄 More platform integrations
+- 🔄 Advanced AI with machine learning
 
 ---
 
-Esta arquitetura fornece uma base sólida e escalável para o YouTube Organizer, com foco em performance, manutenibilidade e experiência do usuário.
+This architecture provides a solid and scalable foundation for the YouTube Organizer, with focus on performance, maintainability, and user experience.

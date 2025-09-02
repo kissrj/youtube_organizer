@@ -7,6 +7,8 @@ import { AddCollectionDialog } from '@/components/collections/AddCollectionDialo
 import { CollectionSettingsWithIcons } from '@/components/collections/CollectionSettingsWithIcons'
 import { Collection } from '@/lib/types'
 import { Plus, Settings, Rss } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useToast } from '@/components/ui/ToastProvider'
 
 export default function CollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -14,6 +16,9 @@ export default function CollectionsPage() {
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [toDelete, setToDelete] = useState<Collection | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     loadCollections()
@@ -24,11 +29,11 @@ export default function CollectionsPage() {
       const response = await fetch('/api/collections')
       if (response.ok) {
         const data = await response.json()
-        // A API retorna { success: true, data: { collections: [...], total: number, hierarchy: [...] } }
+        // The API returns { success: true, data: { collections: [...], total: number, hierarchy: [...] } }
         setCollections(data.data?.collections || [])
       }
     } catch (error) {
-      console.error('Erro ao carregar coleções:', error)
+      console.error('Error loading collections:', error)
       setCollections([])
     } finally {
       setLoading(false)
@@ -47,14 +52,18 @@ export default function CollectionsPage() {
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Coleção criada:', result)
+        toast({
+          title: 'Collection created',
+          description: `"${result?.data?.name || data?.name}" added successfully`,
+          variant: 'success',
+        })
         await loadCollections()
       } else {
         const error = await response.json()
-        console.error('Erro ao criar coleção:', error)
+        toast({ title: 'Failed to create collection', description: error?.error || 'Unknown error', variant: 'error' })
       }
     } catch (error) {
-      console.error('Erro ao criar coleção:', error)
+      toast({ title: 'Failed to create collection', description: 'Check your connection and try again.', variant: 'error' })
     }
   }
 
@@ -70,35 +79,66 @@ export default function CollectionsPage() {
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Coleção atualizada:', result)
+        toast({ title: 'Collection updated', variant: 'success' })
         await loadCollections()
       } else {
         const error = await response.json()
-        console.error('Erro ao atualizar coleção:', error)
+        toast({ title: 'Update failed', description: error?.error || 'Unknown error', variant: 'error' })
       }
     } catch (error) {
-      console.error('Erro ao atualizar coleção:', error)
+      toast({ title: 'Update failed', description: 'Check your connection and try again.', variant: 'error' })
     }
   }
 
-  const handleDeleteCollection = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta coleção?')) return
+  const confirmDelete = (collection: Collection) => {
+    setToDelete(collection)
+    setConfirmOpen(true)
+  }
 
+  const handleDeleteConfirmed = async () => {
+    if (!toDelete) return
+    const backup = toDelete
     try {
-      const response = await fetch(`/api/collections/${id}`, {
-        method: 'DELETE',
-      })
-
+      const response = await fetch(`/api/collections/${backup.id}`, { method: 'DELETE' })
       if (response.ok) {
-        const result = await response.json()
-        console.log('Coleção excluída:', result)
         await loadCollections()
+        toast({
+          title: 'Collection deleted',
+          description: `"${backup.name}" was removed` ,
+          actionLabel: 'Undo',
+          onAction: async () => {
+            try {
+              const body = {
+                name: backup.name,
+                description: backup.description,
+                icon: backup.icon,
+                color: backup.color,
+                isPublic: backup.isPublic,
+                parentId: backup.parentId,
+              }
+              const r = await fetch('/api/collections', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+              })
+              if (r.ok) {
+                await loadCollections()
+                toast({ title: 'Action undone', description: 'Collection restored', variant: 'success' })
+              } else {
+                toast({ title: 'Undo failed', description: 'Could not restore', variant: 'error' })
+              }
+            } catch {
+              toast({ title: 'Undo failed', description: 'Check your connection', variant: 'error' })
+            }
+          },
+          variant: 'success',
+        })
       } else {
-        const error = await response.json()
-        console.error('Erro ao excluir coleção:', error)
+        const err = await response.json()
+        toast({ title: 'Delete failed', description: err?.error || 'Unknown error', variant: 'error' })
       }
-    } catch (error) {
-      console.error('Erro ao excluir coleção:', error)
+    } catch {
+      toast({ title: 'Delete failed', description: 'Check your connection and try again.', variant: 'error' })
+    } finally {
+      setToDelete(null)
     }
   }
 
@@ -114,8 +154,8 @@ export default function CollectionsPage() {
 
   const handleSettingsUpdate = async (settings: any) => {
     if (!selectedCollection) return
-    // Aqui seria implementada a atualização das configurações
-    console.log('Atualizando configurações:', settings)
+    // Here the settings update would be implemented
+    console.log('Updating settings:', settings)
   }
 
   if (loading) {
@@ -131,40 +171,34 @@ export default function CollectionsPage() {
   return (
     <AuthGuard>
       <div className="space-y-6">
-        {/* Cabeçalho */}
+        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Coleções</h1>
-            <p className="text-gray-600 mt-1">
-              Organize seus vídeos, canais e playlists em coleções personalizáveis
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">Collections</h1>
+            <p className="text-gray-600 mt-1">Organize your videos, channels and playlists</p>
           </div>
           <button
             onClick={() => setShowAddDialog(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
-            Nova Coleção
+            New Collection
           </button>
         </div>
 
-        {/* Grid de Coleções */}
+        {/* Collections Grid */}
         {collections.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <div className="text-gray-400 mb-4">
               <Plus className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Nenhuma coleção encontrada
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Crie sua primeira coleção para começar a organizar seus conteúdos
-            </p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No collections yet</h3>
+            <p className="text-gray-600 mb-6">Create your first collection to get started</p>
             <button
               onClick={() => setShowAddDialog(true)}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Criar Primeira Coleção
+              Create First Collection
             </button>
           </div>
         ) : (
@@ -184,27 +218,25 @@ export default function CollectionsPage() {
                 onFeeds={() => {
                   window.location.href = `/collections/${collection.id}/feeds`
                 }}
-                onDelete={() => handleDeleteCollection(collection.id)}
+                onDelete={() => confirmDelete(collection)}
               />
             ))}
           </div>
         )}
 
-        {/* Diálogo de Criação */}
+        {/* Create Dialog */}
         <AddCollectionDialog
           isOpen={showAddDialog}
           onClose={() => setShowAddDialog(false)}
           onSubmit={handleCreateCollection}
         />
 
-        {/* Painel de Configurações */}
+        {/* Settings Panel */}
         {showSettings && selectedCollection && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Configurações - {selectedCollection.name}
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900">Settings - {selectedCollection.name}</h3>
                 <button
                   onClick={() => setShowSettings(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -225,6 +257,16 @@ export default function CollectionsPage() {
           </div>
         )}
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete collection"
+        description={`Are you sure you want to delete "${toDelete?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive
+        onConfirm={handleDeleteConfirmed}
+        onClose={() => setConfirmOpen(false)}
+      />
     </AuthGuard>
   )
 }

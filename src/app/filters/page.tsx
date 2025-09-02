@@ -9,7 +9,7 @@ import { FilterOptions, FilterPreset } from '@/lib/services/advancedFilters';
 export default function AdvancedFiltersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const collectionId = searchParams.get('collectionId') || '';
+  const notebookId = searchParams.get('notebookId') || '';
 
   const [activeTab, setActiveTab] = useState<'builder' | 'presets'>('builder');
   const [currentFilters, setCurrentFilters] = useState<FilterOptions | null>(null);
@@ -20,15 +20,15 @@ export default function AdvancedFiltersPage() {
     setIsLoading(true);
 
     try {
-      // Aqui você pode redirecionar para a página de vídeos com os filtros aplicados
-      // ou atualizar uma lista de vídeos na mesma página
+      // Here you can redirect to the videos page with the applied filters
+      // or update a video list on the same page
       const params = new URLSearchParams();
-      params.set('collectionId', collectionId);
+      params.set('notebookId', notebookId);
       params.set('filters', JSON.stringify(filters));
 
       router.push(`/videos?${params.toString()}`);
     } catch (error) {
-      console.error('Erro ao aplicar filtros:', error);
+      console.error('Error applying filters:', error);
     } finally {
       setIsLoading(false);
     }
@@ -43,22 +43,22 @@ export default function AdvancedFiltersPage() {
         },
         body: JSON.stringify({
           name,
-          description: `Preset criado em ${new Date().toLocaleDateString()}`,
+          description: `Preset created on ${new Date().toLocaleDateString()}`,
           filters,
           sortOptions: filters.sort
         }),
       });
 
       if (response.ok) {
-        alert('Preset salvo com sucesso!');
-        // Recarregar a lista de presets
+        alert('Preset saved successfully!');
+        // Reload the presets list
         window.location.reload();
       } else {
-        throw new Error('Erro ao salvar preset');
+        throw new Error('Error saving preset');
       }
     } catch (error) {
-      console.error('Erro ao salvar preset:', error);
-      alert('Erro ao salvar preset');
+      console.error('Error saving preset:', error);
+      alert('Error saving preset');
     }
   };
 
@@ -73,7 +73,7 @@ export default function AdvancedFiltersPage() {
   };
 
   const handleEditPreset = (preset: FilterPreset) => {
-    // Abrir o builder com os filtros do preset
+    // Open the builder with the preset filters
     setActiveTab('builder');
     setCurrentFilters({
       conditions: preset.filters?.conditions || [],
@@ -83,30 +83,30 @@ export default function AdvancedFiltersPage() {
   };
 
   const handleDeletePreset = (presetId: string) => {
-    // A ação de deletar já é tratada no componente FilterPresetList
-    // Aqui você pode adicionar lógica adicional se necessário
+    // The delete action is already handled in the FilterPresetList component
+    // Here you can add additional logic if necessary
   };
 
   const handleToggleDefault = (presetId: string) => {
-    // A ação de toggle já é tratada no componente FilterPresetList
-    // Aqui você pode adicionar lógica adicional se necessário
+    // The toggle action is already handled in the FilterPresetList component
+    // Here you can add additional logic if necessary
   };
 
-  if (!collectionId) {
+  if (!notebookId) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Filtros Avançados
+            Advanced Filters
           </h1>
           <p className="text-gray-600 mb-6">
-            Selecione uma coleção para começar a usar os filtros avançados.
+            Select a notebook to start using advanced filters.
           </p>
           <button
-            onClick={() => router.push('/collections')}
+            onClick={() => router.push('/notebooks')}
             className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
-            Ver Coleções
+            View Notebooks
           </button>
         </div>
       </div>
@@ -119,10 +119,10 @@ export default function AdvancedFiltersPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Filtros Avançados
+            Advanced Filters
           </h1>
           <p className="text-gray-600">
-            Crie filtros complexos para encontrar exatamente os vídeos que você procura.
+            Create complex filters to find exactly the videos you're looking for.
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export default function AdvancedFiltersPage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Construtor de Filtros
+                Filter Builder
               </button>
               <button
                 onClick={() => setActiveTab('presets')}
@@ -148,7 +148,7 @@ export default function AdvancedFiltersPage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Presets Salvos
+                Saved Presets
               </button>
             </nav>
           </div>
@@ -158,7 +158,7 @@ export default function AdvancedFiltersPage() {
         <div className="space-y-6">
           {activeTab === 'builder' && (
             <FilterBuilder
-              collectionId={collectionId}
+              notebookId={notebookId}
               onApplyFilters={handleApplyFilters}
               onSavePreset={handleSavePreset}
               initialFilters={currentFilters || undefined}
@@ -167,7 +167,7 @@ export default function AdvancedFiltersPage() {
 
           {activeTab === 'presets' && (
             <FilterPresetList
-              collectionId={collectionId}
+              notebookId={notebookId}
               onApplyPreset={handleApplyPreset}
               onEditPreset={handleEditPreset}
               onDeletePreset={handleDeletePreset}
@@ -179,7 +179,7 @@ export default function AdvancedFiltersPage() {
         {/* Filtros Atuais */}
         {currentFilters && currentFilters.conditions.length > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Filtros Atuais Aplicados</h3>
+            <h3 className="text-lg font-semibold mb-4">Currently Applied Filters</h3>
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex flex-wrap gap-2 mb-4">
                 {currentFilters.conditions.map((condition, index) => (
@@ -192,10 +192,10 @@ export default function AdvancedFiltersPage() {
                 ))}
               </div>
               <div className="text-sm text-gray-600">
-                Lógica: {currentFilters.logic}
+                Logic: {currentFilters.logic}
                 {currentFilters.sort && (
                   <span className="ml-4">
-                    Ordenação: {currentFilters.sort.field} ({currentFilters.sort.direction})
+                    Sort: {currentFilters.sort.field} ({currentFilters.sort.direction})
                   </span>
                 )}
               </div>
@@ -208,7 +208,7 @@ export default function AdvancedFiltersPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 flex items-center space-x-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <span>Aplicando filtros...</span>
+              <span>Applying filters...</span>
             </div>
           </div>
         )}

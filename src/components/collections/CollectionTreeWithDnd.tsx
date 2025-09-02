@@ -128,7 +128,7 @@ export function CollectionTreeWithDnd({
                   onCollectionDelete(collection.id)
                 }}
                 className="p-1 hover:bg-gray-200 rounded transition-colors text-red-600"
-                title="Excluir"
+                title="Delete"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -186,3 +186,4 @@ export function CollectionTreeWithDnd({
     </div>
   )
 }
+

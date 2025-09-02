@@ -5,7 +5,7 @@ import { Edit, Trash2, Play, Star, StarOff, Download, Upload } from 'lucide-reac
 import { FilterPreset } from '@/lib/services/advancedFilters';
 
 interface FilterPresetListProps {
-  collectionId: string;
+  notebookId: string;
   onApplyPreset: (preset: FilterPreset) => void;
   onEditPreset: (preset: FilterPreset) => void;
   onDeletePreset: (presetId: string) => void;
@@ -13,7 +13,7 @@ interface FilterPresetListProps {
 }
 
 export default function FilterPresetList({
-  collectionId,
+  notebookId,
   onApplyPreset,
   onEditPreset,
   onDeletePreset,
@@ -26,7 +26,7 @@ export default function FilterPresetList({
 
   useEffect(() => {
     loadPresets();
-  }, [collectionId]);
+  }, [notebookId]);
 
   const loadPresets = async () => {
     try {
@@ -51,7 +51,7 @@ export default function FilterPresetList({
         },
         body: JSON.stringify({
           presetId: preset.id,
-          collectionId
+          notebookId
         }),
       });
 

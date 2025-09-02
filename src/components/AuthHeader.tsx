@@ -4,6 +4,7 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 export function AuthHeader() {
   const { data: session, status } = useSession()
@@ -24,7 +25,7 @@ export function AuthHeader() {
             <h1 className="text-2xl font-bold text-gray-900">
               YouTube Organizer
             </h1>
-            <div className="text-sm text-gray-600">Carregando...</div>
+            <div className="text-sm text-gray-600">Loading…</div>
           </div>
         </div>
       </header>
@@ -52,16 +53,17 @@ export function AuthHeader() {
                   Playlists
                 </Link>
                 <Link href="/videos" className="text-gray-700 hover:text-gray-900 transition-colors font-medium">
-                  Vídeos
+                  Videos
                 </Link>
                 <Link href="/categories" className="text-gray-700 hover:text-gray-900 transition-colors font-medium">
-                  Categorias
+                  Categories
                 </Link>
                 <Link href="/tags" className="text-gray-700 hover:text-gray-900 transition-colors font-medium">
                   Tags
                 </Link>
 
                 <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-gray-300">
+                  <ThemeToggle />
                   <div className="flex items-center space-x-2">
                     {session.user?.image && (
                       <img
@@ -78,7 +80,7 @@ export function AuthHeader() {
                     onClick={() => signOut({ callbackUrl: '/auth/signin' })}
                     className="px-3 py-1 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                   >
-                    Sair
+                    Sign Out
                   </button>
                 </div>
               </>
@@ -87,7 +89,7 @@ export function AuthHeader() {
                 onClick={() => signIn('google', { callbackUrl: '/' })}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2 font-medium"
               >
-                <span>Entrar com Google</span>
+                <span>Sign in with Google</span>
               </button>
             )}
           </nav>
@@ -113,6 +115,9 @@ export function AuthHeader() {
         {session && isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-300">
             <nav className="flex flex-col space-y-3">
+              <div className="pb-3 border-b border-gray-300">
+                <ThemeToggle />
+              </div>
               <Link href="/" className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2">
                 Dashboard
               </Link>
@@ -120,10 +125,10 @@ export function AuthHeader() {
                 Playlists
               </Link>
               <Link href="/videos" className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2">
-                Vídeos
+                Videos
               </Link>
               <Link href="/categories" className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2">
-                Categorias
+                Categories
               </Link>
               <Link href="/tags" className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2">
                 Tags
@@ -146,7 +151,7 @@ export function AuthHeader() {
                   onClick={() => signOut({ callbackUrl: '/auth/signin' })}
                   className="px-3 py-1 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  Sair
+                  Sign Out
                 </button>
               </div>
             </nav>
@@ -156,3 +161,4 @@ export function AuthHeader() {
     </header>
   )
 }
+

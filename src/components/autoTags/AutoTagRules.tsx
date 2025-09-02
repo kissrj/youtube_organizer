@@ -35,7 +35,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         setRules(data);
       }
     } catch (error) {
-      console.error('Erro ao carregar regras:', error);
+      console.error('Error loading rules:', error);
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         });
       }
     } catch (error) {
-      console.error('Erro ao criar regra:', error);
+      console.error('Error creating rule:', error);
     }
   };
 
@@ -79,9 +79,9 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...editingRule,
-          keywords: editingRule?.keywords && Array.isArray(editingRule.keywords) 
-            ? editingRule.keywords 
-            : e.target.value.split(',').map((k: string) => k.trim()).filter((k: string) => k) || []
+          keywords: editingRule?.keywords && Array.isArray(editingRule.keywords)
+            ? editingRule.keywords
+            : []
         })
       });
 
@@ -91,7 +91,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         setEditingRule(null);
       }
     } catch (error) {
-      console.error('Erro ao atualizar regra:', error);
+      console.error('Error updating rule:', error);
     }
   };
 
@@ -105,26 +105,26 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         setRules(rules.filter(rule => rule.id !== id));
       }
     } catch (error) {
-      console.error('Erro ao excluir regra:', error);
+      console.error('Error deleting rule:', error);
     }
   };
 
   if (loading) {
-    return <div>Carregando regras...</div>;
+    return <div>Loading rules...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Regras de Tags Automáticas</h2>
-          <p className="text-muted-foreground">Configure regras para sugerir tags automaticamente</p>
+          <h2 className="text-xl font-semibold">Auto Tag Rules</h2>
+          <p className="text-muted-foreground">Configure rules to suggest tags automatically</p>
         </div>
         <button
           onClick={() => setIsCreateDialogOpen(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Nova Regra
+          New Rule
         </button>
       </div>
 
@@ -135,28 +135,28 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
               <div className="flex items-center space-x-2">
                 <h3 className="text-lg font-semibold">{rule.name}</h3>
                 {!rule.isActive && (
-                  <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">Inativa</span>
+                  <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">Inactive</span>
                 )}
-                <span className="border px-2 py-1 rounded text-sm">Prioridade: {rule.priority}</span>
+                <span className="border px-2 py-1 rounded text-sm">Priority: {rule.priority}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onRuleSelect?.(rule)}
                   className="border px-3 py-1 rounded hover:bg-gray-50"
                 >
-                  Configurar
+                  Configure
                 </button>
                 <button
                   onClick={() => setEditingRule(rule)}
                   className="border px-3 py-1 rounded hover:bg-gray-50"
                 >
-                  Editar
+                  Edit
                 </button>
                 <button
                   onClick={() => handleDeleteRule(rule.id)}
                   className="border px-3 py-1 rounded hover:bg-red-50 text-red-600"
                 >
-                  Excluir
+                  Delete
                 </button>
               </div>
             </div>
@@ -165,27 +165,27 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
             )}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium">Padrão de Título:</span>
-                <p className="text-gray-600">{rule.titlePattern || 'Nenhum'}</p>
+                <span className="font-medium">Title Pattern:</span>
+                <p className="text-gray-600">{rule.titlePattern || 'None'}</p>
               </div>
               <div>
-                <span className="font-medium">Padrão de Descrição:</span>
-                <p className="text-gray-600">{rule.descriptionPattern || 'Nenhum'}</p>
+                <span className="font-medium">Description Pattern:</span>
+                <p className="text-gray-600">{rule.descriptionPattern || 'None'}</p>
               </div>
               <div>
-                <span className="font-medium">Categoria:</span>
-                <p className="text-gray-600">{rule.category || 'Nenhuma'}</p>
+                <span className="font-medium">Category:</span>
+                <p className="text-gray-600">{rule.category || 'None'}</p>
               </div>
               <div>
-                <span className="font-medium">Palavras-chave:</span>
+                <span className="font-medium">Keywords:</span>
                 <p className="text-gray-600">
-                  {rule.keywords?.join(', ') || 'Nenhuma'}
+                  {rule.keywords?.join(', ') || 'None'}
                 </p>
               </div>
             </div>
             {rule.tags && rule.tags.length > 0 && (
               <div className="mt-3">
-                <span className="font-medium text-sm">Tags Associadas:</span>
+                <span className="font-medium text-sm">Associated Tags:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {rule.tags.map((tag) => (
                     <span key={tag.id} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
@@ -199,92 +199,92 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
         ))}
       </div>
 
-      {/* Dialog de Criação */}
+      {/* Create Dialog */}
       {isCreateDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <h3 className="text-lg font-semibold mb-4">Criar Nova Regra</h3>
+            <h3 className="text-lg font-semibold mb-4">Create New Rule</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Nome da Regra</label>
+                <label className="text-sm font-medium">Rule Name</label>
                 <input
                   type="text"
                   value={newRule.name}
                   onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-                  placeholder="Nome da regra"
+                  placeholder="Rule name"
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Descrição</label>
+                <label className="text-sm font-medium">Description</label>
                 <textarea
                   value={newRule.description}
                   onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
-                  placeholder="Descrição opcional"
+                  placeholder="Optional description"
                   className="w-full border rounded px-3 py-2"
                   rows={3}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Padrão de Título</label>
+                  <label className="text-sm font-medium">Title Pattern</label>
                   <input
                     type="text"
                     value={newRule.titlePattern}
                     onChange={(e) => setNewRule({ ...newRule, titlePattern: e.target.value })}
-                    placeholder="Ex: tutorial.*programação"
+                    placeholder="Ex: tutorial.*programming"
                     className="w-full border rounded px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Padrão de Descrição</label>
+                  <label className="text-sm font-medium">Description Pattern</label>
                   <input
                     type="text"
                     value={newRule.descriptionPattern}
                     onChange={(e) => setNewRule({ ...newRule, descriptionPattern: e.target.value })}
-                    placeholder="Ex: aprenda.*desenvolver"
+                    placeholder="Ex: learn.*develop"
                     className="w-full border rounded px-3 py-2"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Categoria</label>
+                  <label className="text-sm font-medium">Category</label>
                   <input
                     type="text"
                     value={newRule.category}
                     onChange={(e) => setNewRule({ ...newRule, category: e.target.value })}
-                    placeholder="Ex: tecnologia"
+                    placeholder="Ex: technology"
                     className="w-full border rounded px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Prioridade</label>
+                  <label className="text-sm font-medium">Priority</label>
                   <select
                     value={newRule.priority.toString()}
                     onChange={(e) => setNewRule({ ...newRule, priority: parseInt(e.target.value) })}
                     className="w-full border rounded px-3 py-2"
                   >
-                    <option value="1">1 - Baixa</option>
+                    <option value="1">1 - Low</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
-                    <option value="5">5 - Média</option>
+                    <option value="5">5 - Medium</option>
                     <option value="6">6</option>
                     <option value="7">7</option>
                     <option value="8">8</option>
                     <option value="9">9</option>
-                    <option value="10">10 - Alta</option>
+                    <option value="10">10 - High</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Palavras-chave (separadas por vírgula)</label>
+                <label className="text-sm font-medium">Keywords (comma separated)</label>
                 <input
                   type="text"
                   value={newRule.keywords}
                   onChange={(e) => setNewRule({ ...newRule, keywords: e.target.value })}
-                  placeholder="Ex: programação, coding, software"
+                  placeholder="Ex: programming, coding, software"
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -296,7 +296,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                   onChange={(e) => setNewRule({ ...newRule, isActive: e.target.checked })}
                 />
                 <label htmlFor="active" className="text-sm font-medium">
-                  Ativa
+                  Active
                 </label>
               </div>
             </div>
@@ -305,27 +305,27 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                 onClick={() => setIsCreateDialogOpen(false)}
                 className="border px-4 py-2 rounded hover:bg-gray-50"
               >
-                Cancelar
+                Cancel
               </button>
               <button
                 onClick={handleCreateRule}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                Criar Regra
+                Create Rule
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Dialog de Edição */}
+      {/* Edit Dialog */}
       {editingRule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <h3 className="text-lg font-semibold mb-4">Editar Regra</h3>
+            <h3 className="text-lg font-semibold mb-4">Edit Rule</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Nome da Regra</label>
+                <label className="text-sm font-medium">Rule Name</label>
                 <input
                   type="text"
                   value={editingRule.name}
@@ -334,7 +334,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Descrição</label>
+                <label className="text-sm font-medium">Description</label>
                 <textarea
                   value={editingRule.description}
                   onChange={(e) => setEditingRule({ ...editingRule, description: e.target.value })}
@@ -344,7 +344,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Padrão de Título</label>
+                  <label className="text-sm font-medium">Title Pattern</label>
                   <input
                     type="text"
                     value={editingRule.titlePattern || ''}
@@ -353,7 +353,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Padrão de Descrição</label>
+                  <label className="text-sm font-medium">Description Pattern</label>
                   <input
                     type="text"
                     value={editingRule.descriptionPattern || ''}
@@ -364,7 +364,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Categoria</label>
+                  <label className="text-sm font-medium">Category</label>
                   <input
                     type="text"
                     value={editingRule.category || ''}
@@ -373,27 +373,27 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Prioridade</label>
+                  <label className="text-sm font-medium">Priority</label>
                   <select
                     value={editingRule.priority.toString()}
                     onChange={(e) => setEditingRule({ ...editingRule, priority: parseInt(e.target.value) })}
                     className="w-full border rounded px-3 py-2"
                   >
-                    <option value="1">1 - Baixa</option>
+                    <option value="1">1 - Low</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
-                    <option value="5">5 - Média</option>
+                    <option value="5">5 - Medium</option>
                     <option value="6">6</option>
                     <option value="7">7</option>
                     <option value="8">8</option>
                     <option value="9">9</option>
-                    <option value="10">10 - Alta</option>
+                    <option value="10">10 - High</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Palavras-chave (separadas por vírgula)</label>
+                <label className="text-sm font-medium">Keywords (comma separated)</label>
                 <input
                   type="text"
                   value={editingRule.keywords?.join(', ') || ''}
@@ -412,7 +412,7 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                   onChange={(e) => setEditingRule({ ...editingRule, isActive: e.target.checked })}
                 />
                 <label htmlFor="active" className="text-sm font-medium">
-                  Ativa
+                  Active
                 </label>
               </div>
             </div>
@@ -421,13 +421,13 @@ export function AutoTagRules({ onRuleSelect }: AutoTagRulesProps) {
                 onClick={() => setEditingRule(null)}
                 className="border px-4 py-2 rounded hover:bg-gray-50"
               >
-                Cancelar
+                Cancel
               </button>
               <button
                 onClick={() => handleUpdateRule(editingRule.id)}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                Salvar
+                Save
               </button>
             </div>
           </div>

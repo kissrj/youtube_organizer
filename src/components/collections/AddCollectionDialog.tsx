@@ -44,7 +44,7 @@ export function AddCollectionDialog({
       })
       onClose()
     } catch (error) {
-      console.error('Erro ao criar coleção:', error)
+      console.error('Erro ao criar coleÃ§Ã£o:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -71,7 +71,7 @@ export function AddCollectionDialog({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Nova Coleção</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Nova ColeÃ§Ã£o</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -83,27 +83,27 @@ export function AddCollectionDialog({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nome da Coleção *
+              Nome da ColeÃ§Ã£o *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Digite o nome da coleção"
+              placeholder="Digite o nome da coleÃ§Ã£o"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
+              DescriÃ§Ã£o
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Descrição opcional da coleção"
+              placeholder="DescriÃ§Ã£o opcional da coleÃ§Ã£o"
               rows={3}
             />
           </div>
@@ -111,7 +111,7 @@ export function AddCollectionDialog({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ícone
+                Ãcone
               </label>
               <div className="relative">
                 <button
@@ -168,7 +168,7 @@ export function AddCollectionDialog({
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
             <label htmlFor="isPublic" className="ml-2 text-sm text-gray-700">
-              Tornar coleção pública
+              Tornar coleÃ§Ã£o pÃºblica
             </label>
           </div>
 
@@ -178,14 +178,14 @@ export function AddCollectionDialog({
               onClick={onClose}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !formData.name.trim()}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isSubmitting ? 'Criando...' : 'Criar Coleção'}
+              {isSubmitting ? 'Creating…' : 'Criar ColeÃ§Ã£o'}
             </button>
           </div>
         </form>
@@ -193,3 +193,4 @@ export function AddCollectionDialog({
     </div>
   )
 }
+
