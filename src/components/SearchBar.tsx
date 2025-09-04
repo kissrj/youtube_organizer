@@ -170,11 +170,21 @@ export default function SearchBar({
 
       {/* Search tips */}
       {query && (
-        <div className="mt-2 text-sm text-muted">
-          <p>
-            💡 Searching for: <strong className="text-foreground">"{query}"</strong>
-            {hasActiveFilters && ' with applied filters'}
-          </p>
+        <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="flex items-start gap-2">
+            <span className="text-blue-600 dark:text-blue-400 mt-0.5">💡</span>
+            <div className="flex-1">
+              <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                Searching for: <strong className="text-blue-900 dark:text-blue-100">"{query}"</strong>
+                {hasActiveFilters && ' with applied filters'}
+              </p>
+              <div className="mt-2 text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                <p>• Search works in titles, descriptions, channels, and tags</p>
+                <p>• Use multiple words for better results</p>
+                <p>• Try searching for specific terms like "tutorial", "review", or channel names</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

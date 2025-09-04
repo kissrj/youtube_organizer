@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { searchVideosByContent } from '@/lib/services/content-indexer'
+import { searchVideosByContent, reindexAllUserVideos } from '@/lib/services/content-indexer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,42 +45,51 @@ export async function GET(request: NextRequest) {
 
     // Filtro de busca por texto
     if (search) {
-      // Se a busca for mais específica (mais de 3 caracteres), usar busca avançada por conteúdo
-      if (search.length > 3) {
-        console.log(`🔍 Usando busca avançada por conteúdo para: "${search}"`)
+      console.log(`🔍 Iniciando busca para: "${search}"`)
 
-        // Buscar vídeos usando o sistema de indexação de conteúdo
-        const contentSearchResults = await searchVideosByContent(userId, search, {
-          categoryId: categoryId || undefined,
-          tagId: tagId || undefined,
-          limit: limit * 2, // Buscar mais resultados para ter opções
-          offset: 0,
-        })
+      // Sempre usar busca avançada (mesmo para termos curtos)
+      const contentSearchResults = await searchVideosByContent(userId, search, {
+        categoryId: categoryId || undefined,
+        tagId: tagId || undefined,
+        limit: limit * 3, // Buscar mais resultados para ter opções
+        offset: 0,
+      })
 
-        // Se encontrou resultados na busca avançada, usar apenas esses
-        if (contentSearchResults.length > 0) {
-          const videoIds = contentSearchResults.map(v => v.id)
-          where.id = { in: videoIds }
+      if (contentSearchResults.length > 0) {
+        console.log(`✅ Busca avançada encontrou ${contentSearchResults.length} resultados`)
+        const videoIds = contentSearchResults.map(v => v.id)
+        where.id = { in: videoIds }
 
-          // Remover filtros de categoria e tag pois já foram aplicados na busca avançada
-          delete where.categories
-          delete where.tags
-        } else {
-          // Fallback para busca tradicional se não encontrou nada
-          console.log('⚠️ Busca avançada não encontrou resultados, usando busca tradicional')
-          where.OR = [
-            { title: { contains: search } },
-            { channelTitle: { contains: search } },
-            { description: { contains: search } },
-          ]
-        }
+        // Remover filtros de categoria e tag pois já foram aplicados na busca avançada
+        delete where.categories
+        delete where.tags
       } else {
-        // Para buscas curtas, usar busca tradicional
-        where.OR = [
-          { title: { contains: search } },
-          { channelTitle: { contains: search } },
-          { description: { contains: search } },
-        ]
+        // Fallback melhorado: busca mais abrangente
+        console.log('⚠️ Busca avançada não encontrou resultados, usando fallback inteligente')
+
+        const searchTerms = search.toLowerCase().split(/\s+/).filter(term => term.length > 1)
+        const fallbackConditions = []
+
+        // Busca exata no título e canal
+        fallbackConditions.push(
+          { title: { contains: search, mode: 'insensitive' } },
+          { channelTitle: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } }
+        )
+
+        // Busca por termos individuais
+        for (const term of searchTerms) {
+          if (term.length > 2) {
+            fallbackConditions.push(
+              { title: { contains: term, mode: 'insensitive' } },
+              { channelTitle: { contains: term, mode: 'insensitive' } },
+              { description: { contains: term, mode: 'insensitive' } },
+              { videoTags: { contains: term, mode: 'insensitive' } }
+            )
+          }
+        }
+
+        where.OR = fallbackConditions
       }
     }
 
@@ -196,6 +205,47 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Erro ao buscar vídeos:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { action } = body
+
+    if (action === 'reindex') {
+      console.log(`🔄 Iniciando reindexação para usuário: ${session.user.id}`)
+
+      // Executar reindexação em background
+      reindexAllUserVideos(session.user.id)
+        .then((result) => {
+          console.log(`✅ Reindexação concluída: ${result.reindexed} vídeos reindexados, ${result.errors} erros`)
+        })
+        .catch((error) => {
+          console.error('❌ Erro na reindexação:', error)
+        })
+
+      return NextResponse.json({
+        success: true,
+        message: 'Reindexação iniciada em background',
+        status: 'running'
+      })
+    }
+
+    return NextResponse.json({ error: 'Ação não suportada' }, { status: 400 })
+
+  } catch (error) {
+    console.error('Erro na operação POST:', error)
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }

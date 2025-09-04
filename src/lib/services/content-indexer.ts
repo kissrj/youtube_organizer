@@ -83,18 +83,29 @@ export function analyzeVideoContent(metadata: VideoMetadata): ContentAnalysis {
 }
 
 /**
- * Extrai palavras-chave do conteúdo
+ * Extrai palavras-chave do conteúdo com melhor processamento
  */
 function extractKeywords(content: string): string[] {
   const words = content
     .toLowerCase()
     .split(/\s+/)
-    .filter(word => word.length > 3) // Palavras com mais de 3 caracteres
+    .filter(word => word.length > 2) // Palavras com mais de 2 caracteres
     .filter(word => !isStopWord(word)) // Remover palavras vazias
+    .filter(word => /^[a-zA-ZÀ-ÿ0-9]+$/.test(word)) // Apenas letras e números
+    .map(word => word.replace(/[^\wÀ-ÿ]/g, '')) // Remover caracteres especiais
+    .filter(word => word.length > 2) // Filtrar novamente após limpeza
     .filter((word, index, arr) => arr.indexOf(word) === index) // Remover duplicatas
 
-  // Retornar as 20 palavras mais frequentes
-  return words.slice(0, 20)
+  // Retornar as 25 palavras mais relevantes (ordenadas por frequência)
+  const wordFrequency = words.reduce((acc, word) => {
+    acc[word] = (acc[word] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+
+  return Object.entries(wordFrequency)
+    .sort(([, a], [, b]) => b - a) // Ordenar por frequência
+    .slice(0, 25)
+    .map(([word]) => word)
 }
 
 /**
@@ -198,7 +209,7 @@ export async function indexVideoContent(videoId: string, metadata: VideoMetadata
 }
 
 /**
- * Busca vídeos usando busca avançada no conteúdo indexado
+ * Busca vídeos usando busca avançada no conteúdo indexado com melhor lógica
  */
 export async function searchVideosByContent(
   userId: string,
@@ -214,33 +225,94 @@ export async function searchVideosByContent(
 
   // Preparar query de busca
   const searchQuery = query.toLowerCase().trim()
+  const searchTerms = searchQuery.split(/\s+/).filter(term => term.length > 1)
 
-  // Buscar vídeos que contenham a query no conteúdo indexado
-  const videos = await prisma.video.findMany({
-    where: {
-      userId,
-      OR: [
-        {
-          searchContent: {
-            contains: searchQuery,
-          },
-        },
+  // Criar condições de busca mais inteligentes
+  const searchConditions = []
+
+  // 1. Busca exata no título (maior prioridade)
+  searchConditions.push({
+    title: {
+      contains: searchQuery,
+      mode: 'insensitive' as const
+    }
+  })
+
+  // 2. Busca exata no canal (alta prioridade)
+  searchConditions.push({
+    channelTitle: {
+      contains: searchQuery,
+      mode: 'insensitive' as const
+    }
+  })
+
+  // 3. Busca no conteúdo indexado
+  searchConditions.push({
+    searchContent: {
+      contains: searchQuery,
+      mode: 'insensitive' as const
+    }
+  })
+
+  // 4. Busca em cada termo individual para melhor matching
+  for (const term of searchTerms) {
+    if (term.length > 2) {
+      searchConditions.push(
         {
           title: {
-            contains: searchQuery,
-          },
+            contains: term,
+            mode: 'insensitive' as const
+          }
+        },
+        {
+          channelTitle: {
+            contains: term,
+            mode: 'insensitive' as const
+          }
         },
         {
           description: {
-            contains: searchQuery,
-          },
+            contains: term,
+            mode: 'insensitive' as const
+          }
         },
         {
-          keywords: {
-            contains: searchQuery,
-          },
-        },
-      ],
+          searchContent: {
+            contains: term,
+            mode: 'insensitive' as const
+          }
+        }
+      )
+    }
+  }
+
+  // 5. Busca em keywords (verificar cada keyword individualmente)
+  if (searchTerms.length > 0) {
+    const keywordConditions = searchTerms.map(term => ({
+      keywords: {
+        contains: term,
+        mode: 'insensitive' as const
+      }
+    }))
+    searchConditions.push(...keywordConditions)
+  }
+
+  // 6. Busca em tags do YouTube (se existirem)
+  if (searchTerms.length > 0) {
+    const tagConditions = searchTerms.map(term => ({
+      videoTags: {
+        contains: term,
+        mode: 'insensitive' as const
+      }
+    }))
+    searchConditions.push(...tagConditions)
+  }
+
+  // Buscar vídeos com a nova lógica
+  const videos = await prisma.video.findMany({
+    where: {
+      userId,
+      OR: searchConditions,
       // Filtros adicionais
       ...(categoryId && {
         categories: {
@@ -269,14 +341,53 @@ export async function searchVideosByContent(
         },
       },
     },
-    orderBy: {
-      updatedAt: 'desc',
-    },
+    orderBy: [
+      // Ordenar por relevância: vídeos que contenham a query completa primeiro
+      {
+        title: {
+          contains: searchQuery,
+          mode: 'insensitive'
+        } ? 'desc' : 'asc'
+      },
+      // Depois por data de atualização
+      {
+        updatedAt: 'desc'
+      }
+    ],
     take: limit,
     skip: offset,
   })
 
-  return videos
+  // Aplicar ranking adicional baseado na relevância
+  const rankedVideos = videos.map(video => {
+    let relevanceScore = 0
+    const title = video.title.toLowerCase()
+    const description = (video.description || '').toLowerCase()
+    const channelTitle = (video.channelTitle || '').toLowerCase()
+    const searchContent = (video.searchContent || '').toLowerCase()
+
+    // Pontuação por match exato no título
+    if (title.includes(searchQuery)) relevanceScore += 100
+    if (channelTitle.includes(searchQuery)) relevanceScore += 80
+
+    // Pontuação por termos individuais
+    for (const term of searchTerms) {
+      if (title.includes(term)) relevanceScore += 50
+      if (channelTitle.includes(term)) relevanceScore += 40
+      if (description.includes(term)) relevanceScore += 20
+      if (searchContent.includes(term)) relevanceScore += 10
+    }
+
+    return {
+      ...video,
+      _relevanceScore: relevanceScore
+    }
+  })
+
+  // Reordenar por pontuação de relevância
+  return rankedVideos
+    .sort((a, b) => b._relevanceScore - a._relevanceScore)
+    .map(({ _relevanceScore, ...video }) => video)
 }
 
 /**
@@ -295,9 +406,9 @@ export async function updateVideoTranscriptStatus(
 }
 
 /**
- * Reindexa todos os vídeos de um usuário
+ * Reindexa todos os vídeos de um usuário com melhorias
  */
-export async function reindexAllUserVideos(userId: string): Promise<void> {
+export async function reindexAllUserVideos(userId: string): Promise<{ reindexed: number; errors: number }> {
   console.log(`🔄 Reindexando todos os vídeos do usuário: ${userId}`)
 
   const videos = await prisma.video.findMany({
@@ -315,6 +426,9 @@ export async function reindexAllUserVideos(userId: string): Promise<void> {
 
   console.log(`📊 Encontrados ${videos.length} vídeos para reindexação`)
 
+  let reindexed = 0
+  let errors = 0
+
   for (const video of videos) {
     try {
       await indexVideoContent(video.id, {
@@ -325,10 +439,55 @@ export async function reindexAllUserVideos(userId: string): Promise<void> {
         categoryId: video.categoryId || undefined,
         defaultAudioLanguage: video.defaultAudioLanguage || undefined,
       })
+      reindexed++
     } catch (error) {
       console.error(`❌ Erro ao reindexar vídeo ${video.id}:`, error)
+      errors++
     }
   }
 
-  console.log(`✅ Reindexação concluída para usuário: ${userId}`)
+  console.log(`✅ Reindexação concluída: ${reindexed} vídeos reindexados, ${errors} erros`)
+
+  return { reindexed, errors }
+}
+
+/**
+ * Reindexa um vídeo específico
+ */
+export async function reindexVideo(videoId: string): Promise<boolean> {
+  try {
+    const video = await prisma.video.findUnique({
+      where: { id: videoId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoTags: true,
+        channelTitle: true,
+        categoryId: true,
+        defaultAudioLanguage: true,
+        userId: true,
+      },
+    })
+
+    if (!video) {
+      console.warn(`⚠️ Vídeo ${videoId} não encontrado para reindexação`)
+      return false
+    }
+
+    await indexVideoContent(video.id, {
+      title: video.title,
+      description: video.description || undefined,
+      videoTags: video.videoTags || undefined,
+      channelTitle: video.channelTitle || undefined,
+      categoryId: video.categoryId || undefined,
+      defaultAudioLanguage: video.defaultAudioLanguage || undefined,
+    })
+
+    console.log(`✅ Vídeo ${videoId} reindexado com sucesso`)
+    return true
+  } catch (error) {
+    console.error(`❌ Erro ao reindexar vídeo ${videoId}:`, error)
+    return false
+  }
 }

@@ -320,58 +320,205 @@ export class YouTubeImportService {
   }
 
   private async importWatchHistory(userId: string, days: number) {
+    console.log(`📺 Iniciando importação das ATIVIDADES PÚBLICAS do canal (não histórico privado)`);
+    console.log(`⚠️ IMPORTANTE: A API do YouTube NÃO fornece acesso ao histórico de visualização PRIVADO`);
+    console.log(`📋 Estamos importando: uploads, likes, comentários e outras atividades PÚBLICAS`);
+    console.log(`📅 Buscando atividades dos últimos ${days} dias`);
+
     const youtube = await this.getYouTubeClient(userId);
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
+    // Data máxima: não processar atividades com mais de 1 ano
+    const maxAgeDate = new Date();
+    maxAgeDate.setFullYear(maxAgeDate.getFullYear() - 1);
+
     let nextPageToken = '';
     const importedVideos = new Set();
+    const skippedVideos = new Set();
     let totalImported = 0;
+    let totalSkipped = 0;
     let tagsCreated = 0;
+    let pageCount = 0;
+    let totalActivities = 0;
+    let activitiesTooOld = 0;
+
+    console.log(`🎯 Data limite: ${cutoffDate.toISOString()}`);
+    console.log(`📅 Data máxima (1 ano): ${maxAgeDate.toISOString()}`);
 
     do {
-      const response = await youtube.activities.list({
-        part: ['snippet', 'contentDetails'],
-        mine: true,
-        maxResults: 50,
-        pageToken: nextPageToken,
-        publishedAfter: cutoffDate.toISOString()
-      });
+      try {
+        pageCount++;
+        console.log(`📄 Processando página ${pageCount} do histórico...`);
 
-      for (const item of response.data.items || []) {
-        if (item.snippet?.type === 'video' && item.contentDetails?.upload?.videoId) {
-          const videoId = item.contentDetails.upload.videoId;
+        // ⚠️ IMPORTANTE: A API activities.list() do YouTube NÃO retorna o histórico de visualização privado!
+        // Ela retorna apenas atividades PÚBLICAS do canal (uploads, likes, etc.)
+        // O histórico de visualização é informação PRIVADA e não está disponível via API pública
+        console.log('⚠️ ATENÇÃO: A API do YouTube não fornece acesso ao histórico de visualização privado');
+        console.log('📺 Usando activities.list() que retorna apenas atividades públicas do canal');
 
-          if (!importedVideos.has(videoId)) {
-            try {
-              const video = await syncVideoFromYouTube(videoId, userId);
+        const response = await youtube.activities.list({
+          part: ['snippet', 'contentDetails'],
+          mine: true,
+          maxResults: 50,
+          pageToken: nextPageToken || undefined,
+          publishedAfter: cutoffDate.toISOString()
+        });
 
-              // Mark video as watched since it's from watch history
-              await prisma.video.update({
-                where: { id: video.id },
-                data: {
-                  isWatched: true,
-                  watchedAt: item.snippet.publishedAt ? new Date(item.snippet.publishedAt) : new Date()
-                }
-              });
+        const activities = response.data.items || [];
+        console.log(`📊 Encontrados ${activities.length} atividades nesta página`);
 
-              // Aplicar tags com IA
-              const aiResult = await this.applyAITagsToVideo(video.id);
-              tagsCreated += aiResult.tagsCreated;
+        if (activities.length === 0) {
+          console.log(`⚠️ Página ${pageCount} vazia, finalizando importação`);
+          break;
+        }
 
-              importedVideos.add(videoId);
-              totalImported++;
-            } catch (error) {
-              console.warn(`Erro ao importar vídeo ${videoId}:`, error);
+        for (const item of activities) {
+          totalActivities++;
+
+          // Verificar se é uma atividade de vídeo assistido
+          // O YouTube pode retornar diferentes tipos de atividades no histórico
+          const isVideoActivity = item.snippet?.type === 'video';
+          const hasVideoId = item.contentDetails?.upload?.videoId ||
+                           item.contentDetails?.like?.resourceId?.videoId ||
+                           item.contentDetails?.playlistItem?.resourceId?.videoId;
+
+          if (isVideoActivity && hasVideoId) {
+            // Extrair o videoId de diferentes tipos de atividades
+            const videoId = item.contentDetails?.upload?.videoId ||
+                          item.contentDetails?.like?.resourceId?.videoId ||
+                          item.contentDetails?.playlistItem?.resourceId?.videoId;
+
+            if (!videoId) {
+              console.log(`⏭️ Atividade sem videoId válido: ${JSON.stringify(item.contentDetails)}`);
+              continue;
             }
+
+            const activityTime = item.snippet.publishedAt ? new Date(item.snippet.publishedAt) : new Date();
+            const activityType = item.snippet?.type;
+
+            // Verificar se a atividade é muito antiga (mais de 1 ano)
+            if (activityTime < maxAgeDate) {
+              console.log(`⏭️ Atividade muito antiga pulada: ${videoId} - ${activityTime.toISOString()}`);
+              activitiesTooOld++;
+              continue;
+            }
+
+            // Verificar se a atividade está dentro do período solicitado
+            if (activityTime < cutoffDate) {
+              console.log(`⏭️ Atividade fora do período: ${videoId} - ${activityTime.toISOString()}`);
+              continue;
+            }
+
+            console.log(`🎬 Processando vídeo ${videoId} - Tipo: ${activityType} - Atividade: ${activityTime.toISOString()}`);
+
+            if (!importedVideos.has(videoId)) {
+              try {
+                // Verificar se o vídeo já existe no banco
+                const existingVideo = await prisma.video.findUnique({
+                  where: {
+                    userId_youtubeId: {
+                      userId,
+                      youtubeId: videoId
+                    }
+                  }
+                });
+
+                let video;
+
+                if (existingVideo) {
+                  console.log(`📋 Vídeo ${videoId} já existe no banco, atualizando status de visualização`);
+                  video = existingVideo;
+
+                  // Atualizar apenas o status de visualização
+                  await prisma.video.update({
+                    where: { id: video.id },
+                    data: {
+                      isWatched: true,
+                      watchedAt: activityTime
+                    }
+                  });
+                } else {
+                  console.log(`🆕 Vídeo ${videoId} não existe, importando...`);
+                  // Importar vídeo novo
+                  video = await syncVideoFromYouTube(videoId, userId);
+
+                  // Marcar como assistido
+                  await prisma.video.update({
+                    where: { id: video.id },
+                    data: {
+                      isWatched: true,
+                      watchedAt: activityTime
+                    }
+                  });
+
+                  console.log(`✅ Vídeo ${video.title} importado e marcado como assistido`);
+                }
+
+                // Aplicar tags apenas se for vídeo novo
+                if (!existingVideo) {
+                  const aiResult = await this.applyAITagsToVideo(video.id);
+                  tagsCreated += aiResult.tagsCreated;
+                }
+
+                importedVideos.add(videoId);
+                totalImported++;
+
+              } catch (error) {
+                console.error(`❌ Erro ao processar vídeo ${videoId}:`, error);
+                totalSkipped++;
+                skippedVideos.add(videoId);
+              }
+            } else {
+              console.log(`⏭️ Vídeo ${videoId} já foi processado nesta sessão`);
+            }
+          } else {
+            console.log(`⏭️ Atividade ignorada: tipo=${item.snippet?.type}, temVideoId=${!!item.contentDetails?.upload?.videoId}`);
           }
         }
+
+        nextPageToken = response.data.nextPageToken || '';
+
+        // Log de progresso a cada 5 páginas
+        if (pageCount % 5 === 0) {
+          console.log(`📊 Progresso: ${pageCount} páginas processadas, ${totalImported} vídeos importados, ${totalSkipped} pulados`);
+        }
+
+        // Controle de rate limiting - pausa maior a cada 10 páginas
+        const pauseTime = pageCount % 10 === 0 ? 1000 : 200;
+        if (pauseTime > 200) {
+          console.log(`⏱️ Pausa maior após ${pageCount} páginas para rate limiting...`);
+        }
+        await new Promise(resolve => setTimeout(resolve, pauseTime));
+
+      } catch (error) {
+        console.error(`❌ Erro ao processar página ${pageCount}:`, error);
+        break; // Parar em caso de erro para não ficar em loop
       }
 
-      nextPageToken = response.data.nextPageToken || '';
     } while (nextPageToken);
 
-    return { videosImported: totalImported, tagsCreated };
+    console.log(`\n🎉 Importação do histórico concluída!`);
+    console.log(`📊 Estatísticas:`);
+    console.log(`  - Páginas processadas: ${pageCount}`);
+    console.log(`  - Atividades total: ${totalActivities}`);
+    console.log(`  - Atividades muito antigas: ${activitiesTooOld}`);
+    console.log(`  - Vídeos importados: ${totalImported}`);
+    console.log(`  - Vídeos pulados: ${totalSkipped}`);
+    console.log(`  - Tags criadas: ${tagsCreated}`);
+
+    if (skippedVideos.size > 0) {
+      console.log(`⚠️ Vídeos com erro (${skippedVideos.size}): ${Array.from(skippedVideos).slice(0, 5).join(', ')}${skippedVideos.size > 5 ? '...' : ''}`);
+    }
+
+    return {
+      videosImported: totalImported,
+      videosSkipped: totalSkipped,
+      tagsCreated,
+      pagesProcessed: pageCount,
+      totalActivities,
+      activitiesTooOld
+    };
   }
 
   private async importAllPlaylists(userId: string) {

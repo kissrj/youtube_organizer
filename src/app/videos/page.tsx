@@ -441,17 +441,45 @@ export default function VideosPage() {
   return (
     <AuthGuard>
       <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold text-foreground">Video History</h1>
+          {/* Header Section - Title on top line */}
+          <div className="mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <h1 className="text-3xl font-bold text-foreground">🎬 Videos</h1>
               <div className="hidden md:flex items-center gap-2 text-sm text-muted">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                 <span>Drag videos to the action bar on the right</span>
               </div>
             </div>
 
-            {/* Layout and Sort Controls */}
-            <div className="flex items-center gap-4">
+            {/* Controls Section - Below title */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Reindex Button */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    if (confirm('This will reindex all your videos for better search. It may take a few minutes. Continue?')) {
+                      try {
+                        const response = await fetch('/api/videos', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ action: 'reindex' })
+                        })
+                        if (response.ok) {
+                          alert('✅ Reindexing started! Search will be better in a few minutes.')
+                        } else {
+                          alert('❌ Failed to start reindexing')
+                        }
+                      } catch (error) {
+                        alert('❌ Error starting reindexing')
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                  title="Reindex videos for better search"
+                >
+                  🔄 Reindex Search
+                </button>
+              </div>
               <SortControls
                 sortBy={sortBy}
                 sortOrder={sortOrder}
