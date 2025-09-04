@@ -130,3 +130,143 @@ export async function getCategoryPlaylists(categoryId: string) {
 
   return category?.playlists.map(pc => pc.playlist) || []
 }
+
+/**
+ * Get videos for a specific category with pagination
+ */
+export async function getCategoryVideos(categoryId: string, options: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  userId: string;
+} = { userId: '' }) {
+  const { page = 1, limit = 20, search = '', sortBy = 'publishedAt', sortOrder = 'desc', userId } = options;
+
+  // First, get all video IDs that belong to this category
+  const categoryVideos = await prisma.videoCategory.findMany({
+    where: {
+      categoryId: categoryId,
+      category: {
+        userId: userId
+      }
+    },
+    select: {
+      videoId: true
+    }
+  })
+
+  const videoIds = categoryVideos.map(cv => cv.videoId)
+
+  if (videoIds.length === 0) {
+    return {
+      videos: [],
+      pagination: {
+        page,
+        limit,
+        totalCount: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPrevPage: false,
+      },
+      category: null,
+    }
+  }
+
+  const skip = (page - 1) * limit
+
+  // Build the where clause for videos
+  const where: any = {
+    id: {
+      in: videoIds
+    }
+  }
+
+  // Add search filter if provided
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
+      { channelTitle: { contains: search, mode: 'insensitive' } }
+    ]
+  }
+
+  // Build the order by clause
+  const orderBy: any = {}
+  if (sortBy === 'title') {
+    orderBy.title = sortOrder
+  } else if (sortBy === 'viewCount') {
+    orderBy.viewCount = sortOrder === 'desc' ? 'desc' : 'asc'
+  } else if (sortBy === 'duration') {
+    orderBy.duration = sortOrder
+  } else {
+    // Default to publishedAt
+    orderBy.publishedAt = sortOrder
+  }
+
+  const [videos, totalCount] = await Promise.all([
+    prisma.video.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit,
+      include: {
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                color: true
+              }
+            }
+          }
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+      }
+    }),
+    prisma.video.count({
+      where
+    })
+  ])
+
+  // Get category details
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      color: true,
+      _count: {
+        select: {
+          videos: true,
+          playlists: true
+        }
+      }
+    }
+  })
+
+  return {
+    videos,
+    pagination: {
+      page,
+      limit,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      hasNextPage: page * limit < totalCount,
+      hasPrevPage: page > 1,
+    },
+    category,
+  }
+}

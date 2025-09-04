@@ -1,89 +1,129 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import {
-  createNotebook,
-  getUserNotebooks,
-  createNotebookSchema,
-} from '@/lib/services/notebooks'
+import { prisma } from '@/lib/prisma'
 
+/**
+ * GET /api/notebooks - Lista notebooks do usuário
+ */
 export async function GET(request: NextRequest) {
   try {
+    console.log('🔍 API Notebooks: Starting GET request')
+
     const session = await getServerSession(authOptions)
+    console.log('👤 API Notebooks: Session check:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: session?.user?.id
+    })
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      console.log('❌ API Notebooks: No authenticated user')
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      )
     }
 
-    const { searchParams } = new URL(request.url)
-    const includeChildren = searchParams.get('includeChildren') === 'true'
-    const includeContent = searchParams.get('includeContent') === 'true'
-    const includeSettings = searchParams.get('includeSettings') === 'true'
-    const parentId = searchParams.get('parentId') || undefined
+    console.log('🔍 API Notebooks: Querying database for user:', session.user.id)
 
-    const notebooks = await getUserNotebooks(session.user.id, {
-      includeChildren,
-      includeContent,
-      includeSettings,
-      parentId,
+    // First, let's check if there are any collections at all
+    const allCollections = await prisma.collection.findMany({
+      where: {
+        userId: session.user.id
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        color: true,
+        createdAt: true
+      }
     })
 
-    // Build hierarchy if requested
-    let hierarchy: any[] = []
-    if (includeChildren) {
-      hierarchy = notebooks.filter(n => !n.parentId)
-    }
+    console.log('📊 API Notebooks: All collections for user:', allCollections.length)
+    console.log('📋 API Notebooks: Collection details:', allCollections.map(c => ({ id: c.id, name: c.name })))
 
-    return NextResponse.json({
-      success: true,
+    const notebooks = await prisma.notebook.findMany({
+      where: {
+        userId: session.user.id
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        color: true,
+        createdAt: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    console.log('✅ API Notebooks: Query successful, found', notebooks.length, 'notebooks')
+    console.log('📝 API Notebooks: Notebook details:', notebooks.map(n => ({ id: n.id, name: n.name })))
+
+    const response = {
       data: {
         notebooks,
-        total: notebooks.length,
-        hierarchy,
-      },
-    })
+        total: notebooks.length
+      }
+    }
+
+    console.log('📤 API Notebooks: Sending response:', response)
+
+    return NextResponse.json(response)
+
   } catch (error) {
-    console.error('Error fetching notebooks:', error)
+    console.error('💥 API Notebooks: Error occurred:', error)
+    console.error('💥 API Notebooks: Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }
 }
 
+/**
+ * POST /api/notebooks - Cria um novo notebook
+ */
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      )
     }
 
-    const body = await request.json()
-    const validatedData = createNotebookSchema.parse(body)
+    const { name, description } = await request.json()
 
-    const notebook = await createNotebook({
-      ...validatedData,
-      userId: session.user.id,
-    })
-
-    return NextResponse.json({
-      success: true,
-      data: notebook,
-      message: 'Notebook created successfully',
-    })
-  } catch (error: any) {
-    console.error('Error creating notebook:', error)
-
-    if (error.name === 'ZodError') {
+    if (!name || !name.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Invalid data', details: error.errors },
+        { error: 'Nome é obrigatório' },
         { status: 400 }
       )
     }
 
+    const notebook = await prisma.notebook.create({
+      data: {
+        name: name.trim(),
+        description: description?.trim() || '',
+        userId: session.user.id,
+        color: '#3b82f6', // Cor padrão
+      }
+    })
+
+    return NextResponse.json({
+      data: notebook
+    })
+
+  } catch (error) {
+    console.error('Erro ao criar notebook:', error)
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     )
   }

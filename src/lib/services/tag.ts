@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/prisma'
 
+// Importar o validador de tags
+import { TagValidator } from './autoTags'
+
 export interface CreateTagData {
   name: string
   userId: string
@@ -13,8 +16,24 @@ export interface UpdateTagData {
  * Cria uma nova tag
  */
 export async function createTag(data: CreateTagData) {
+  // Validar e sanitizar o nome da tag
+  const sanitizedName = TagValidator.sanitizeTagName(data.name);
+
+  if (!sanitizedName) {
+    throw new Error('Nome da tag inválido. Deve conter apenas letras, números e espaços, com no mínimo 2 caracteres e no máximo 50.');
+  }
+
+  // Verificar se já existe uma tag com o mesmo nome (após sanitização)
+  const existingTag = await getTagByName(sanitizedName, data.userId);
+  if (existingTag) {
+    throw new Error('Já existe uma tag com este nome.');
+  }
+
   return await prisma.tag.create({
-    data,
+    data: {
+      ...data,
+      name: sanitizedName,
+    },
   })
 }
 
@@ -58,6 +77,12 @@ export async function getUserTags(userId: string) {
       playlists: {
         include: {
           playlist: true,
+        },
+      },
+      _count: {
+        select: {
+          videos: true,
+          playlists: true,
         },
       },
     },
@@ -137,13 +162,154 @@ export async function getTagPlaylists(tagId: string) {
 }
 
 /**
+ * Busca vídeos associados a uma tag com paginação
+ */
+export async function getTagVideos(tagId: string, options: {
+  page?: number;
+  limit?: number;
+  userId: string;
+} = { userId: '' }) {
+  const { page = 1, limit = 20, userId } = options;
+
+  // Primeiro verifica se a tag pertence ao usuário e obtém os dados completos
+  const tag = await prisma.tag.findFirst({
+    where: {
+      id: tagId,
+      userId,
+    },
+    include: {
+      _count: {
+        select: {
+          videos: true,
+          playlists: true,
+        },
+      },
+      playlists: {
+        include: {
+          playlist: {
+            select: {
+              id: true,
+              title: true,
+              thumbnailUrl: true,
+            },
+          },
+        },
+        take: 5, // Limitar a 5 playlists para preview
+      },
+    },
+  });
+
+  if (!tag) {
+    throw new Error('Tag não encontrada ou não pertence ao usuário');
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [videos, totalCount] = await Promise.all([
+    prisma.video.findMany({
+      where: {
+        userId,
+        tags: {
+          some: {
+            tagId,
+          },
+        },
+      },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.video.count({
+      where: {
+        userId,
+        tags: {
+          some: {
+            tagId,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    videos,
+    pagination: {
+      page,
+      limit,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      hasNextPage: page * limit < totalCount,
+      hasPrevPage: page > 1,
+    },
+    tag,
+  };
+}
+
+/**
+ * Busca informações detalhadas de uma tag incluindo estatísticas
+ */
+export async function getTagDetails(tagId: string, userId: string) {
+  const tag = await prisma.tag.findFirst({
+    where: {
+      id: tagId,
+      userId,
+    },
+    include: {
+      _count: {
+        select: {
+          videos: true,
+          playlists: true,
+        },
+      },
+      playlists: {
+        include: {
+          playlist: {
+            select: {
+              id: true,
+              title: true,
+              thumbnailUrl: true,
+            },
+          },
+        },
+        take: 5, // Limitar a 5 playlists para preview
+      },
+    },
+  });
+
+  if (!tag) {
+    throw new Error('Tag não encontrada ou não pertence ao usuário');
+  }
+
+  return tag;
+}
+
+/**
  * Cria uma tag se não existir, ou retorna a existente
  */
 export async function findOrCreateTag(name: string, userId: string) {
-  let tag = await getTagByName(name, userId)
+  // Validar e sanitizar o nome da tag
+  const sanitizedName = TagValidator.sanitizeTagName(name);
+
+  if (!sanitizedName) {
+    throw new Error('Nome da tag inválido. Deve conter apenas letras, números e espaços, com no mínimo 2 caracteres e no máximo 50.');
+  }
+
+  let tag = await getTagByName(sanitizedName, userId)
 
   if (!tag) {
-    tag = await createTag({ name, userId })
+    tag = await createTag({ name: sanitizedName, userId })
   }
 
   return tag

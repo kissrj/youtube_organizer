@@ -55,7 +55,7 @@ export default function SyncPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Device Sync</h1>
         <p className="text-muted-foreground">
-          Keep your collections and settings in sync across devices
+          Keep your notebooks and settings in sync across devices
         </p>
       </div>
 

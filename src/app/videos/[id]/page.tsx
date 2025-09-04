@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState, useEffect, use } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AuthGuard } from '@/components/AuthGuard'
 import { YouTubePlayer } from '@/components/YouTubePlayer'
@@ -43,18 +43,21 @@ interface Video {
   }[]
 }
 
-export default function VideoDetailPage() {
-  const params = useParams()
+export default function VideoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Desembrulhar params com React.use()
+  const resolvedParams = use(params)
+  const videoId = resolvedParams.id
+
   useEffect(() => {
-    if (params.id) {
-      fetchVideo(params.id as string)
+    if (videoId) {
+      fetchVideo(videoId)
     }
-  }, [params.id])
+  }, [videoId])
 
   const fetchVideo = async (videoId: string) => {
     try {

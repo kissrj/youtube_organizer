@@ -29,11 +29,13 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'desc'
     const definition = searchParams.get('definition')
     const dimension = searchParams.get('dimension')
+    const watchStatus = searchParams.get('watchStatus') // 'watched', 'unwatched', or null for all
 
     // Construir query base
     let where: any = {
       userId,
-      // Exclude videos that belong to playlists (have playlist tags)
+      // Only exclude videos that have playlist tags in the videoTags field
+      // This prevents showing videos that were incorrectly tagged during import
       NOT: {
         videoTags: {
           contains: 'playlist_'
@@ -139,6 +141,13 @@ export async function GET(request: NextRequest) {
     // Filtro por dimensão
     if (dimension) {
       where.dimension = dimension
+    }
+
+    // Filtro por status de visualização
+    if (watchStatus === 'watched') {
+      where.isWatched = true
+    } else if (watchStatus === 'unwatched') {
+      where.isWatched = false
     }
 
     // Ordenação

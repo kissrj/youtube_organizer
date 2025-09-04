@@ -10,6 +10,12 @@ type Video = {
   title: string
   description?: string
   thumbnailUrl?: string
+  tags?: Array<{
+    tag: {
+      id: string
+      name: string
+    }
+  }>
 }
 
 interface Props {
@@ -18,7 +24,7 @@ interface Props {
 }
 
 export default function VideoModal({ video, onClose }: Props) {
-  const [activeTab, setActiveTab] = useState<'video' | 'description'>('video')
+  const [activeTab, setActiveTab] = useState<'video' | 'description' | 'tags'>('video')
 
   if (!video) return null
 
@@ -29,10 +35,12 @@ export default function VideoModal({ video, onClose }: Props) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       onClose()
-    } else if (e.key === 'ArrowLeft' && activeTab === 'description') {
-      setActiveTab('video')
-    } else if (e.key === 'ArrowRight' && activeTab === 'video') {
-      setActiveTab('description')
+    } else if (e.key === 'ArrowLeft') {
+      if (activeTab === 'description') setActiveTab('video')
+      else if (activeTab === 'tags') setActiveTab('description')
+    } else if (e.key === 'ArrowRight') {
+      if (activeTab === 'video') setActiveTab('description')
+      else if (activeTab === 'description') setActiveTab('tags')
     }
   }
 
@@ -54,16 +62,16 @@ export default function VideoModal({ video, onClose }: Props) {
       tabIndex={-1}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden"
+        className="ui-card max-w-5xl w-full max-h-[90vh] overflow-hidden animate-card-enter"
         onClick={(e) => e.stopPropagation()}
         role="tabpanel"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h3 className="text-lg font-semibold text-gray-800 truncate pr-4">{title}</h3>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-ui">
+          <h3 className="text-lg font-semibold text-foreground truncate pr-4">{title}</h3>
           <button
             onClick={onClose}
-            className="p-2 rounded hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-2 rounded hover:bg-surface text-subtle transition-colors"
             aria-label="Close modal"
           >
             ✕
@@ -71,38 +79,55 @@ export default function VideoModal({ video, onClose }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b bg-gray-50" role="tablist" aria-label="Video content tabs">
-          <button
-            onClick={() => setActiveTab('video')}
-            className={`flex-1 px-3 sm:px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
-              activeTab === 'video'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-            }`}
-            aria-selected={activeTab === 'video'}
-            role="tab"
-            aria-controls="video-panel"
-            id="video-tab"
-          >
-            <span className="hidden sm:inline">🎥 Video</span>
-            <span className="sm:hidden">🎥</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('description')}
-            className={`flex-1 px-3 sm:px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
-              activeTab === 'description'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-            }`}
-            aria-selected={activeTab === 'description'}
-            role="tab"
-            aria-controls="description-panel"
-            id="description-tab"
-          >
-            <span className="hidden sm:inline">📝 Description</span>
-            <span className="sm:hidden">📝</span>
-          </button>
-        </div>
+        <div className="flex border-b border-ui bg-surface" role="tablist" aria-label="Video content tabs">
+           <button
+             onClick={() => setActiveTab('video')}
+             className={`flex-1 px-3 sm:px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
+               activeTab === 'video'
+                 ? 'text-blue-600 border-b-2 border-blue-600 bg-elevated'
+                 : 'text-subtle hover:text-foreground hover:bg-surface'
+             }`}
+             aria-selected={activeTab === 'video'}
+             role="tab"
+             aria-controls="video-panel"
+             id="video-tab"
+           >
+             <span className="hidden sm:inline">🎥 Video</span>
+             <span className="sm:hidden">🎥</span>
+           </button>
+           <button
+             onClick={() => setActiveTab('description')}
+             className={`flex-1 px-3 sm:px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
+               activeTab === 'description'
+                 ? 'text-blue-600 border-b-2 border-blue-600 bg-elevated'
+                 : 'text-subtle hover:text-foreground hover:bg-surface'
+             }`}
+             aria-selected={activeTab === 'description'}
+             role="tab"
+             aria-controls="description-panel"
+             id="description-tab"
+           >
+             <span className="hidden sm:inline">📝 Description</span>
+             <span className="sm:hidden">📝</span>
+           </button>
+           {video.tags && video.tags.length > 0 && (
+             <button
+               onClick={() => setActiveTab('tags')}
+               className={`flex-1 px-3 sm:px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset ${
+                 activeTab === 'tags'
+                   ? 'text-blue-600 border-b-2 border-blue-600 bg-elevated'
+                   : 'text-subtle hover:text-foreground hover:bg-surface'
+               }`}
+               aria-selected={activeTab === 'tags'}
+               role="tab"
+               aria-controls="tags-panel"
+               id="tags-tab"
+             >
+               <span className="hidden sm:inline">🏷️ Tags ({video.tags.length})</span>
+               <span className="sm:hidden">🏷️</span>
+             </button>
+           )}
+         </div>
 
         {/* Tab Content */}
         <div className="overflow-hidden">
@@ -143,15 +168,42 @@ export default function VideoModal({ video, onClose }: Props) {
               aria-hidden={activeTab !== 'description'}
             >
               {video.description ? (
-                <div className="p-4 sm:p-6 font-['Inter','Roboto',sans-serif] text-sm sm:text-base">
+                <div className="p-4 sm:p-6 font-['Inter','Roboto',sans-serif] text-sm sm:text-base text-foreground">
                   {renderDescription(video.description)}
                 </div>
               ) : (
-                <div className="p-6 text-center text-gray-500">
+                <div className="p-6 text-center text-subtle">
                   <div className="text-4xl mb-2">📝</div>
                   <p className="text-sm sm:text-base">No description available for this video.</p>
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'tags' && video.tags && video.tags.length > 0 && (
+            <div
+              className="max-h-96 overflow-y-auto"
+              id="tags-panel"
+              role="tabpanel"
+              aria-labelledby="tags-tab"
+              aria-hidden={activeTab !== 'tags'}
+            >
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-wrap gap-2">
+                  {video.tags.map(({ tag }) => (
+                    <span
+                      key={tag.id}
+                      className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200 transition-colors cursor-pointer"
+                      title={`Tag: ${tag.name}`}
+                    >
+                      #{tag.name}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-4 text-sm text-subtle">
+                  <p>Total tags: {video.tags.length}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -1,12 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
 
 interface Tag {
   id: string
   name: string
+  _count: {
+    videos: number
+    playlists: number
+  }
   playlists: Array<{
     playlist: {
       id: string
@@ -17,6 +22,7 @@ interface Tag {
 }
 
 export default function TagsPage() {
+  const router = useRouter()
   const [tags, setTags] = useState<Tag[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -136,50 +142,67 @@ export default function TagsPage() {
       {/* Lista de tags */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {tags.map((tag) => (
-          <div key={tag.id} className="bg-white rounded-lg shadow p-4">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-semibold text-gray-900">#{tag.name}</h3>
-              <button
-                onClick={() => deleteTag(tag.id)}
-                className="text-red-600 hover:text-red-800 text-sm"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-500 mb-3">
-              {tag.playlists.length} playlist{tag.playlists.length !== 1 ? 's' : ''}
-            </p>
-
-            {/* Playlists com esta tag */}
-            {tag.playlists.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900 text-sm">Playlists:</h4>
-                <div className="space-y-1">
-                  {tag.playlists.slice(0, 2).map((pt) => (
-                    <div key={pt.playlist.id} className="flex items-center space-x-2">
-                      {pt.playlist.thumbnailUrl && (
-                        <Image
-                          src={pt.playlist.thumbnailUrl}
-                          alt={pt.playlist.title}
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 rounded object-cover"
-                        />
-                      )}
-                      <span className="text-xs text-gray-700 truncate">
-                        {pt.playlist.title}
-                      </span>
-                    </div>
-                  ))}
-                  {tag.playlists.length > 2 && (
-                    <p className="text-xs text-gray-500">
-                      +{tag.playlists.length - 2} mais
-                    </p>
-                  )}
-                </div>
+          <div
+            key={tag.id}
+            className="bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => router.push(`/tags/${tag.id}`)}
+          >
+            <div className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="font-semibold text-gray-900 text-lg">#{tag.name}</h3>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    deleteTag(tag.id)
+                  }}
+                  className="text-red-600 hover:text-red-800 text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
               </div>
-            )}
+
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                <span>{tag._count.videos} vídeo{tag._count.videos !== 1 ? 's' : ''}</span>
+                <span>{tag._count.playlists} playlist{tag._count.playlists !== 1 ? 's' : ''}</span>
+              </div>
+
+              {/* Playlists com esta tag */}
+              {tag.playlists.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-900 text-sm">Playlists relacionadas:</h4>
+                  <div className="space-y-1">
+                    {tag.playlists.slice(0, 2).map((pt) => (
+                      <div key={pt.playlist.id} className="flex items-center space-x-2">
+                        {pt.playlist.thumbnailUrl && (
+                          <Image
+                            src={pt.playlist.thumbnailUrl}
+                            alt={pt.playlist.title}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded object-cover"
+                          />
+                        )}
+                        <span className="text-xs text-gray-700 truncate">
+                          {pt.playlist.title}
+                        </span>
+                      </div>
+                    ))}
+                    {tag.playlists.length > 2 && (
+                      <p className="text-xs text-gray-500">
+                        +{tag.playlists.length - 2} mais
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Call to action */}
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs text-blue-600 hover:text-blue-800">
+                  Ver todos os vídeos →
+                </p>
+              </div>
+            </div>
           </div>
         ))}
       </div>

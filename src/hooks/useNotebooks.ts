@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Collection } from '@/lib/types'
+import { Notebook } from '@/lib/types'
 import { defaultNotebooks, DefaultNotebook } from '@/lib/data/default-notebooks'
 import { useToast } from '@/components/ui/ToastProvider'
 
 interface UseNotebooksReturn {
-  notebooks: Collection[]
+  notebooks: Notebook[]
   loading: boolean
   error: string | null
   defaultNotebookCounts: Record<string, number>
@@ -16,7 +16,7 @@ interface UseNotebooksReturn {
 }
 
 export function useNotebooks(): UseNotebooksReturn {
-  const [notebooks, setNotebooks] = useState<Collection[]>([])
+  const [notebooks, setNotebooks] = useState<Notebook[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [defaultNotebookCounts, setDefaultNotebookCounts] = useState<Record<string, number>>({})
@@ -24,7 +24,7 @@ export function useNotebooks(): UseNotebooksReturn {
 
   // Memoized API calls to prevent unnecessary re-renders
   const apiCalls = useMemo(() => ({
-    fetchNotebooks: async (): Promise<{ notebooks: Collection[], total: number }> => {
+    fetchNotebooks: async (): Promise<{ notebooks: Notebook[], total: number }> => {
       const response = await fetch('/api/notebooks')
       if (!response.ok) {
         throw new Error('Failed to fetch notebooks')
@@ -33,7 +33,7 @@ export function useNotebooks(): UseNotebooksReturn {
       return data.data || { notebooks: [], total: 0 }
     },
 
-    createNotebook: async (data: any): Promise<Collection> => {
+    createNotebook: async (data: any): Promise<Notebook> => {
       const response = await fetch('/api/notebooks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,7 +47,7 @@ export function useNotebooks(): UseNotebooksReturn {
       return result.data
     },
 
-    updateNotebook: async (id: string, data: any): Promise<Collection> => {
+    updateNotebook: async (id: string, data: any): Promise<Notebook> => {
       const response = await fetch(`/api/notebooks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -71,10 +71,10 @@ export function useNotebooks(): UseNotebooksReturn {
   }), [])
 
   // Calculate default notebook counts
-  const calculateDefaultCounts = useCallback((userNotebooks: Collection[]): Record<string, number> => {
+  const calculateDefaultCounts = useCallback((userNotebooks: Notebook[]): Record<string, number> => {
     const counts: Record<string, number> = {}
     defaultNotebooks.forEach(defaultNb => {
-      const userNotebook = userNotebooks.find((nb: Collection) => nb.name === defaultNb.name)
+      const userNotebook = userNotebooks.find((nb: Notebook) => nb.name === defaultNb.name)
       counts[defaultNb.id] = userNotebook ? (userNotebook._count?.videos || 0) : 0
     })
     return counts

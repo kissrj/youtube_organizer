@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState, useEffect, use } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
 import SearchBar from '@/components/SearchBar'
+import VideoModal from '@/components/VideoModal'
 import { formatVideoStats, getDefinitionColor, getDimensionColor, getProjectionColor } from '@/lib/utils/video-formatters'
 
 interface Video {
@@ -51,10 +52,21 @@ interface Category {
   color: string
 }
 
-export default function CategoryVideosPage() {
-  const params = useParams()
+interface PaginationInfo {
+  page: number
+  limit: number
+  totalCount: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
+}
+
+export default function CategoryVideosPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const categoryId = params?.id as string
+
+  // Desembrulhar params com React.use()
+  const resolvedParams = use(params)
+  const categoryId = resolvedParams.id
 
   const [videos, setVideos] = useState<Video[]>([])
   const [category, setCategory] = useState<Category | null>(null)
@@ -62,29 +74,29 @@ export default function CategoryVideosPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('publishedAt')
   const [sortOrder, setSortOrder] = useState('desc')
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     if (categoryId) {
-      fetchCategoryAndVideos()
+      fetchCategoryAndVideos(currentPage)
     }
-  }, [categoryId, searchQuery, sortBy, sortOrder])
+  }, [categoryId, searchQuery, sortBy, sortOrder, currentPage])
 
-  const fetchCategoryAndVideos = async () => {
+  const fetchCategoryAndVideos = async (page: number = 1) => {
     try {
-      // Fetch category details
-      const categoryResponse = await fetch(`/api/categories/${categoryId}`)
-      if (categoryResponse.ok) {
-        const categoryData = await categoryResponse.json()
-        setCategory(categoryData)
-      }
+      setLoading(true)
 
-      // Fetch videos from playlists in this category
+      // Fetch videos with pagination
       const videosResponse = await fetch(
-        `/api/categories/${categoryId}/videos?search=${encodeURIComponent(searchQuery)}&sortBy=${sortBy}&sortOrder=${sortOrder}`
+        `/api/categories/${categoryId}/videos?page=${page}&limit=20&search=${encodeURIComponent(searchQuery)}&sortBy=${sortBy}&sortOrder=${sortOrder}`
       )
       if (videosResponse.ok) {
-        const videosData = await videosResponse.json()
-        setVideos(videosData)
+        const result = await videosResponse.json()
+        setVideos(result.videos)
+        setPagination(result.pagination)
+        setCategory(result.category)
       }
     } catch (error) {
       console.error('Error fetching category videos:', error)
@@ -93,19 +105,12 @@ export default function CategoryVideosPage() {
     }
   }
 
-  const openVideoModal = async (video: Video) => {
-    try {
-      const res = await fetch(`/api/videos/${video.id}`)
-      if (res.ok) {
-        const fresh = await res.json()
-        // For now, just open YouTube. You can implement a modal later
-        window.open(`https://www.youtube.com/watch?v=${fresh.youtubeId}`, '_blank')
-      } else {
-        window.open(`https://www.youtube.com/watch?v=${video.youtubeId}`, '_blank')
-      }
-    } catch (err) {
-      window.open(`https://www.youtube.com/watch?v=${video.youtubeId}`, '_blank')
-    }
+  const openVideoModal = (video: Video) => {
+    setSelectedVideo(video)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
   }
 
   if (loading) {
@@ -318,7 +323,40 @@ export default function CategoryVideosPage() {
             </p>
           </div>
         )}
+
+        {/* Paginação */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-2 mt-8">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="px-3 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              ← Anterior
+            </button>
+
+            <span className="text-sm text-gray-600">
+              Página {pagination.page} de {pagination.totalPages}
+            </span>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="px-3 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              Próxima →
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Modal de Vídeo */}
+      {selectedVideo && (
+        <VideoModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+        />
+      )}
     </AuthGuard>
   )
 }

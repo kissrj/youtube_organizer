@@ -1,8 +1,12 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
+import FixedActionsBar from '@/components/FixedActionsBar'
+import DraggableItem from '@/components/DraggableItem'
+import { useQuickActions } from '@/hooks/useQuickActions'
+import SortControls, { PLAYLIST_SORT_OPTIONS } from '@/components/SortControls'
 
 interface Category {
   id: string
@@ -47,15 +51,36 @@ export default function PlaylistsPage() {
   const [youtubeId, setYoutubeId] = useState('')
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
   const [showOrganizer, setShowOrganizer] = useState(false)
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  // Quick Actions Hook
+  const {
+    notebookModal,
+    tagModal,
+    handleNotebookDrop,
+    handleTagDrop,
+    handleDeleteDrop,
+    handleAddToNotebook,
+    handleCreateNotebook,
+    handleAddTags,
+    handleCreateTag,
+    closeNotebookModal,
+    closeTagModal,
+  } = useQuickActions()
 
   useEffect(() => {
     fetchPlaylists()
     fetchCategoriesAndTags()
-  }, [])
+  }, [sortBy, sortOrder])
 
   const fetchPlaylists = async () => {
     try {
-      const response = await fetch('/api/playlists')
+      const params = new URLSearchParams({
+        sortBy,
+        sortOrder,
+      })
+      const response = await fetch(`/api/playlists?${params.toString()}`)
       if (response.ok) {
         const data = await response.json()
         setPlaylists(data)
@@ -192,7 +217,7 @@ export default function PlaylistsPage() {
                 'The daily YouTube API quota has been exceeded.\n' +
                 'Try again tomorrow or consider upgrading your plan.')
         } else {
-          alert(`âŒ Erro: ${errorMessage}`)
+          alert(`Erro: ${errorMessage}`)
         }
 
         // Show more user-friendly error message
@@ -296,7 +321,6 @@ export default function PlaylistsPage() {
     setShowOrganizer(true)
   }
 
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -312,188 +336,213 @@ export default function PlaylistsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Playlists</h1>
         </div>
 
-      {/* Form to synchronize playlist */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Add YouTube Playlist
-        </h2>
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={youtubeId}
-            onChange={(e) => setYoutubeId(e.target.value)}
-            placeholder="Paste the YouTube playlist ID"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
-          />
-          <button
-            onClick={syncPlaylist}
-            disabled={syncLoading || !youtubeId.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {syncLoading ? 'Adding Playlist & Importing Videos...' : 'Add Playlist'}
-          </button>
-        </div>
+        {/* Sort Controls */}
+        <SortControls
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortByChange={setSortBy}
+          onSortOrderChange={setSortOrder}
+          sortOptions={PLAYLIST_SORT_OPTIONS}
+          className="justify-end"
+        />
 
-        {/* Quick test button */}
-        <div className="flex items-center gap-2 mt-4">
-          <span className="text-sm text-gray-600">Quick test:</span>
-          <button
-            onClick={() => setYoutubeId('PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')}
-            className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
-          >
-            ðŸŽµ Popular Music Videos
-          </button>
-          <span className="text-xs text-gray-500">
-            (Known working public playlist)
-          </span>
-        </div>
-
-        <div className="text-sm text-gray-600 mt-2 space-y-1">
-          <p><strong>✅ You can paste:</strong></p>
-          <div className="bg-green-50 border border-green-200 rounded p-3 space-y-2">
-            <div>
-              <span className="font-medium text-green-800">Just the ID:</span>
-              <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2">PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
-            </div>
-            <div>
-              <span className="font-medium text-green-800">Or the full URL:</span>
-              <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2 break-all">https://www.youtube.com/playlist?list=PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
-            </div>
+        {/* Form to synchronize playlist */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Add YouTube Playlist
+          </h2>
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={youtubeId}
+              onChange={(e) => setYoutubeId(e.target.value)}
+              placeholder="Paste the YouTube playlist ID"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white placeholder-gray-500"
+            />
+            <button
+              onClick={syncPlaylist}
+              disabled={syncLoading || !youtubeId.trim()}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncLoading ? 'Adding Playlist & Importing Videos...' : 'Add Playlist'}
+            </button>
           </div>
-          <div className="bg-blue-50 border border-blue-200 rounded p-3 mt-3">
-            <p className="text-blue-800 font-medium">🚀 Automatic Video Import</p>
-            <p className="text-blue-700 text-sm mt-1">
-              When you add a playlist, all videos from that playlist will be automatically imported and tagged appropriately.
-              These videos will only appear in this playlist's workspace, not in your general videos section.
+
+          {/* Quick test button */}
+          <div className="flex items-center gap-2 mt-4">
+            <span className="text-sm text-gray-600">Quick test:</span>
+            <button
+              onClick={() => setYoutubeId('PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')}
+              className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+            >
+              Popular Music Videos
+            </button>
+            <span className="text-xs text-gray-500">
+              (Known working public playlist)
+            </span>
+          </div>
+
+          <div className="text-sm text-gray-600 mt-2 space-y-1">
+            <p><strong>✅ You can paste:</strong></p>
+            <div className="bg-green-50 border border-green-200 rounded p-3 space-y-2">
+              <div>
+                <span className="font-medium text-green-800">Just the ID:</span>
+                <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2">PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
+              </div>
+              <div>
+                <span className="font-medium text-green-800">Or the full URL:</span>
+                <code className="bg-green-100 px-2 py-1 rounded text-green-900 ml-2 break-all">https://www.youtube.com/playlist?list=PLrAXtmRdnEQy5KQzqBv8KjHj9lJcKvPjI</code>
+              </div>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 mt-3">
+              <p className="text-blue-800 font-medium">🚀 Automatic Video Import</p>
+              <p className="text-blue-700 text-sm mt-1">
+                When you add a playlist, all videos from that playlist will be automatically imported and tagged appropriately.
+                These videos will only appear in this playlist's workspace, not in your general videos section.
+              </p>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              💡 The system will automatically extract the playlist ID from the URL if necessary.
             </p>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            💡 The system will automatically extract the playlist ID from the URL if necessary.
-          </p>
         </div>
-      </div>
 
-      {/* Playlist list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {playlists.map((playlist) => (
-          <div
-            key={playlist.id}
-            className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => window.location.href = `/playlists/${playlist.id}`}
-          >
-            <div className="aspect-video bg-gray-200 relative">
-              {playlist.thumbnailUrl && (
-                <Image
-                  src={playlist.thumbnailUrl}
-                  alt={playlist.title}
-                  width={1280}
-                  height={720}
-                  className="w-full h-full object-cover"
-                />
-              )}
-              {/* Click indicator */}
-              <div className="absolute top-2 right-2 bg-blue-600 bg-opacity-90 text-white text-xs px-2 py-1 rounded">
-                Click to view videos
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                {playlist.title}
-              </h3>
-              <p className="text-sm text-gray-600 mb-2">
-                {playlist.channelTitle}
-              </p>
-              <p className="text-sm text-gray-500 mb-3">
-                {playlist.itemCount} videos
-              </p>
-
-              {/* Categories */}
-              {playlist.categories.length > 0 && (
-                <div className="mb-3">
-                  <div className="flex flex-wrap gap-1">
-                    {playlist.categories.map((pc) => (
-                      <span
-                        key={pc.category.id}
-                        className="inline-block px-2 py-1 text-xs rounded-full"
-                        style={{
-                          backgroundColor: pc.category.color || '#e5e7eb',
-                          color: '#374151'
-                        }}
-                      >
-                        {pc.category.name}
-                      </span>
-                    ))}
+        {/* Playlist list */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {playlists.map((playlist) => (
+            <DraggableItem
+              key={playlist.id}
+              id={playlist.id}
+              type="playlist"
+              title={playlist.title}
+              youtubeId={playlist.youtubeId}
+              className="mb-4 transform-gpu will-change-transform playlist-card animate-card-enter group"
+            >
+              <div
+                className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => window.location.href = `/playlists/${playlist.id}`}
+              >
+                <div className="aspect-video bg-gray-200 relative">
+                  {playlist.thumbnailUrl && (
+                    <Image
+                      src={playlist.thumbnailUrl}
+                      alt={playlist.title}
+                      width={1280}
+                      height={720}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Click indicator */}
+                  <div className="absolute top-2 right-2 bg-blue-600 bg-opacity-90 text-white text-xs px-2 py-1 rounded">
+                    Click to view videos
                   </div>
                 </div>
-              )}
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    {playlist.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {playlist.channelTitle}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {playlist.itemCount} videos
+                  </p>
 
-              {/* Tags */}
-              {playlist.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {playlist.tags.map((pt) => (
-                    <span
-                      key={pt.tag.id}
-                      className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
+                  {/* Categories */}
+                  {playlist.categories.length > 0 && (
+                    <div className="mb-3">
+                      <div className="flex flex-wrap gap-1">
+                        {playlist.categories.map((pc) => (
+                          <span
+                            key={pc.category.id}
+                            className="inline-block px-2 py-1 text-xs rounded-full"
+                            style={{
+                              backgroundColor: pc.category.color || '#e5e7eb',
+                              color: '#374151'
+                            }}
+                          >
+                            {pc.category.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {playlist.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {playlist.tags.map((pt) => (
+                        <span
+                          key={pt.tag.id}
+                          className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
+                        >
+                          #{pt.tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => window.location.href = `/playlists/${playlist.id}`}
+                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                     >
-                      #{pt.tag.name}
-                    </span>
-                  ))}
+                      <span>📺</span>
+                      View Videos
+                    </button>
+                    <button
+                      onClick={() => window.open(`https://www.youtube.com/playlist?list=${playlist.youtubeId}`, '_blank')}
+                      className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <span>▶️</span>
+                      Watch
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!confirm('Are you sure you want to delete this playlist? This action is irreversible.')) return
+                        try {
+                          const res = await fetch(`/api/playlists/${playlist.id}`, { method: 'DELETE' })
+                          if (res.ok) {
+                            // refresh list
+                            fetchPlaylists()
+                          } else {
+                            const err = await res.json()
+                            alert(err.error || 'Error deleting playlist')
+                          }
+                        } catch (e) {
+                          console.error('Error deleting playlist:', e)
+                          alert('Error deleting playlist')
+                        }
+                      }}
+                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                      title="Delete playlist"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
                 </div>
-              )}
-
-              {/* Action buttons */}
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => window.location.href = `/playlists/${playlist.id}`}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>📺</span>
-                  View Videos
-                </button>
-                <button
-                  onClick={() => window.open(`https://www.youtube.com/playlist?list=${playlist.youtubeId}`, '_blank')}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>▶️</span>
-                  Watch
-                </button>
-                <button
-                  onClick={async () => {
-                    if (!confirm('Are you sure you want to delete this playlist? This action is irreversible.')) return
-                    try {
-                      const res = await fetch(`/api/playlists/${playlist.id}`, { method: 'DELETE' })
-                      if (res.ok) {
-                        // refresh list
-                        fetchPlaylists()
-                      } else {
-                        const err = await res.json()
-                        alert(err.error || 'Error deleting playlist')
-                      }
-                    } catch (e) {
-                      console.error('Error deleting playlist:', e)
-                      alert('Error deleting playlist')
-                    }
-                  }}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-                  title="Delete playlist"
-                >
-                  🗑️ Delete
-                </button>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {playlists.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">
-            No playlists found. Synchronize a YouTube playlist to get started.
-          </p>
+            </DraggableItem>
+          ))}
         </div>
-      )}
+
+        {playlists.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              No playlists found. Synchronize a YouTube playlist to get started.
+            </p>
+          </div>
+        )}
+
+        {/* Fixed Actions Bar - Always Visible */}
+        <FixedActionsBar
+          onNotebookDrop={handleAddToNotebook}
+          onCreateNotebook={handleCreateNotebook}
+          onTagDrop={handleTagDrop}
+          onDeleteDrop={handleDeleteDrop}
+        />
       </div>
     </AuthGuard>
   )
 }
-

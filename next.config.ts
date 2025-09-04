@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
     // This might help with route conflicts
   },
   images: {
-    domains: ['i.ytimg.com', 'img.youtube.com'],
+    domains: ['i.ytimg.com', 'img.youtube.com', 'ytimg.com'],
+    unoptimized: true,
   },
 };
 

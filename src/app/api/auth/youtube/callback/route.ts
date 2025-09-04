@@ -6,12 +6,14 @@ import { exchangeCodeForTokens, saveYouTubeAccount, getYouTubeUserInfo } from '@
  * GET /api/auth/youtube/callback?code=...&state=...
  */
 export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams
-    const code = searchParams.get('code')
-    const state = searchParams.get('state') // userId
-    const error = searchParams.get('error')
+  const searchParams = request.nextUrl.searchParams
+  const code = searchParams.get('code')
+  const state = searchParams.get('state') // userId
+  const error = searchParams.get('error')
+  const origin = new URL(request.url).origin
+  const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${origin}/api/auth/youtube/callback`
 
+  try {
     // Verifica se houve erro na autorização
     if (error) {
       console.error('Erro na autorização YouTube:', error)
@@ -39,9 +41,7 @@ export async function GET(request: NextRequest) {
     console.log(`🔄 Processando callback OAuth para usuário ${state}`)
 
     // Troca o código por tokens
-  const origin = new URL(request.url).origin
-  const redirectUri = process.env.YOUTUBE_REDIRECT_URI || `${origin}/api/auth/youtube/callback`
-  const tokens = await exchangeCodeForTokens(code, redirectUri)
+    const tokens = await exchangeCodeForTokens(code, redirectUri)
     console.log('✅ Tokens obtidos com sucesso')
 
     // Busca informações do usuário no YouTube (tolerante a falhas)
@@ -63,11 +63,33 @@ export async function GET(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error('Erro no callback OAuth do YouTube:', error)
+    console.error('❌ Erro no callback OAuth do YouTube:', error)
 
-    // Redireciona com erro
+    // Log detalhado para diagnóstico
+    console.error('Detalhes do erro:', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+      stack: error instanceof Error ? error.stack : undefined,
+      code: code ? 'Presente' : 'Ausente',
+      state: state ? 'Presente' : 'Ausente',
+      error_param: error || 'Nenhum',
+      redirectUri: redirectUri
+    })
+
+    // Determinar tipo de erro para melhor tratamento
+    let errorType = 'youtube_callback_error'
+    if (error instanceof Error) {
+      if (error.message.includes('invalid_grant')) {
+        errorType = 'youtube_invalid_grant'
+      } else if (error.message.includes('redirect_uri_mismatch')) {
+        errorType = 'youtube_redirect_uri_mismatch'
+      } else if (error.message.includes('access_denied')) {
+        errorType = 'youtube_access_denied'
+      }
+    }
+
+    // Redireciona com erro específico
     return NextResponse.redirect(
-      new URL('/?error=youtube_callback_error', request.url)
+      new URL(`/?error=${errorType}&details=${encodeURIComponent(error instanceof Error ? error.message : 'Erro desconhecido')}`, request.url)
     )
   }
 }

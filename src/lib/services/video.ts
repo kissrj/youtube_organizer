@@ -264,6 +264,17 @@ export async function syncVideoFromYouTube(youtubeId: string, userId: string) {
         // Não falha a criação do vídeo por causa da indexação
       }
 
+      // Processa as tags do YouTube e cria associações VideoTag
+      if (youtubeVideo.tags && youtubeVideo.tags.length > 0) {
+        try {
+          await processYouTubeTags(video.id, youtubeVideo.tags, userId)
+          console.log('✅ Tags do YouTube processadas para o vídeo')
+        } catch (tagError) {
+          console.error('⚠️ Erro ao processar tags do YouTube:', tagError)
+          // Não falha a criação do vídeo por causa das tags
+        }
+      }
+
       return video
     } catch (prismaError: any) {
       console.error('❌ Erro específico do Prisma:', {
@@ -393,4 +404,46 @@ export async function getTagVideos(tagId: string) {
   })
 
   return tag?.videos.map((vt: any) => vt.video) || []
+}
+
+/**
+ * Processa as tags do YouTube e cria associações VideoTag
+ */
+export async function processYouTubeTags(videoId: string, youtubeTags: string[], userId: string) {
+  try {
+    // Importa as funções necessárias
+    const { findOrCreateTag } = await import('@/lib/services/tag')
+
+    // Processa cada tag do YouTube
+    const tagAssociations = []
+
+    for (const tagName of youtubeTags) {
+      try {
+        // Cria ou encontra a tag
+        const tag = await findOrCreateTag(tagName, userId)
+
+        // Adiciona à lista de associações
+        tagAssociations.push({
+          videoId,
+          tagId: tag.id
+        })
+      } catch (error) {
+        console.warn(`⚠️ Erro ao processar tag "${tagName}":`, error)
+        // Continua processando outras tags
+      }
+    }
+
+    // Cria as associações em lote
+    if (tagAssociations.length > 0) {
+      await prisma.videoTag.createMany({
+        data: tagAssociations,
+        skipDuplicates: true // Evita duplicatas
+      })
+      console.log(`✅ Criadas ${tagAssociations.length} associações VideoTag para vídeo ${videoId}`)
+    }
+
+  } catch (error) {
+    console.error('❌ Erro ao processar tags do YouTube:', error)
+    throw error
+  }
 }

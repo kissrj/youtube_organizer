@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getUserPlaylists } from '@/lib/services/playlist'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -14,7 +14,14 @@ export async function GET() {
       )
     }
 
-    const playlists = await getUserPlaylists(session.user.id)
+    const { searchParams } = new URL(request.url)
+    const sortBy = searchParams.get('sortBy') || 'createdAt'
+    const sortOrder = (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc'
+
+    const playlists = await getUserPlaylists(session.user.id, {
+      sortBy,
+      sortOrder,
+    })
     return NextResponse.json(playlists)
   } catch (error) {
     console.error('Erro ao buscar playlists:', error)

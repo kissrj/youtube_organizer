@@ -60,7 +60,25 @@ export async function getPlaylistByYouTubeId(youtubeId: string, userId: string) 
 /**
  * Busca todas as playlists de um usuário
  */
-export async function getUserPlaylists(userId: string) {
+export async function getUserPlaylists(userId: string, options: {
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+} = {}) {
+  const { sortBy = 'createdAt', sortOrder = 'desc' } = options;
+
+  // Build the order by clause
+  const orderBy: any = {};
+  if (sortBy === 'title') {
+    orderBy.title = sortOrder;
+  } else if (sortBy === 'itemCount') {
+    orderBy.itemCount = sortOrder === 'desc' ? 'desc' : 'asc';
+  } else if (sortBy === 'publishedAt') {
+    orderBy.publishedAt = sortOrder;
+  } else {
+    // Default to createdAt
+    orderBy.createdAt = sortOrder;
+  }
+
   return await prisma.playlist.findMany({
     where: { userId },
     include: {
@@ -75,7 +93,7 @@ export async function getUserPlaylists(userId: string) {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy,
   })
 }
 

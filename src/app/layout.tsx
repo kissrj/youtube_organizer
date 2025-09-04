@@ -6,12 +6,13 @@ import { IconThemeProvider } from '@/providers/IconThemeProvider'
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
 import { ToastProvider } from '@/components/ui/ToastProvider'
+import { DndProviderComponent } from '@/components/dnd/DndProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'YouTube Organizer',
-  description: 'Organize your YouTube videos with collections, tags and AI.',
+  description: 'Organize your YouTube videos with notebooks, tags and AI.',
 }
 
 export default function RootLayout({
@@ -26,12 +27,14 @@ export default function RootLayout({
           <SessionProvider>
             <IconThemeProvider>
               <ToastProvider>
-                <div className="min-h-screen">
-                  <AuthHeader />
-                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {children}
-                  </main>
-                </div>
+                <DndProviderComponent>
+                  <div className="min-h-screen">
+                    <AuthHeader />
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                      {children}
+                    </main>
+                  </div>
+                </DndProviderComponent>
               </ToastProvider>
             </IconThemeProvider>
           </SessionProvider>

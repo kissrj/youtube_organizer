@@ -1,30 +1,31 @@
 // src/lib/types.ts
-export interface Collection {
+export interface NotebookVideo {
+  id: string
+  notebookId: string
+  videoId: string
+  addedAt: Date
+  video: Video
+}
+
+export interface Notebook {
   id: string
   name: string
   description?: string
-  icon?: string
   color?: string
-  isPublic: boolean
-  parentId?: string
-  position: number
+  category?: string
+  isDefault?: boolean
   userId: string
   createdAt: Date
   updatedAt: Date
-  children?: Collection[]
-  videos?: CollectionVideo[]
-  channels?: CollectionChannel[]
-  playlists?: CollectionPlaylist[]
-  tags?: CollectionTag[]
-  settings?: CollectionSettings
+  videos?: NotebookVideo[]
+  playlists?: any[]
   _count?: {
     videos: number
-    channels: number
-    playlists: number
-    children: number
+    playlists?: number
   }
 }
 
+// Legacy Collection interfaces (deprecated - use Notebook instead)
 export interface CollectionVideo {
   id: string
   collectionId: string
@@ -154,6 +155,23 @@ export interface VideoTag {
 }
 
 // Form types
+export interface CreateNotebookForm {
+  name: string
+  description?: string
+  color?: string
+}
+
+export interface UpdateNotebookForm {
+  name?: string
+  description?: string
+  color?: string
+}
+
+export interface NotebookFilters {
+  userId?: string
+}
+
+// Legacy Collection form types (deprecated - use Notebook instead)
 export interface CreateCollectionForm {
   name: string
   description?: string

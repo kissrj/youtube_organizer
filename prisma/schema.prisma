@@ -75,6 +75,7 @@ model User {
   importJobs    ImportJob[]
   dataMappings  DataMapping[]
   collections   Collection[]
+  notebooks     Notebook[]
   notifications Notification[]
   notificationPreferences NotificationPreference?
   notificationChannels NotificationChannel[]
@@ -148,6 +149,8 @@ model Playlist {
   categories        PlaylistCategory[]
   tags              PlaylistTag[]
   collections       CollectionPlaylist[]
+  videos            PlaylistVideo[]
+  notebooks         NotebookPlaylist[]
 
   @@unique([userId, youtubeId])
 }
@@ -174,6 +177,20 @@ model PlaylistTag {
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([playlistId, tagId])
+}
+
+model PlaylistVideo {
+  id         String   @id @default(cuid())
+  playlistId String
+  videoId    String
+  addedAt    DateTime @default(now())
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, videoId])
+  @@index([playlistId])
+  @@index([videoId])
 }
 
 // Vídeos individuais importados
@@ -210,6 +227,10 @@ model Video {
   transcriptSource  String?
   transcriptUpdatedAt DateTime?
 
+  // Watch status tracking
+  isWatched         Boolean  @default(false)
+  watchedAt         DateTime?
+
   userId            String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -220,6 +241,8 @@ model Video {
   analyses          VideoAnalysis[]
   tagSuggestions    TagSuggestion[]
   collections       CollectionVideo[]
+  notebooks         NotebookVideo[]
+  playlists         PlaylistVideo[]
 
   @@unique([userId, youtubeId])
 }
@@ -246,6 +269,58 @@ model VideoTag {
   tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([videoId, tagId])
+}
+
+// Notebooks: user-scoped groupings for videos
+model Notebook {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String?  // Hex color for UI
+  category    String?  // Category for organization
+  isDefault   Boolean  @default(false) // Whether this is a system default notebook
+  userId      String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videos      NotebookVideo[]
+  playlists   NotebookPlaylist[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([isDefault])
+}
+
+// Notebook-Video relationship
+model NotebookVideo {
+  id         String   @id @default(cuid())
+  notebookId String
+  videoId    String
+  addedAt    DateTime @default(now())
+
+  notebook   Notebook @relation(fields: [notebookId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([notebookId, videoId])
+  @@index([notebookId])
+  @@index([videoId])
+}
+
+// Notebook-Playlist relationship
+model NotebookPlaylist {
+  id         String   @id @default(cuid())
+  notebookId String
+  playlistId String
+  addedAt    DateTime @default(now())
+
+  notebook   Notebook @relation(fields: [notebookId], references: [id], onDelete: Cascade)
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  @@unique([notebookId, playlistId])
+  @@index([notebookId])
+  @@index([playlistId])
 }
 
 // Collections: hierarchical, user-scoped groupings for videos/playlists/channels/tags
@@ -594,77 +669,85 @@ enum QueueStatus {
   RETRYING
 }
 
+// Import Jobs System Models
+model ImportJob {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Job metadata
+  jobId       String   @unique // External job ID for tracking
+  status      ImportJobStatus @default(RUNNING)
+  jobType     String   // 'youtube_import', 'video_sync', etc.
+
+  // Progress tracking
+  overallProgress Float    @default(0)
+  currentStep     String?
+  videosImported  Int      @default(0)
+  playlistsImported Int    @default(0)
+  tagsCreated     Int      @default(0)
+  categoriesCreated Int    @default(0)
+
+  // Options
+  options      Json?    // Import options as JSON
+
+  // Timestamps
+  startedAt    DateTime @default(now())
+  completedAt  DateTime?
+  expiresAt    DateTime?
+
+  // Error handling
+  errors       String?  // JSON array of error messages
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("import_jobs")
+  @@index([userId])
+  @@index([status])
+  @@index([jobId])
+}
+
+enum ImportJobStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
 // Export/Import System Models
 model ExportJob {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Metadados do job
   name        String
   description String?
   format      ExportFormat
   status      ExportStatus @default(PENDING)
-  
+
   // Dados do export
   include     Json     // O que incluir no export
   filters     Json?    // Filtros aplicados
   totalItems  Int      @default(0)
   exportedItems Int    @default(0)
-  
+
   // Arquivo resultante
   filePath    String?
   fileSize    Int?
   downloadUrl String?
-  
+
   // Timestamps
   scheduledAt DateTime @default(now())
   startedAt   DateTime?
   completedAt DateTime?
   expiresAt   DateTime?
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("export_jobs")
-  @@index([userId])
-}
-
-model ImportJob {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Metadados do job
-  name        String
-  description String?
-  format      ImportFormat
-  status      ImportStatus @default(PENDING)
-  
-  // Dados do import
-  filePath    String
-  fileSize    Int
-  totalItems  Int      @default(0)
-  processedItems Int   @default(0)
-  successItems Int     @default(0)
-  errorItems  Int      @default(0)
-  
-  // Mapeamento de campos
-  mapping     Json     // Mapeamento de campos personalizado
-  
-  // Relatório
-  report      Json?    // Relatório do processo
-  
-  // Timestamps
-  scheduledAt DateTime @default(now())
-  startedAt   DateTime?
-  completedAt DateTime?
-  expiresAt   DateTime?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("import_jobs")
   @@index([userId])
 }
 

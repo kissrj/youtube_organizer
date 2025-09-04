@@ -280,7 +280,7 @@ export function ExportManager({ userId }: ExportManagerProps) {
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <label htmlFor="include-collections" className="ml-2 text-sm text-gray-900">
-                          Collections
+                          Notebooks
                         </label>
                       </div>
                       <div className="flex items-center">

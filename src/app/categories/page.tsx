@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { AuthGuard } from '@/components/AuthGuard'
 
@@ -23,6 +24,7 @@ interface Category {
 }
 
 export default function CategoriesPage() {
+  const router = useRouter()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -174,20 +176,22 @@ export default function CategoriesPage() {
 
       {/* Category list */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => window.location.href = `/categories/${category.id}`}
-          >
-            <div
-              className="h-16 flex items-center justify-center"
-              style={{ backgroundColor: category.color }}
-            >
-              <h3 className="text-white font-semibold text-lg">
-                {category.name}
-              </h3>
-            </div>
+        {categories
+          .filter(category => category && category.id) // Filter out invalid categories
+          .map((category) => (
+              <div
+                key={category.id}
+                className="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => router.push(`/categories/${category.id}`)}
+              >
+                <div
+                  className="h-16 flex items-center justify-center"
+                  style={{ backgroundColor: category.color || '#3b82f6' }}
+                >
+                  <h3 className="text-white font-semibold text-lg text-center px-2 break-words">
+                    {category.name || 'Categoria sem nome'}
+                  </h3>
+                </div>
 
             <div className="p-4">
               {category.description && (
@@ -240,7 +244,7 @@ export default function CategoriesPage() {
               </div>
             </div>
           </div>
-        ))}
+          ))}
       </div>
 
       {categories.length === 0 && (

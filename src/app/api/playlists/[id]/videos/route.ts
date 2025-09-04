@@ -33,11 +33,13 @@ export async function GET(
 
 
     // Build the where clause for videos
-    // Filter videos that contain playlist information in their tags
+    // Filter videos that are associated with this playlist
     const where: any = {
       userId: session.user.id,
-      videoTags: {
-        contains: `playlist_${playlistId}`
+      playlists: {
+        some: {
+          playlistId: playlistId
+        }
       }
     }
 
@@ -99,35 +101,14 @@ export async function GET(
 
 
     // Add playlist information to each video
-    const videosWithPlaylist = videos.map(video => {
-      // Try to extract playlist info from video tags
-      let playlistInfo = null
-      if (video.videoTags) {
-        try {
-          const tags = JSON.parse(video.videoTags)
-          const playlistTag = tags.find((tag: string) => tag.startsWith('playlist:'))
-          if (playlistTag) {
-            const playlistData = JSON.parse(playlistTag.replace('playlist:', ''))
-            playlistInfo = playlistData
-          }
-        } catch (error) {
-          // Ignore parsing errors for videos without playlist info
-        }
+    const videosWithPlaylist = videos.map(video => ({
+      ...video,
+      playlist: {
+        id: playlist.id,
+        title: playlist.title,
+        youtubeId: playlist.youtubeId
       }
-
-      return {
-        ...video,
-        playlist: playlistInfo ? {
-          id: playlistInfo.playlistId,
-          title: playlistInfo.playlistTitle,
-          youtubeId: playlistInfo.playlistYoutubeId
-        } : {
-          id: playlist.id,
-          title: playlist.title,
-          youtubeId: playlist.youtubeId
-        }
-      }
-    })
+    }))
 
     return NextResponse.json(videosWithPlaylist)
 

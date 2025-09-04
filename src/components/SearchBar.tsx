@@ -47,9 +47,9 @@ export default function SearchBar({
     <div className="w-full max-w-4xl mx-auto">
       {/* Main search bar */}
       <div className="relative">
-        <div className="flex items-center bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+        <div className="flex items-center bg-surface border border-ui rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
           <div className="pl-3">
-            <Search className="h-5 w-5 text-gray-500" />
+            <Search className="h-5 w-5 text-subtle" />
           </div>
 
           <input
@@ -57,14 +57,14 @@ export default function SearchBar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder}
-            className="flex-1 px-3 py-3 text-gray-900 placeholder-gray-500 bg-transparent border-0 focus:ring-0 focus:outline-none"
+            className="flex-1 px-3 py-3 text-fg placeholder:text-subtle bg-transparent border-0 focus:ring-0 focus:outline-none"
           />
 
           {/* Filters button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-3 border-l border-gray-300 hover:bg-gray-50 transition-colors ${
-              hasActiveFilters ? 'text-blue-600' : 'text-gray-500'
+            className={`p-3 border-l border-ui hover:bg-surface transition-colors ${
+              hasActiveFilters ? 'text-blue-600' : 'text-subtle'
             }`}
             title="Advanced filters"
           >
@@ -75,7 +75,7 @@ export default function SearchBar({
           {(query || hasActiveFilters) && (
             <button
               onClick={clearSearch}
-              className="p-3 border-l border-gray-300 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+              className="p-3 border-l border-ui text-subtle hover:text-foreground hover:bg-surface transition-colors"
               title="Clear search"
             >
               <X className="h-5 w-5" />
@@ -86,11 +86,11 @@ export default function SearchBar({
 
       {/* Advanced filters */}
       {showFilters && (
-        <div className="mt-3 bg-white border border-gray-300 rounded-lg shadow-sm p-4">
+        <div className="mt-3 bg-surface border border-ui rounded-lg shadow-sm p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Filter by category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Category
               </label>
               <select
@@ -99,7 +99,7 @@ export default function SearchBar({
                   ...prev,
                   categoryId: e.target.value || undefined
                 }))}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-surface border border-ui rounded-md text-fg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All categories</option>
                 {categories.map((category) => (
@@ -112,7 +112,7 @@ export default function SearchBar({
 
             {/* Filter by tag */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Tag
               </label>
               <select
@@ -121,7 +121,7 @@ export default function SearchBar({
                   ...prev,
                   tagId: e.target.value || undefined
                 }))}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-surface border border-ui rounded-md text-fg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All tags</option>
                 {tags.map((tag) => (
@@ -135,12 +135,12 @@ export default function SearchBar({
 
           {/* Active filters */}
           {hasActiveFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-300">
+            <div className="mt-4 pt-4 border-t border-ui">
               <div className="flex flex-wrap gap-2">
-                <span className="text-sm text-gray-600">Active filters:</span>
+                <span className="text-sm text-muted">Active filters:</span>
 
                 {filters.categoryId && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-surface border border-ui text-muted">
                     Category: {categories.find(c => c.id === filters.categoryId)?.name}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, categoryId: undefined }))}
@@ -152,7 +152,7 @@ export default function SearchBar({
                 )}
 
                 {filters.tagId && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-surface border border-ui text-muted">
                     Tag: {tags.find(t => t.id === filters.tagId)?.name}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, tagId: undefined }))}
@@ -170,9 +170,9 @@ export default function SearchBar({
 
       {/* Search tips */}
       {query && (
-        <div className="mt-2 text-sm text-gray-600">
+        <div className="mt-2 text-sm text-muted">
           <p>
-            💡 Searching for: <strong className="text-gray-900">"{query}"</strong>
+            💡 Searching for: <strong className="text-foreground">"{query}"</strong>
             {hasActiveFilters && ' with applied filters'}
           </p>
         </div>

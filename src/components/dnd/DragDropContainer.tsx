@@ -41,23 +41,58 @@ export function DragDropContainer({
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type,
-    item: { id, type },
+    item: () => {
+      console.log('🚀 DRAG START - Container:', { id, type })
+      return { id, type }
+    },
     collect: (monitor: any) => ({
       isDragging: !!monitor.isDragging(),
     }),
+    end: (item: any, monitor: any) => {
+      console.log('🎯 DRAG END - Container:', {
+        item,
+        didDrop: monitor.didDrop(),
+        dropResult: monitor.getDropResult()
+      })
+    }
   }))
 
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: type,
-    drop: (item: any) => {
+    drop: (item: any, monitor: any) => {
+      console.log('🎯 CONTAINER DROP:', {
+        draggedItem: item,
+        targetId: id,
+        targetType: type,
+        isOver: monitor.isOver()
+      })
+      
       if (item.id !== id) {
         onDrop(item.id, id, 'inside')
+      }
+      return { success: true, targetId: id }
+    },
+    hover: (item: any, monitor: any) => {
+      if (item.id !== id) {
+        console.log('🔄 HOVER over container:', {
+          draggedId: item.id,
+          targetId: id
+        })
       }
     },
     collect: (monitor: any) => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
     }),
+    canDrop: (item: any) => {
+      const canAccept = item.id !== id
+      console.log('🔍 Container can drop check:', {
+        draggedId: item.id,
+        targetId: id,
+        canAccept
+      })
+      return canAccept
+    }
   }))
 
   return (

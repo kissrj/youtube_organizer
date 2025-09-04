@@ -41,14 +41,40 @@ export function DroppableCollectionArea({
 
   const [{ isOver: isDragOver }, drop] = useDrop(() => ({
     accept: ['collection', 'video', 'channel', 'playlist'],
-    drop: (item: any) => {
+    drop: (item: any, monitor: any) => {
+      console.log('🎯 COLLECTION DROP - Detailed Debug:', {
+        item,
+        targetCollectionId: collectionId,
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+        clientOffset: monitor.getClientOffset(),
+        timestamp: new Date().toISOString()
+      })
+      
       onDrop(item.id, collectionId)
+      return { success: true, collectionId }
+    },
+    hover: (item: any, monitor: any) => {
+      console.log('🔄 HOVER over collection:', {
+        item: item.id,
+        collection: collectionId,
+        isOver: monitor.isOver()
+      })
     },
     collect: (monitor: any) => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
     }),
-    canDrop: (item: any) => canDrop
+    canDrop: (item: any) => {
+      const canAccept = canDrop && item.id !== collectionId
+      console.log('🔍 Collection can drop check:', {
+        itemId: item.id,
+        collectionId,
+        canDrop,
+        canAccept
+      })
+      return canAccept
+    }
   }))
 
   const [isHovered, setIsHovered] = useState(false)

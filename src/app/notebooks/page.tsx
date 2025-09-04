@@ -3,34 +3,30 @@
 import React, { useState, useCallback } from 'react'
 import { AuthGuard } from '@/components/AuthGuard'
 import { NotebookCard } from '@/components/notebooks/NotebookCard'
-import { DefaultNotebookCard } from '@/components/notebooks/DefaultNotebookCard'
 import { AddNotebookDialog } from '@/components/notebooks/AddNotebookDialog'
 import { NotebookSettingsWithIcons } from '@/components/notebooks/NotebookSettingsWithIcons'
-import { Collection } from '@/lib/types'
-import { defaultNotebooks, DefaultNotebook } from '@/lib/data/default-notebooks'
+import { Notebook } from '@/lib/types'
 import { Plus, Settings, Sparkles } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useNotebooks } from '@/hooks/useNotebooks'
 
 export default function NotebooksPage() {
   const [showAddDialog, setShowAddDialog] = useState(false)
-  const [selectedNotebook, setSelectedNotebook] = useState<Collection | null>(null)
+  const [selectedNotebook, setSelectedNotebook] = useState<Notebook | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [toDelete, setToDelete] = useState<Collection | null>(null)
+  const [toDelete, setToDelete] = useState<Notebook | null>(null)
 
   const {
     notebooks,
     loading,
     error,
-    defaultNotebookCounts,
     createNotebook,
     updateNotebook,
     deleteNotebook,
-    createDefaultNotebook,
   } = useNotebooks()
 
-  const confirmDelete = useCallback((notebook: Collection) => {
+  const confirmDelete = useCallback((notebook: Notebook) => {
     setToDelete(notebook)
     setConfirmOpen(true)
   }, [])
@@ -137,11 +133,15 @@ export default function NotebooksPage() {
                   <div className="flex items-center gap-4 mt-4">
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      {notebooks.length + defaultNotebooks.length} notebooks available
+                      {notebooks.length} notebooks available
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                      {notebooks.filter(nb => nb.isDefault).length} default
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      {notebooks.length} custom created
+                      {notebooks.filter(nb => !nb.isDefault).length} custom
                     </div>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default function NotebooksPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500 bg-gradient-to-r from-purple-100 to-purple-200 px-3 py-1 rounded-full font-medium">
-                      {defaultNotebooks.length} available
+                      {notebooks.filter(nb => nb.isDefault).length} available
                     </span>
                   </div>
                 </div>
@@ -185,56 +185,56 @@ export default function NotebooksPage() {
                   role="grid"
                   aria-label="Default notebooks grid"
                 >
-                  {defaultNotebooks.map((defaultNotebook, index) => (
-                    <div
-                      key={defaultNotebook.id}
-                      role="gridcell"
-                      className="animate-fade-in-up"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <DefaultNotebookCard
-                        notebook={defaultNotebook}
-                        videoCount={defaultNotebookCounts[defaultNotebook.id] || 0}
-                        onClick={() => {
-                          // Navigate to default notebook or create it if it doesn't exist
-                          const userNotebook = notebooks.find((nb: Collection) => nb.name === defaultNotebook.name)
-                          if (userNotebook) {
-                            window.location.href = `/notebooks/${userNotebook.id}`
-                          } else {
-                            // Create the default notebook first
-                            createDefaultNotebook(defaultNotebook)
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
+                  {notebooks
+                    .filter(notebook => notebook.isDefault)
+                    .map((defaultNotebook, index) => (
+                      <div
+                        key={defaultNotebook.id}
+                        role="gridcell"
+                        className="animate-fade-in-up"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <NotebookCard
+                          notebook={defaultNotebook}
+                          isSelected={selectedNotebook?.id === defaultNotebook.id}
+                          onClick={() => setSelectedNotebook(defaultNotebook)}
+                          onIconChange={handleIconChange}
+                          onColorChange={handleColorChange}
+                          onEdit={() => {
+                            setSelectedNotebook(defaultNotebook)
+                            setShowSettings(true)
+                          }}
+                          onFeeds={() => {
+                            window.location.href = `/notebooks/${defaultNotebook.id}/feeds`
+                          }}
+                          onDelete={() => confirmDelete(defaultNotebook)}
+                        />
+                      </div>
+                    ))}
 
                   {/* Create New Card */}
                   <div
                     role="gridcell"
                     className="animate-fade-in-up"
-                    style={{ animationDelay: `${defaultNotebooks.length * 100}ms` }}
+                    style={{ animationDelay: `${notebooks.filter(nb => nb.isDefault).length * 100}ms` }}
                   >
-                    <DefaultNotebookCard
-                      notebook={{
-                        id: 'create-new',
-                        name: 'Create New',
-                        description: 'Start a new notebook for your content',
-                        icon: 'Plus',
-                        color: 'from-blue-500 to-blue-600',
-                        category: 'Custom',
-                        isDefault: false
-                      }}
-                      isCreateNew={true}
-                      onClick={() => {}}
-                      onCreateNew={() => setShowAddDialog(true)}
-                    />
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-dashed border-blue-200 rounded-2xl p-6 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 cursor-pointer group" onClick={() => setShowAddDialog(true)}>
+                      <div className="flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                          <Plus className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">Create New</h3>
+                          <p className="text-sm text-gray-600">Start a new notebook for your content</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
 
               {/* User Notebooks Section */}
-              {notebooks.length > 0 && (
+              {notebooks.filter(nb => !nb.isDefault).length > 0 && (
                 <section aria-labelledby="user-notebooks-heading" className="animate-slide-up">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -243,14 +243,14 @@ export default function NotebooksPage() {
                       </div>
                       <div>
                         <h2 id="user-notebooks-heading" className="text-2xl font-bold text-gray-900">
-                          Your Notebooks
+                          Your Custom Notebooks
                         </h2>
-                        <p className="text-gray-600 text-sm mt-1">Custom notebooks you've created</p>
+                        <p className="text-gray-600 text-sm mt-1">Notebooks you've created</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500 bg-gradient-to-r from-blue-100 to-blue-200 px-3 py-1 rounded-full font-medium">
-                        {notebooks.length} created
+                        {notebooks.filter(nb => !nb.isDefault).length} created
                       </span>
                     </div>
                   </div>
@@ -260,30 +260,32 @@ export default function NotebooksPage() {
                     role="grid"
                     aria-label="User notebooks grid"
                   >
-                    {notebooks.map((notebook, index) => (
-                      <div
-                        key={notebook.id}
-                        role="gridcell"
-                        className="animate-fade-in-up"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <NotebookCard
-                          notebook={notebook}
-                          isSelected={selectedNotebook?.id === notebook.id}
-                          onClick={() => setSelectedNotebook(notebook)}
-                          onIconChange={handleIconChange}
-                          onColorChange={handleColorChange}
-                          onEdit={() => {
-                            setSelectedNotebook(notebook)
-                            setShowSettings(true)
-                          }}
-                          onFeeds={() => {
-                            window.location.href = `/notebooks/${notebook.id}/feeds`
-                          }}
-                          onDelete={() => confirmDelete(notebook)}
-                        />
-                      </div>
-                    ))}
+                    {notebooks
+                      .filter(notebook => !notebook.isDefault)
+                      .map((notebook, index) => (
+                        <div
+                          key={notebook.id}
+                          role="gridcell"
+                          className="animate-fade-in-up"
+                          style={{ animationDelay: `${index * 50}ms` }}
+                        >
+                          <NotebookCard
+                            notebook={notebook}
+                            isSelected={selectedNotebook?.id === notebook.id}
+                            onClick={() => setSelectedNotebook(notebook)}
+                            onIconChange={handleIconChange}
+                            onColorChange={handleColorChange}
+                            onEdit={() => {
+                              setSelectedNotebook(notebook)
+                              setShowSettings(true)
+                            }}
+                            onFeeds={() => {
+                              window.location.href = `/notebooks/${notebook.id}/feeds`
+                            }}
+                            onDelete={() => confirmDelete(notebook)}
+                          />
+                        </div>
+                      ))}
                   </div>
                 </section>
               )}

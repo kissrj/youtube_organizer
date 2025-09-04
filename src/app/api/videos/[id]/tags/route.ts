@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { addTagToVideo, removeTagFromVideo } from '@/lib/services/video'
 import { findOrCreateTag } from '@/lib/services/tag'
-import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
@@ -17,24 +16,36 @@ export async function POST(
     }
 
     const { id } = await params
-    const { tagName } = await request.json()
+    const { tagId, tagName } = await request.json()
 
-    if (!tagName) {
+    if (!tagId && !tagName) {
       return NextResponse.json(
-        { error: 'Nome da tag é obrigatório' },
+        { error: 'ID da tag ou nome da tag é obrigatório' },
         { status: 400 }
       )
     }
 
-    // Encontra ou cria a tag
-    const tag = await findOrCreateTag(tagName.trim(), session.user.id)
+    let finalTagId = tagId
+
+    // Se foi fornecido um nome de tag, tenta encontrar ou criar a tag
+    if (tagName && !tagId) {
+      try {
+        const tag = await findOrCreateTag(tagName.trim(), session.user.id)
+        finalTagId = tag.id
+      } catch (error) {
+        console.error('Erro ao criar/encontrar tag:', error)
+        return NextResponse.json(
+          { error: 'Erro ao processar nome da tag. Verifique se o nome é válido.' },
+          { status: 400 }
+        )
+      }
+    }
 
     // Adiciona a tag ao vídeo
-    await addTagToVideo(id, tag.id)
+    await addTagToVideo(id, finalTagId)
 
     return NextResponse.json({
-      message: 'Tag adicionada com sucesso',
-      tag
+      message: 'Tag adicionada com sucesso'
     })
   } catch (error) {
     console.error('Erro ao adicionar tag ao vídeo:', error)

@@ -1,5 +1,138 @@
 import { prisma } from '@/lib/prisma'
 
+// Função utilitária para validar tags - apenas caracteres alfanuméricos
+export function validateTagName(tagName: string): boolean {
+  if (!tagName || typeof tagName !== 'string') return false
+
+  // Remove espaços em branco e converte para minúsculo para validação
+  const cleanTag = tagName.trim()
+
+  // Verifica se está vazio após limpeza
+  if (cleanTag.length === 0) return false
+
+  // Regex que permite apenas letras (a-z, A-Z) e dígitos (0-9)
+  // ^ indica início da string, $ indica fim da string
+  // [a-zA-Z0-9] permite qualquer caractere alfanumérico
+  // + significa uma ou mais ocorrências
+  const alphanumericRegex = /^[a-zA-Z0-9]+$/
+
+  return alphanumericRegex.test(cleanTag)
+}
+
+// Função para sanitizar e validar lista de tags
+export function sanitizeAndValidateTags(tags: string[]): string[] {
+  return tags
+    .filter(tag => validateTagName(tag))
+    .map(tag => tag.trim().toLowerCase())
+    .filter((tag, index, arr) => arr.indexOf(tag) === index) // Remove duplicatas
+    .filter(tag => tag.length >= 2 && tag.length <= 50) // Tamanho mínimo e máximo
+}
+
+// Utilitários para validação e sanitização de tags
+export class TagValidator {
+  // Lista de palavras comuns em português que devem ser evitadas como tags únicas
+  private static readonly STOP_WORDS = new Set([
+    'o', 'a', 'os', 'as', 'um', 'uma', 'uns', 'umas',
+    'de', 'do', 'da', 'dos', 'das', 'em', 'no', 'na', 'nos', 'nas',
+    'por', 'para', 'com', 'sem', 'sob', 'sobre', 'até', 'até',
+    'e', 'ou', 'mas', 'que', 'como', 'se', 'quando', 'onde',
+    'este', 'esta', 'estes', 'estas', 'esse', 'essa', 'esses', 'essas',
+    'aquele', 'aquela', 'aqueles', 'aquelas', 'isto', 'isso', 'aquilo',
+    'me', 'te', 'se', 'nos', 'vos', 'lhe', 'lhes', 'meu', 'minha',
+    'teu', 'tua', 'seu', 'sua', 'nosso', 'nossa', 'vosso', 'vossa',
+    'muito', 'pouco', 'mais', 'menos', 'muito', 'pouco', 'tanto', 'quanto',
+    'todo', 'toda', 'todos', 'todas', 'algum', 'alguma', 'nenhum', 'nenhuma',
+    'outro', 'outra', 'outros', 'outras', 'mesmo', 'mesma', 'mesmos', 'mesmas',
+    'tal', 'tais', 'qual', 'quais', 'quanto', 'quanta', 'quantos', 'quantas'
+  ]);
+
+  // Lista de caracteres especiais a serem removidos
+  private static readonly SPECIAL_CHARS_REGEX = /[^\w\s\-]/g;
+
+  // Regex para detectar apenas números
+  private static readonly ONLY_NUMBERS_REGEX = /^\d+$/;
+
+  // Regex para detectar apenas caracteres especiais
+  private static readonly ONLY_SPECIAL_REGEX = /^[^\w\s]+$/;
+
+  /**
+   * Sanitiza e valida um nome de tag
+   */
+  static sanitizeTagName(name: string): string | null {
+    if (!name || typeof name !== 'string') {
+      return null;
+    }
+
+    // 1. Trim e normalizar espaços
+    let sanitized = name.trim().replace(/\s+/g, ' ');
+
+    // 2. Remover caracteres especiais estranhos (manter apenas letras, números, espaços e hífens)
+    sanitized = sanitized.replace(this.SPECIAL_CHARS_REGEX, '');
+
+    // 3. Trim novamente após remoção de caracteres especiais
+    sanitized = sanitized.trim();
+
+    // 4. Verificar se ficou vazio após sanitização
+    if (!sanitized) {
+      return null;
+    }
+
+    // 5. Verificar se é apenas números
+    if (this.ONLY_NUMBERS_REGEX.test(sanitized)) {
+      return null;
+    }
+
+    // 6. Verificar se é apenas caracteres especiais
+    if (this.ONLY_SPECIAL_REGEX.test(sanitized)) {
+      return null;
+    }
+
+    // 7. Verificar comprimento mínimo (2 caracteres) e máximo (50 caracteres)
+    if (sanitized.length < 2 || sanitized.length > 50) {
+      return null;
+    }
+
+    // 8. Verificar se é uma stop word única
+    const words = sanitized.toLowerCase().split(' ');
+    if (words.length === 1 && this.STOP_WORDS.has(words[0])) {
+      return null;
+    }
+
+    // 9. Capitalizar primeira letra de cada palavra (Title Case)
+    sanitized = sanitized.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+
+    // 10. Remover acentos se necessário (opcional - manter para português)
+    // sanitized = sanitized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    return sanitized;
+  }
+
+  /**
+   * Valida múltiplos nomes de tags
+   */
+  static sanitizeTagNames(names: string[]): string[] {
+    return names
+      .map(name => this.sanitizeTagName(name))
+      .filter((name): name is string => name !== null)
+      .filter((name, index, arr) => arr.indexOf(name) === index); // Remover duplicatas
+  }
+
+  /**
+   * Verifica se um nome de tag é válido
+   */
+  static isValidTagName(name: string): boolean {
+    return this.sanitizeTagName(name) !== null;
+  }
+
+  /**
+   * Cria tags válidas a partir de palavras-chave
+   */
+  static createValidTagsFromKeywords(keywords: string[], maxTags: number = 5): string[] {
+    const validTags = this.sanitizeTagNames(keywords);
+    return validTags.slice(0, maxTags);
+  }
+}
+
 // Tipos
 export type AutoTagRule = {
   id: string;
@@ -168,10 +301,13 @@ export class AutoTagsService {
 
     // Extração de palavras-chave (palavras com mais de 3 caracteres e não muito comuns)
     const stopWords = ['o', 'a', 'e', 'é', 'um', 'uma', 'para', 'com', 'sem', 'por', 'que', 'de', 'do', 'da', 'em', 'no', 'na', 'os', 'as', 'dos', 'das'];
-    const keywords = words
+    const rawKeywords = words
       .filter(word => word.length > 3 && !stopWords.includes(word))
       .filter((word, index, arr) => arr.indexOf(word) === index) // Remover duplicatas
       .slice(0, 10); // Limitar a 10 palavras
+
+    // Aplicar validação de tags alfanuméricas
+    const keywords = rawKeywords.filter(keyword => validateTagName(keyword));
 
     // Análise de sentimento (simplificada)
     const positiveWords = ['bom', 'ótimo', 'excelente', 'maravilhoso', 'incrível', 'fantástico', 'legal', 'show', 'top'];
@@ -306,10 +442,16 @@ export class AutoTagsService {
       }
     });
 
-    // Se não encontrar tags existentes, criar tags automáticas
+    // Se não encontrar tags existentes, criar tags automáticas válidas
     if (existingTags.length === 0) {
-      const autoTags = uniqueKeywords.slice(0, 5).map(keyword => ({
-        name: keyword,
+      const validTagNames = TagValidator.createValidTagsFromKeywords(uniqueKeywords, 5);
+
+      if (validTagNames.length === 0) {
+        return []; // Nenhuma tag válida encontrada
+      }
+
+      const autoTags = validTagNames.map(tagName => ({
+        name: tagName,
         isAuto: true,
         category: categoryAnalysis.primary
       }));
@@ -338,7 +480,8 @@ export class AutoTagsService {
       // Buscar tags existentes
       const existingTags = await prisma.tag.findMany({
         where: {
-          name: { in: analysis.suggestedTags }
+          name: { in: analysis.suggestedTags },
+          userId: video.userId
         }
       });
 
@@ -346,13 +489,17 @@ export class AutoTagsService {
       const video = await prisma.video.findUnique({ where: { id: videoId } });
       if (!video) throw new Error('Vídeo não encontrado');
 
-      const newTags = analysis.suggestedTags.filter(tagName =>
-        !existingTags.some(tag => tag.name === tagName)
+      // Filtrar e validar tags sugeridas
+      const validNewTags = TagValidator.sanitizeTagNames(
+        analysis.suggestedTags.filter(tagName =>
+          !existingTags.some(tag => tag.name === tagName)
+        )
       );
 
-      if (newTags.length > 0) {
-        await prisma.tag.createMany({
-          data: newTags.map((name: string) => ({
+      let createdTags: any[] = [];
+      if (validNewTags.length > 0) {
+        createdTags = await prisma.tag.createManyAndReturn({
+          data: validNewTags.map((name: string) => ({
             name,
             isAuto: true,
             category: 'automático',
@@ -362,27 +509,44 @@ export class AutoTagsService {
       }
 
       // Atualizar lista de tags existentes
-      const allTags = [...existingTags, ...newTags.map(name => ({ name } as any))];
+      const allTags = [...existingTags, ...createdTags];
 
-      // Associar tags ao vídeo
-      await prisma.video.update({
-        where: { id: videoId },
-        data: {
-          tags: {
-            connect: allTags.map(tag => ({ id: tag.id }))
+      // Associar tags ao vídeo criando registros VideoTag
+      if (allTags.length > 0) {
+        // Verificar associações existentes para evitar duplicatas
+        const existingAssociations = await prisma.videoTag.findMany({
+          where: {
+            videoId,
+            tagId: { in: allTags.map(tag => tag.id) }
           }
+        });
+
+        const existingTagIds = existingAssociations.map(assoc => assoc.tagId);
+        const newAssociations = allTags
+          .filter(tag => !existingTagIds.includes(tag.id))
+          .map(tag => ({
+            videoId,
+            tagId: tag.id
+          }));
+
+        if (newAssociations.length > 0) {
+          await prisma.videoTag.createMany({
+            data: newAssociations
+          });
         }
-      });
+      }
 
       // Criar sugestões de tags
-      const tagSuggestions = await prisma.tagSuggestion.createMany({
-        data: allTags.map(tag => ({
-          videoId,
-          tagId: tag.id,
-          confidence: analysis.confidenceScore,
-          source: 'auto'
-        }))
-      });
+      if (allTags.length > 0) {
+        await prisma.tagSuggestion.createMany({
+          data: allTags.map(tag => ({
+            videoId,
+            tagId: tag.id,
+            confidence: analysis.confidenceScore,
+            source: 'auto'
+          }))
+        });
+      }
 
       return {
         success: true,

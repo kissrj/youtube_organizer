@@ -97,6 +97,18 @@ export async function saveYouTubeAccount(
   youtubeUserInfo?: any
 ) {
   try {
+    console.log('💾 Salvando conta YouTube para usuário:', userId)
+
+    // Log dos dados que serão salvos (sem tokens por segurança)
+    console.log('📊 Dados para salvar:', {
+      hasAccessToken: !!tokens.access_token,
+      hasRefreshToken: !!tokens.refresh_token,
+      hasExpiryDate: !!tokens.expiry_date,
+      scope: tokens.scope,
+      youtubeUserId: youtubeUserInfo?.id,
+      youtubeUsername: youtubeUserInfo?.username,
+    })
+
     const data = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
@@ -107,7 +119,7 @@ export async function saveYouTubeAccount(
       updatedAt: new Date(),
     }
 
-    return await prisma.youTubeAccount.upsert({
+    const result = await prisma.youTubeAccount.upsert({
       where: { userId },
       update: data,
       create: {
@@ -116,9 +128,34 @@ export async function saveYouTubeAccount(
         connectedAt: new Date(),
       },
     })
+
+    console.log('✅ Conta YouTube salva com sucesso:', {
+      id: result.id,
+      userId: result.userId,
+      youtubeUserId: result.youtubeUserId,
+      connectedAt: result.connectedAt,
+    })
+
+    return result
   } catch (error) {
-    console.error('Erro ao salvar conta YouTube:', error)
-    throw new Error('Falha ao salvar conta YouTube')
+    console.error('❌ Erro ao salvar conta YouTube:', error)
+
+    // Log detalhado do erro para diagnóstico
+    if (error instanceof Error) {
+      console.error('Detalhes do erro:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      })
+    }
+
+    // Verificar se é erro de constraint ou validação
+    if (error.code) {
+      console.error('Código do erro:', error.code)
+      console.error('Meta do erro:', error.meta)
+    }
+
+    throw new Error(`Falha ao salvar conta YouTube: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
   }
 }
 

@@ -105,14 +105,14 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="btn btn-ghost"
           >
             <ArrowLeft className="h-5 w-5" />
             Back
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Feed Videos</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl font-bold text-foreground">Feed Videos</h1>
+            <p className="text-muted mt-1">
               {pagination.total} video{pagination.total !== 1 ? 's' : ''} found
             </p>
           </div>
@@ -159,11 +159,11 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
           {videos.map((video) => (
             <div
               key={video.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+              className="ui-card p-4 ui-card-hover"
             >
               <div className="flex gap-4">
                 {/* Thumbnail */}
-                <div className="flex-shrink-0 relative">
+                <div className="flex-shrink-0 relative group">
                   <Image
                     src={video.thumbnailUrl || '/placeholder-video.png'}
                     alt={video.title}
@@ -171,8 +171,12 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                     height={128}
                     className="w-48 h-32 object-cover rounded-lg"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="backdrop-blur-sm bg-black/40 text-white px-3 py-1.5 rounded-full text-xs shadow">Tap to play</div>
+                  </div>
                   {video.duration && (
-                    <div className="absolute bottom-2 right-2 bg-white bg-opacity-90 text-gray-900 text-xs px-2 py-1 rounded border border-gray-200">
+                    <div className="absolute bottom-2 right-2 bg-black/75 text-white text-xs px-2 py-1 rounded">
                       {formatDuration(video.duration)}
                     </div>
                   )}
@@ -180,18 +184,18 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                  <h3 className="font-semibold text-lg text-foreground mb-2 line-clamp-2">
                     {video.title}
                   </h3>
 
                   {video.description && (
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                    <p className="text-muted text-sm mb-3 line-clamp-2">
                       {video.description}
                     </p>
                   )}
 
                   {/* Metadata */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                  <div className="flex items-center gap-4 text-sm text-subtle mb-3">
                     {video.publishedAt && (
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
@@ -234,10 +238,10 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                         />
                       )}
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-foreground">
                           {video.channel?.title || video.channelTitle}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-subtle">
                           {video.channelTitle && video.channelTitle !== video.channel?.title
                             ? video.channelTitle
                             : ''}
@@ -251,13 +255,13 @@ export function FeedVideos({ feedId, onBack }: FeedVideosProps) {
                         {video.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag.id}
-                            className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+                            className="px-2 py-1 bg-surface border border-ui text-subtle text-xs rounded-full"
                           >
                             {tag.name}
                           </span>
                         ))}
                         {video.tags.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          <span className="px-2 py-1 bg-surface border border-ui text-subtle text-xs rounded-full">
                             +{video.tags.length - 3}
                           </span>
                         )}
